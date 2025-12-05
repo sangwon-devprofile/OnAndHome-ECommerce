@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>On&Home - 홈</title>
+  <link rel="stylesheet" href="/css/import.css" />
+  <script src="/js/oncommon.js"></script>
+</head>
+<body>
+  <!-- 백그라운드 -->
+  <div class="on-main-wrap">
+    <!-- 헤더 -->
+      <div th:replace="~{fragments/header :: header}"></div>
+    
+    <!-- 상단슬라이드 -->
+    <div class="main-slide-wrapper mb-120">
+      <div class="main-slide"><a href="/user/product/detail/423"><img src="/product_img/slide_01.jpg" alt="슬라이드 이미지 1"></a></div>
+      <div class="main-slide"><a href="/user/product/detail/431"><img src="/product_img/slide_02.jpg" alt="슬라이드 이미지 2"></a></div>
+      <div class="main-slide"><a href="/user/product/detail/469"><img src="/product_img/slide_03.jpg" alt="슬라이드 이미지 2"></a></div>
+      <div class="main-slide"><a href="/user/product/detail/493"><img src="/product_img/slide_04.jpg" alt="슬라이드 이미지 2"></a></div>
+    </div>
+    
+    <!-- 아이템영역1 -->
+    <div class="on-item01 mb-120">
+      <div class="on-item01-inner">
+        <h2 class="sub-title line-under">금주의 HOT아이템</h2>
+        <div class="on-item01-wrapper">
+          <!-- 왼쪽 -->
+          <div class="on-item01-l">
+            <div class="on-item01-l-up">
+              <div class="on-item01-01">
+                <a href="/user/product/detail/439"><img class="item_01_01" src="/product_img/item_01_01.jpg" alt="상품 이미지"></a>
+              </div>
+              <div class="on-item01-02">
+                <a href="/user/product/detail/480"><img class="item_01_02" src="/product_img/item_01_02.jpg" alt="상품 이미지"></a>
+              </div>
+            </div> 
+            <!-- 아래 -->
+            <div class="on-item01-03">
+              <a href="/user/product/detail/475"><img class="item_01_03" src="/product_img/item_01_03.jpg" alt="상품 이미지"></a>
+            </div>
+          </div>
+          <!-- 오른쪽 -->
+          <div class="on-item01-r">
+            <div class="">
+              <a href="/user/product/detail/436"><img class="item_01_04" src="/product_img/item_01_04.jpg" alt="상품 이미지"></a>
+            </div>
+          </div>
+        </div>  
+      </div>
+    </div>
+    
+    <!-- 아이템영역2 - MD's CHOICE -->
+    <div class="on-item02 mb-80">
+      <div class="on-item02-inner">
+        <h2 class="sub-title">MD's CHOICE</h2>
+        <div id="mdChoiceContainer">
+          <!-- 동적으로 로드될 상품 목록 -->
+        </div>
+      </div>
+    </div>  
+    
+    <!-- 아이템영역3 - 이달의 최다 구매 상품 -->
+    <div class="on-item02 mb-120">
+      <div class="on-item02-inner">
+        <h2 class="sub-title">이달의 최다 구매 상품</h2>
+        <div id="topSalesContainer">
+          <!-- 동적으로 로드될 상품 목록 -->
+        </div>
+      </div>
+    </div>
+    
+    <!-- 아이템영역4 -->
+    <div class="on-item04 mb-120">
+      <div class="on-item04-inner">
+        <div class="on-item-04-wrapper">
+          <div class="on-item-04-wrapper-l"><a href="/user/product/detail/461"><img src="/product_img/item_04_01.jpg"></a></div>
+          <div class="on-item-04-wrapper-r">
+            <div class="on-item-04-wrapper-r-item"><a href="/user/product/detail/485"><img src="/product_img/item_04_02.jpg"></a></div>
+            <div class="on-item-04-wrapper-r-item"><a href="/user/product/detail/455"><img src="/product_img/item_04_03.jpg"></a></div>
+            <div class="on-item-04-wrapper-r-item"><a href="/user/product/detail/438"><img src="/product_img/item_04_04.jpg"></a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 푸터 -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+  </div>
+
+  <script>
+    /**
+     * 카테고리 데이터 설정
+     */
+    const categoryData = [
+      {
+        parentName: 'TV/오디오',
+        children: ['TV', '오디오']
+      },
+      {
+        parentName: '주방가전',
+        children: ['냉장고', '전자렌지', '식기세척기']
+      },
+      {
+        parentName: '생활가전',
+        children: ['세탁기', '청소기']
+      },
+      {
+        parentName: '에어컨/공기청정기',
+        children: ['에어컨', '공기청정기']
+      },
+      {
+        parentName: '기타',
+        children: ['정수기', '안마의자', 'PC']
+      }
+    ];
+
+    /**
+     * 페이지 로드 시 초기화
+     */
+    document.addEventListener('DOMContentLoaded', function() {
+      // 카테고리 메뉴 로드
+      loadCategoryMenu();
+      
+      // 헤더 네비게이션 로드
+      loadHeaderNavigation();
+      
+      // MD's CHOICE 상품 로드
+      loadMdChoice();
+      
+      // 이달의 최다 구매 상품 로드
+      loadTopSales();
+    });
+
+    /**
+     * 카테고리 메뉴 동적 생성
+     */
+    function loadCategoryMenu() {
+      const categoryMenu = document.getElementById('categoryMenu');
+      categoryMenu.innerHTML = '';
+
+      categoryData.forEach(category => {
+        const li = document.createElement('li');
+        
+        const parentLink = document.createElement('a');
+        parentLink.href = '#';
+        parentLink.textContent = category.parentName;
+        parentLink.onclick = function(e) {
+          e.preventDefault();
+          return false;
+        };
+        
+        li.appendChild(parentLink);
+        
+        if (category.children && category.children.length > 0) {
+          const depth2 = document.createElement('ul');
+          depth2.className = 'depth2';
+          
+          category.children.forEach(child => {
+            const childLi = document.createElement('li');
+            const childLink = document.createElement('a');
+            childLink.href = `/user/product/category?category=${encodeURIComponent(child)}`;
+            childLink.textContent = child;
+            childLi.appendChild(childLink);
+            depth2.appendChild(childLi);
+          });
+          
+          li.appendChild(depth2);
+        }
+        
+        categoryMenu.appendChild(li);
+      });
+
+      console.log('카테고리 메뉴 로드 완료');
+    }
+
+    /**
+     * ✅ 헤더 네비게이션 로드 (JWT 기반)
+     */
+    function loadHeaderNavigation() {
+      const accessToken = localStorage.getItem('accessToken');
+      
+      const headers = {};
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+      }
+      
+      fetch('/api/user/session-info', {
+        headers: headers
+      })
+        .then(response => response.json())
+        .then(data => {
+          const headerNav = document.getElementById('headerNav');
+          headerNav.innerHTML = '';
+
+          if (data.loggedIn) {
+            console.log('로그인 상태:', data.user);
+            let navHTML = `
+              <li><a href="/user/my_page">마이페이지</a></li>
+              <li><a href="/user/board/notice/list">공지사항</a></li>
+            `;
+
+            if (data.isAdmin) {
+              navHTML += `<li><a href="/admin/dashboard"><b>관리자</b></a></li>`;
+            }
+
+            navHTML += `
+              <li><a href="#" onclick="handleLogout(); return false;">로그아웃</a></li>
+            `;
+
+            headerNav.innerHTML = navHTML;
+          } else {
+            console.log('비로그인 상태');
+            headerNav.innerHTML = `
+              <li><a href="/login">로그인</a></li>
+              <li><a href="/signup">회원가입</a></li>
+              <li><a href="/">공지사항</a></li>
+            `;
+          }
+        })
+        .catch(error => {
+          console.error('세션 정보 조회 실패:', error);
+          const headerNav = document.getElementById('headerNav');
+          headerNav.innerHTML = `
+            <li><a href="/login">로그인</a></li>
+            <li><a href="/signup">회원가입</a></li>
+            <li><a href="/">공지사항</a></li>
+          `;
+        });
+    }
+
+    /**
+     * MD's CHOICE 상품 로드
+     */
+    function loadMdChoice() {
+      console.log('[INDEX] MD\'s CHOICE 로드 시작');
+      fetch('/user/product/api/all')
+        .then(response => response.json())
+        .then(data => {
+          console.log('[INDEX] MD\'s CHOICE 응답:', data);
+          if (data.success && data.products && data.products.length > 0) {
+            const products = data.products.slice(0, 6);
+            renderProductList('mdChoiceContainer', products);
+          }
+        })
+        .catch(error => console.error('MD\'s CHOICE 로드 오류:', error));
+    }
+
+    /**
+     * 이달의 최다 구매 상품 로드
+     */
+    function loadTopSales() {
+      console.log('[INDEX] 이달의 최다 구매 상품 로드 시작');
+      fetch('/user/product/api/all')
+        .then(response => response.json())
+        .then(data => {
+          console.log('[INDEX] 이달의 최다 구매 상품 응답:', data);
+          if (data.success && data.products && data.products.length > 0) {
+            const products = data.products.slice(0, 6);
+            renderProductList('topSalesContainer', products);
+          }
+        })
+        .catch(error => console.error('이달의 최다 구매 상품 로드 오류:', error));
+    }
+
+    /**
+     * 상품 목록 렌더링
+     */
+    function renderProductList(containerId, products) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      
+      console.log('[INDEX] renderProductList 호출 - containerId:', containerId, '상품 수:', products.length);
+
+      for (let i = 0; i < products.length; i += 3) {
+        const itemArray = document.createElement('div');
+        itemArray.className = 'item-array';
+
+        for (let j = i; j < i + 3 && j < products.length; j++) {
+          const product = products[j];
+          const itemDiv = document.createElement('div');
+          
+          let imageSrc = '/product_img/placeholder.jpg';
+          
+          if (product.thumbnailImage) {
+            imageSrc = product.thumbnailImage;
+            console.log('[INDEX] 상품 ID:', product.id, '이미지 경로:', imageSrc);
+          } else {
+            console.warn('[INDEX] 상품 ID:', product.id, '- thumbnailImage 없음');
+          }
+          
+          const priceFormatted = formatPrice(product.price);
+          const salePriceFormatted = product.salePrice ? formatPrice(product.salePrice) : priceFormatted;
+          const hasSalePrice = product.salePrice && product.salePrice < product.price;
+
+          itemDiv.innerHTML = `
+            <a href="/user/product/detail/${product.id}">
+              <div class="item-thum-wrapper">
+                <img src="${imageSrc}" alt="${product.name}" onerror="console.error('이미지 로드 실패:', this.src); this.src='/product_img/placeholder.jpg'">
+              </div>
+            </a>
+            <div class="item-info">
+              <ul class="price-info">
+                <li class="item-title">
+                  <a href="/user/product/detail/${product.id}">${product.name}</a>
+                </li>
+                <li class="price-info-ori" style="display: ${hasSalePrice ? 'block' : 'none'};">${priceFormatted}</li>
+                <li class="price-info-sale">${salePriceFormatted}</li>
+              </ul>
+            </div>
+          `;
+
+          itemArray.appendChild(itemDiv);
+        }
+
+        container.appendChild(itemArray);
+      }
+      
+      console.log('[INDEX] containerId:', containerId, '- 렌더링 완료');
+    }
+
+    /**
+     * 가격 포맷팅
+     */
+    function formatPrice(price) {
+      return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    /**
+     * ✅ 로그아웃 처리 (JWT 토큰 삭제)
+     */
+    function handleLogout() {
+      if (confirm('로그아웃 하시겠습니까?')) {
+        // localStorage에서 토큰 삭제
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('userInfo');
+        
+        console.log('로그아웃 - 토큰 삭제 완료');
+        
+        // 로그인 페이지로 이동
+        window.location.href = '/login?logout=true';
+      }
+    }
+  </script>
+</body>
+</html>

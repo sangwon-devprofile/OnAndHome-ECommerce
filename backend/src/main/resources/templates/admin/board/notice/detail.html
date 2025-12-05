@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항 상세보기</title>
+    <link rel="stylesheet" href="/css/import.css" />
+</head>
+<body>
+<div class="on-wrapper">
+    <div class="on-content">
+
+        <!--사이드바 메뉴-->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="on-main">
+            <h2 class="mb-30">공지사항 상세보기</h2>
+
+            <div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">번호</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${notice.id}"></div>
+                </div>
+
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">작성일자</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd HH:mm')}"></div>
+                </div>
+
+                <div class="on-comp-tbl-row" th:if="${notice.updatedAt != null}">
+                    <div class="on-comp-tbl-th col-2">수정일자</div>
+                    <div class="on-comp-tbl-td col-10"
+                         th:text="${#temporals.format(notice.updatedAt, 'yyyy-MM-dd HH:mm')}"></div>
+                </div>
+
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">작성자</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${notice.writer ?: 'admin'}"></div>
+                </div>
+
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">제목</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${notice.title}"></div>
+                </div>
+
+                <div class="on-comp-tbl-row high-500">
+                    <div class="on-comp-tbl-th col-2">내용</div>
+                    <div class="on-comp-tbl-td col-10 mt-20 items-start" th:text="${notice.content}"></div>
+                </div>
+            </div>
+
+            <!-- ✅ 버튼 영역 -->
+            <div class="flex justify-end mt-20">
+
+                <!-- 목록 버튼 -->
+                <a th:href="@{/admin/board/notice/list}">
+                    <button type="button" class="btn btn--quarternary-outline mr-4">목록</button>
+                </a>
+
+                <!-- 수정 버튼 -->
+                <a th:if="${notice.id != null}" th:href="@{|/admin/board/notice/edit/${notice.id}|}">
+                    <button type="button" class="btn btn--tertiary mr-4">수정</button>
+                </a>
+
+                <!-- ✅ 삭제 버튼 (POST + confirm + 관리자 색상 유지) -->
+                <form th:if="${notice.id != null}"
+                      th:action="@{|/admin/board/notice/delete/${notice.id}|}"
+                      method="post"
+                      onsubmit="return confirm('정말 삭제하시겠습니까?');"
+                      style="display:inline;">
+                    <button type="submit" class="btn btn--secondary">삭제</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

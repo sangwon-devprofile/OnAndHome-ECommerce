@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>On&Home - 마이페이지</title>
+  <link rel="stylesheet" href="/css/import.css" />
+  <script src="/js/oncommon.js"></script>
+</head>
+<body>
+  <!-- 백그라운드 -->
+  <div class="on-main-wrap">
+    <!-- 헤더 -->
+      <div th:replace="~{fragments/header :: header}"></div>
+
+    <!-- 마이페이지 컨텐츠 -->
+    <div class="on-item02 mb-80 mt-80">
+      <div class="on-item02-inner">
+        <h2 class="sub-title line-under">My page</h2>
+        <div class="my_page-wrapper">
+
+          <a href="/user/my_order">
+            <div class="my_page-obj">
+              <span class="ico-mypage order_ico"></span>
+              <span>주문내역</span>
+            </div>
+          </a>
+          <a href="/user/cart">
+            <div class="my_page-obj">
+              <span class="ico-mypage cart_ico"></span>
+              <span>장바구니</span>
+            </div>
+          </a>                       
+          <a href="/user/my_info">
+            <div class="my_page-obj">
+              <span class="ico-mypage info_ico"></span>
+              <span>내정보</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>  
+
+    <!-- 푸터 -->
+      <div th:replace="~{fragments/footer :: footer}"></div>
+  </div>
+
+  <script>
+    /**
+     * 로그인 상태에 따라 헤더 네비게이션을 동적으로 변경
+     */
+    document.addEventListener('DOMContentLoaded', function() {
+      // JWT 토큰 확인
+      const accessToken = localStorage.getItem('accessToken');
+      
+      if (!accessToken) {
+        // 토큰이 없으면 로그인 페이지로 리다이렉트
+        alert('로그인이 필요합니다.');
+        window.location.href = '/login';
+        return;
+      }
+
+      // 서버에서 로그인 정보 확인
+      fetch('/api/user/session-info', {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (!data.loggedIn) {
+            // 로그인 상태가 아니면 로그인 페이지로
+            alert('로그인이 필요합니다.');
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            window.location.href = '/login';
+            return;
+          }
+
+          const headerNav = document.getElementById('headerNav');
+          headerNav.innerHTML = '';  // 기존 내용 제거
+
+          // 로그인 상태
+          let navHTML = `
+            <li><a href="/user/my_page">마이페이지</a></li>
+            <li><a href="/user/board/notice/list">공지사항</a></li>
+          `;
+
+          // Admin 계정이면 관리자 링크 추가
+          if (data.isAdmin) {
+            navHTML += `<li><a href="/admin/dashboard"><b>관리자</b></a></li>`;
+          }
+
+          // 로그아웃 링크
+          navHTML += `
+            <li><a href="#" onclick="handleLogout(); return false;">로그아웃</a></li>
+          `;
+
+          headerNav.innerHTML = navHTML;
+        })
+        .catch(error => {
+          console.error('세션 정보 조회 실패:', error);
+          // 오류 발생 시 로그인 페이지로 리다이렉트
+          alert('로그인 세션이 만료되었습니다.');
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          window.location.href = '/login';
+        });
+    });
+
+    /**
+     * 로그아웃 처리
+     */
+    function handleLogout() {
+      if (confirm('로그아웃 하시겠습니까?')) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('userInfo');
+        window.location.href = '/login?logout=true';
+      }
+    }
+  </script>
+</body>
+</html>

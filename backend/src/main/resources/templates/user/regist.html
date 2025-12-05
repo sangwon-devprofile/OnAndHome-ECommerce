@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>On&Home - 회원가입</title>
+  <link rel="stylesheet" href="/css/import.css" />
+  <script src="/js/oncommon.js"></script>
+</head>
+<body>
+  <!-- 백그라운드 -->
+  <div class="on-main-wrap">
+    <!-- 헤더 -->
+      <div th:replace="~{fragments/header :: header}"></div>
+    
+    <div class="regeist_wrapper mb-40">
+      <div class="regeist_inner">
+        <h2 class="mb-30">회원가입</h2>
+        <div class="border-1p"></div>
+        <div>
+          <form id="signupForm" class="mt-40">
+            <div class="form-group">
+              <label class="login-label" for="userId">아이디 <span style="color: #d32f2f;">*</span></label>
+              <input class="input" type="text" id="userId" name="userId" placeholder="4-20글자" required />
+              <div id="userIdError" class="error-message"></div>
+            </div>
+    
+            <div class="form-group">
+              <label class="login-label" for="password">비밀번호 <span style="color: #d32f2f;">*</span></label>
+              <input type="password" class="input" id="password" name="password" placeholder="8글자 이상" required />
+              <div id="passwordError" class="error-message"></div>
+            </div>
+    
+            <div class="form-group">
+              <label class="login-label" for="passwordConfirm">비밀번호 확인 <span style="color: #d32f2f;">*</span></label>
+              <input type="password" class="input" id="passwordConfirm" name="passwordConfirm" placeholder="" required />
+              <div id="passwordConfirmError" class="error-message"></div>
+            </div>
+    
+            <div class="form-group">
+              <label class="login-label" for="email">이메일 <span style="color: #d32f2f;">*</span></label>
+              <input type="email" id="email" class="input" name="email" placeholder="example@onandhome.com" required />
+              <div id="emailError" class="error-message"></div>
+            </div>
+    
+            <div class="form-group">
+              <label class="login-label" for="username">이름 <span style="color: #d32f2f;">*</span></label>
+              <input type="text" class="input" id="username" name="username" placeholder="홍길동" required />
+              <div id="usernameError" class="error-message"></div>
+            </div>
+    
+            <div class="form-group">
+              <label class="login-label" for="phone">휴대폰</label>
+              <input type="tel" class="input" id="phone" name="phone" placeholder="010-1234-5678" />
+            </div>
+            
+            <div id="successMessage" style="display: none; color: #388e3c; margin-top: 10px; text-align: center; padding: 10px; background-color: #e8f5e9; border-radius: 4px;"></div>
+            <div id="errorAlert" style="display: none; color: #d32f2f; margin-top: 10px; text-align: center; padding: 10px; background-color: #ffebee; border-radius: 4px;"></div>
+            
+            <div class="border-2p"></div>
+            <div class="button-group justify-start flex mb-20">
+              <button type="submit" class="btn btn--primary">회원가입</button>
+              <button type="button" class="btn btn--primary-outline" onclick="history.back();">취소</button>
+            </div>
+            <div class="login-link">
+              이미 계정이 있으신가요? <a href="/login"><b>로그인</b></a>
+            </div>
+          </form>          
+        </div>
+      </div>
+    </div>
+      <div th:replace="~{fragments/footer :: footer}"></div>
+  </div>
+
+  <script>
+    /**
+     * 로그인 상태에 따라 헤더 네비게이션을 동적으로 변경
+     */
+    document.addEventListener('DOMContentLoaded', function() {
+      // 서버에서 로그인 정보 확인
+      fetch('/api/user/session-info')
+        .then(response => response.json())
+        .then(data => {
+          const headerNav = document.getElementById('headerNav');
+          headerNav.innerHTML = '';  // 기존 내용 제거
+
+          if (data.loggedIn) {
+            // 로그인 상태
+            let navHTML = `
+              <li><a href="/user/my_page">마이페이지</a></li>
+              <li><a href="/user/board/notice/list">공지사항</a></li>
+            `;
+
+            // Admin 계정이면 관리자 링크 추가
+            if (data.isAdmin) {
+              navHTML += `<li><a href="/admin/dashboard"><b>관리자</b></a></li>`;
+            }
+
+            // 로그아웃 링크
+            navHTML += `
+              <li><a href="#" onclick="handleLogout(); return false;">로그아웃</a></li>
+            `;
+
+            headerNav.innerHTML = navHTML;
+          } else {
+            // 비로그인 상태
+            headerNav.innerHTML = `
+              <li><a href="/login">로그인</a></li>
+              <li><a href="/signup">회원가입</a></li>
+              <li><a href="/">공지사항</a></li>
+            `;
+          }
+        })
+        .catch(error => {
+          console.error('세션 정보 조회 실패:', error);
+          // 오류 발생 시 기본 비로그인 상태로 표시
+          const headerNav = document.getElementById('headerNav');
+          headerNav.innerHTML = `
+            <li><a href="/login">로그인</a></li>
+            <li><a href="/signup">회원가입</a></li>
+            <li><a href="/">공지사항</a></li>
+          `;
+        });
+    });
+
+    /**
+     * 로그아웃 처리
+     */
+    function handleLogout() {
+      if (confirm('로그아웃 하시겠습니까?')) {
+        window.location.href = '/logout';
+      }
+    }
+
+    const form = document.getElementById('signupForm');
+    const passwordInput = document.getElementById('password');
+    const passwordConfirmInput = document.getElementById('passwordConfirm');
+    const successMessage = document.getElementById('successMessage');
+    const errorAlert = document.getElementById('errorAlert');
+
+    // 비밀번호 확인 실시간 검사
+    passwordConfirmInput.addEventListener('input', function() {
+      if (passwordInput.value && passwordConfirmInput.value) {
+        if (passwordInput.value !== passwordConfirmInput.value) {
+          document.getElementById('passwordConfirmError').textContent = '✗ 비밀번호가 일치하지 않습니다.';
+          document.getElementById('passwordConfirmError').classList.add('show');
+        } else {
+          document.getElementById('passwordConfirmError').classList.remove('show');
+          document.getElementById('passwordConfirmError').textContent = '';
+        }
+      }
+    });
+
+    // 폼 제출 처리
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      // 오류 메시지 초기화
+      document.querySelectorAll('.error-message').forEach(el => {
+        el.textContent = '';
+        el.classList.remove('show');
+      });
+      errorAlert.style.display = 'none';
+      successMessage.style.display = 'none';
+
+      let isValid = true;
+
+      // 아이디 검사
+      const userId = document.getElementById('userId').value.trim();
+      if (!userId || userId.length < 4 || userId.length > 20) {
+        document.getElementById('userIdError').textContent = '아이디는 4-20글자여야 합니다.';
+        document.getElementById('userIdError').classList.add('show');
+        isValid = false;
+      }
+
+      // 비밀번호 검사
+      const password = document.getElementById('password').value;
+      if (!password || password.length < 8) {
+        document.getElementById('passwordError').textContent = '비밀번호는 8글자 이상이어야 합니다.';
+        document.getElementById('passwordError').classList.add('show');
+        isValid = false;
+      }
+
+      // 비밀번호 확인
+      const passwordConfirm = document.getElementById('passwordConfirm').value;
+      if (password !== passwordConfirm) {
+        document.getElementById('passwordConfirmError').textContent = '비밀번호가 일치하지 않습니다.';
+        document.getElementById('passwordConfirmError').classList.add('show');
+        isValid = false;
+      }
+
+      // 이메일 검사
+      const email = document.getElementById('email').value.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email || !emailRegex.test(email)) {
+        document.getElementById('emailError').textContent = '유효한 이메일을 입력하세요.';
+        document.getElementById('emailError').classList.add('show');
+        isValid = false;
+      }
+
+      // 이름 검사
+      const username = document.getElementById('username').value.trim();
+      if (!username) {
+        document.getElementById('usernameError').textContent = '이름을 입력하세요.';
+        document.getElementById('usernameError').classList.add('show');
+        isValid = false;
+      }
+
+      if (!isValid) return;
+
+      try {
+        const data = {
+          userId: userId,
+          password: password,
+          email: email,
+          username: username,
+          phone: document.getElementById('phone').value || null
+        };
+
+        const response = await fetch('/api/user/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          successMessage.textContent = '✓ 회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.';
+          successMessage.style.display = 'block';
+          setTimeout(() => {
+            window.location.href = '/login?signup=true';
+          }, 2000);
+        } else {
+          errorAlert.textContent = '✗ ' + (result.message || '회원가입 실패');
+          errorAlert.style.display = 'block';
+        }
+      } catch (error) {
+        console.error('회원가입 중 오류:', error);
+        errorAlert.textContent = '✗ 회원가입 중 오류가 발생했습니다.';
+        errorAlert.style.display = 'block';
+      }
+    });
+  </script>  
+</body>
+</html>

@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>온앤홈 - User 회원가입</title>
+  <link rel="stylesheet" href="/css/import.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .signup-wrap {
+      width: 100%;
+      max-width: 500px;
+    }
+    
+    .signup-card {
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .signup-logo-wrap {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .signup_header {
+      font-size: 28px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 5px;
+    }
+    
+    .signup-role {
+      background: #e3f2fd;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #1565c0;
+      font-weight: 600;
+      text-align: center;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+      margin-top: 16px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 6px;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: #2196F3;
+      box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+    }
+    
+    .error-message {
+      color: #d32f2f;
+      font-size: 11px;
+      margin-top: 4px;
+      display: none;
+    }
+    
+    .error-message.show {
+      display: block;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 30px;
+    }
+    
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-submit {
+      background: #4CAF50;
+      color: white;
+    }
+    
+    .btn-submit:hover {
+      background: #388E3C;
+    }
+    
+    .btn-cancel {
+      background: #f0f0f0;
+      color: #333;
+    }
+    
+    .btn-cancel:hover {
+      background: #e0e0e0;
+    }
+    
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .login-link a {
+      color: #4CAF50;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .alert {
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      display: none;
+    }
+    
+    .alert.show {
+      display: block;
+    }
+    
+    .alert-error {
+      background: #ffebee;
+      color: #c62828;
+      border: 1px solid #ffcdd2;
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-wrap">
+    <div class="signup-card">
+      <div class="signup-logo-wrap">
+        <h1 class="signup_header">On&Home</h1>
+        <div class="signup-role">👤 일반 사용자 회원가입 (USER)</div>
+      </div>
+      
+      <div id="alertBox" class="alert"></div>
+      
+      <form id="signupForm">
+        <div class="form-group">
+          <label for="userId">아이디 <span style="color: #d32f2f;">*</span></label>
+          <input type="text" id="userId" name="userId" placeholder="4-20글자" required />
+          <div id="userIdError" class="error-message"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">비밀번호 <span style="color: #d32f2f;">*</span></label>
+          <input type="password" id="password" name="password" placeholder="8글자 이상" required />
+          <div id="passwordError" class="error-message"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="passwordConfirm">비밀번호 확인 <span style="color: #d32f2f;">*</span></label>
+          <input type="password" id="passwordConfirm" name="passwordConfirm" placeholder="비밀번호를 다시 입력하세요" required />
+          <div id="passwordConfirmError" class="error-message"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">이메일 <span style="color: #d32f2f;">*</span></label>
+          <input type="email" id="email" name="email" placeholder="example@onandhome.com" required />
+          <div id="emailError" class="error-message"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="username">이름 <span style="color: #d32f2f;">*</span></label>
+          <input type="text" id="username" name="username" placeholder="홍길동" required />
+          <div id="usernameError" class="error-message"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">휴대폰</label>
+          <input type="tel" id="phone" name="phone" placeholder="010-1234-5678" />
+        </div>
+
+        <div class="button-group">
+          <button type="submit" class="btn btn-submit">회원가입</button>
+          <button type="button" class="btn btn-cancel" onclick="history.back();">취소</button>
+        </div>
+
+        <div class="login-link">
+          이미 계정이 있으신가요? <a href="/login">로그인</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('signupForm');
+    const passwordInput = document.getElementById('password');
+    const passwordConfirmInput = document.getElementById('passwordConfirm');
+    const alertBox = document.getElementById('alertBox');
+
+    passwordConfirmInput.addEventListener('input', function() {
+      if (passwordInput.value && passwordConfirmInput.value) {
+        if (passwordInput.value !== passwordConfirmInput.value) {
+          document.getElementById('passwordConfirmError').textContent = '✗ 비밀번호가 일치하지 않습니다.';
+          document.getElementById('passwordConfirmError').classList.add('show');
+        } else {
+          document.getElementById('passwordConfirmError').classList.remove('show');
+        }
+      }
+    });
+
+    function showAlert(message, type = 'success') {
+      alertBox.textContent = message;
+      alertBox.className = `alert show alert-${type}`;
+    }
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      let isValid = true;
+
+      const userId = document.getElementById('userId').value.trim();
+      if (!userId || userId.length < 4 || userId.length > 20) {
+        document.getElementById('userIdError').textContent = '아이디는 4-20글자여야 합니다.';
+        document.getElementById('userIdError').classList.add('show');
+        isValid = false;
+      } else {
+        document.getElementById('userIdError').classList.remove('show');
+      }
+
+      const password = document.getElementById('password').value;
+      if (!password || password.length < 8) {
+        document.getElementById('passwordError').textContent = '비밀번호는 8글자 이상이어야 합니다.';
+        document.getElementById('passwordError').classList.add('show');
+        isValid = false;
+      } else {
+        document.getElementById('passwordError').classList.remove('show');
+      }
+
+      const passwordConfirm = document.getElementById('passwordConfirm').value;
+      if (password !== passwordConfirm) {
+        document.getElementById('passwordConfirmError').textContent = '비밀번호가 일치하지 않습니다.';
+        document.getElementById('passwordConfirmError').classList.add('show');
+        isValid = false;
+      } else {
+        document.getElementById('passwordConfirmError').classList.remove('show');
+      }
+
+      const email = document.getElementById('email').value.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email || !emailRegex.test(email)) {
+        document.getElementById('emailError').textContent = '유효한 이메일을 입력하세요.';
+        document.getElementById('emailError').classList.add('show');
+        isValid = false;
+      } else {
+        document.getElementById('emailError').classList.remove('show');
+      }
+
+      const username = document.getElementById('username').value.trim();
+      if (!username) {
+        document.getElementById('usernameError').textContent = '이름을 입력하세요.';
+        document.getElementById('usernameError').classList.add('show');
+        isValid = false;
+      } else {
+        document.getElementById('usernameError').classList.remove('show');
+      }
+
+      if (!isValid) return;
+
+      try {
+        const data = {
+          userId: userId,
+          password: password,
+          email: email,
+          username: username,
+          phone: document.getElementById('phone').value || null
+        };
+
+        const response = await fetch('/api/user/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showAlert('회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.', 'success');
+          setTimeout(() => {
+            window.location.href = '/login?signup=true';
+          }, 1500);
+        } else {
+          showAlert(result.message || '회원가입 실패', 'error');
+        }
+      } catch (error) {
+        console.error('회원가입 중 오류:', error);
+        showAlert('회원가입 중 오류가 발생했습니다.', 'error');
+      }
+    });
+  </script>
+</body>
+</html>

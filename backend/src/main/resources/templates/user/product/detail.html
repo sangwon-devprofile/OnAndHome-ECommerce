@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>On&Home</title>
+    <link rel="stylesheet" href="/css/import.css" />
+    <script src="/js/oncommon.js"></script>
+</head>
+<body>
+<!-- 백그라운드 -->
+<div class="on-main-wrap">
+    <!-- 헤더 -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <!-- 아이템영역2  -->
+    <div class="on-item02 mb-80">
+        <div class="on-item02-inner">
+            <h2 class="sub-title cate-tit">상품 상세정보</h2>
+            <div class="item-array">
+                <div>
+                    <div class="item-thum-wrapper detail_thum">
+                        <img class="detail_img" id="productThumbnail" src="" alt="상품 이미지" style="display: none;">
+                    </div>
+                </div>
+                <div class="detail-info-wrapper">
+                    <h2 id="productName">상품명 로딩중...</h2>
+                    <div>
+                        <table>
+                            <th class="detail-info-th">정상가격</th>
+                            <td class="detail-price" id="productPrice">-</td>
+                        </table>
+                    </div>
+                    <div>
+                        <table>
+                            <th class="detail-info-th">할인가격</th>
+                            <td class="detail-sale-price" id="productSalePrice">-</td>
+                        </table>
+                    </div>
+                    <div>
+                        <table>
+                            <th class="detail-info-th">제조사</th>
+                            <td class="" id="productManufacturer">-</td>
+                        </table>
+                    </div>
+                    <div>
+                        <table>
+                            <th class="detail-info-th">제조국</th>
+                            <td class="" id="productCountry">-</td>
+                        </table>
+                    </div>
+                    <div>
+                        <table>
+                            <th class="detail-info-th">배송비</th>
+                            <td class="">무료</td>
+                        </table>
+                    </div>
+                    <div>
+                        <table>
+                            <th class="detail-info-th">판매처</th>
+                            <td class="">On&Home</td>
+                        </table>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-buy" onclick="buyNow()">바로구매</button>
+                        <button class="btn btn-cart" onclick="addToCart()">장바구니 담기</button>
+                    </div>
+                    <div class="border-2p"></div>
+                    <div class="detail-total-wrap">
+                        <div>
+                            <span>주문수량</span>
+                            <span class="btn-etc btn-ico--minus" onclick="decreaseQuantity()"></span>
+                            <span id="orderQuantity">1</span>
+                            <span class="btn-etc btn-ico--plus" onclick="increaseQuantity()"></span>
+                        </div>
+                        <div class="mr-20">
+                            <span>합계금액</span>
+                            <span class="total-price" id="totalPrice">0</span>
+                            <span>원</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="border-1p"></div>
+            <div class="item-array justify-center mt-40">
+                <div class="" id="productDetailImageContainer">
+                    <img id="productDetailImage" src="" alt="상세 이미지" style="display: none;">
+                </div>
+            </div>
+            <div class="border-2p"></div>
+            <div>
+                <h2 class="mb-12 ml-8">Review</h2>
+                <div class="border-1p-nm"></div>
+                <div id="reviewList">
+                    <!-- 리뷰 목록이 동적으로 로드됩니다 -->
+                </div>
+                <div class="rep">
+                    <textarea id="reviewContent" class="textarea w-full" placeholder="리뷰를 작성해주세요"></textarea>
+                    <button class="btn btn--tertiary ml-20" onclick="submitReview()">저장</button>
+                </div>
+            </div>
+            <div class="border-2p mt-40"></div>
+            <div>
+                <h2 class="mb-12 ml-8">Q&A</h2>
+                <div class="border-1p-nm"></div>
+                <div id="qnaList">
+                    <!-- QnA 목록이 동적으로 로드됩니다 -->
+                </div>
+                <div class="rep">
+                    <textarea id="qnaContent" class="textarea w-full" placeholder="문의 내용을 입력해주세요"></textarea>
+                    <button class="btn btn--tertiary ml-20" onclick="submitQna()">작성</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="fragments/footer :: footer">
+    </div>
+</div>
+
+<script>
+    // 전역 변수
+    let currentProduct = null;
+    let orderQuantity = 1;
+
+    const categoryData = [
+        { parentName: 'TV/오디오', children: ['TV', '오디오'] },
+        { parentName: '주방가전', children: ['냉장고', '전자렌지', '식기세척기'] },
+        { parentName: '생활가전', children: ['세탁기', '청소기'] },
+        { parentName: '에어컨/공기청정기', children: ['에어컨', '공기청정기'] },
+        { parentName: '기타', children: ['정수기', '안마의자', 'PC'] }
+    ];
+
+    /**
+     * ✅ JWT 토큰 가져오기
+     */
+    function getAuthHeaders() {
+        const accessToken = localStorage.getItem('accessToken');
+        const headers = { 'Content-Type': 'application/json' };
+        if (accessToken) {
+            headers['Authorization'] = `Bearer ${accessToken}`;
+        }
+        return headers;
+    }
+
+    /**
+     * 페이지 로드
+     */
+    document.addEventListener('DOMContentLoaded', function() {
+        loadCategoryMenu();
+        loadHeaderNavigation();
+        loadProductDetail();
+    });
+
+    /**
+     * ✅ 상품 상세 정보 로드 (JWT 포함)
+     */
+    function loadProductDetail() {
+        const pathParts = window.location.pathname.split('/');
+        const productId = pathParts[pathParts.length - 1];
+
+        if (!productId || isNaN(productId)) {
+            alert('잘못된 접근입니다.');
+            window.location.href = '/';
+            return;
+        }
+
+        console.log('상품 ID:', productId);
+
+        fetch(`/api/products/${productId}`, {
+            headers: getAuthHeaders()
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('상품을 찾을 수 없습니다.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('받은 데이터:', data);
+                if (data.success && data.data) {
+                    currentProduct = data.data;
+                    displayProductDetail(data.data);
+                    loadReviews(productId);
+                    loadQnas(productId);
+                } else {
+                    throw new Error('상품 정보를 불러올 수 없습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('상품 로드 오류:', error);
+                alert('상품 정보를 불러올 수 없습니다.');
+                window.location.href = '/';
+            });
+    }
+
+    /**
+     * ✅ 상품 상세 정보 표시 (이미지 하드코딩 제거)
+     */
+    function displayProductDetail(product) {
+        document.getElementById('productName').textContent = product.name || '상품명 없음';
+
+        // 썸네일 이미지
+        const thumbnailImg = document.getElementById('productThumbnail');
+        if (product.thumbnailImage) {
+            thumbnailImg.src = product.thumbnailImage;
+            thumbnailImg.style.display = 'block';
+            thumbnailImg.onerror = function() {
+                console.error('썸네일 이미지 로드 실패:', this.src);
+                this.style.display = 'none';
+            };
+        } else {
+            console.warn('썸네일 이미지 없음');
+            thumbnailImg.style.display = 'none';
+        }
+
+        // 가격
+        const priceFormatted = formatPrice(product.price);
+        document.getElementById('productPrice').textContent = priceFormatted;
+
+        if (product.salePrice && product.salePrice < product.price) {
+            const salePriceFormatted = formatPrice(product.salePrice);
+            document.getElementById('productSalePrice').textContent = salePriceFormatted;
+        } else {
+            document.getElementById('productSalePrice').textContent = priceFormatted;
+        }
+
+        document.getElementById('productManufacturer').textContent = product.manufacturer || '-';
+        document.getElementById('productCountry').textContent = product.country || '-';
+
+        // 상세 이미지
+        const detailImg = document.getElementById('productDetailImage');
+        if (product.detailImage) {
+            detailImg.src = product.detailImage;
+            detailImg.style.display = 'block';
+            detailImg.onerror = function() {
+                console.error('상세 이미지 로드 실패:', this.src);
+                this.style.display = 'none';
+            };
+        } else {
+            console.warn('상세 이미지 없음');
+            detailImg.style.display = 'none';
+        }
+
+        document.title = product.name + ' - On&Home';
+        updateTotalPrice();
+    }
+
+    function increaseQuantity() {
+        orderQuantity++;
+        updateQuantityDisplay();
+        updateTotalPrice();
+    }
+
+    function decreaseQuantity() {
+        if (orderQuantity <= 1) {
+            alert('최소 주문 수량은 1개입니다.');
+            return;
+        }
+        orderQuantity--;
+        updateQuantityDisplay();
+        updateTotalPrice();
+    }
+
+    function updateQuantityDisplay() {
+        document.getElementById('orderQuantity').textContent = orderQuantity;
+    }
+
+    function updateTotalPrice() {
+        if (!currentProduct) return;
+        
+        const pricePerUnit = (currentProduct.salePrice && currentProduct.salePrice < currentProduct.price) 
+            ? currentProduct.salePrice 
+            : currentProduct.price;
+        
+        const totalPrice = pricePerUnit * orderQuantity;
+        document.getElementById('totalPrice').textContent = formatPrice(totalPrice);
+    }
+
+    /**
+     * ✅ 리뷰 목록 로드 (JWT 포함)
+     */
+    function loadReviews(productId) {
+        fetch(`/api/reviews/product/${productId}`, {
+            headers: getAuthHeaders()
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.data) {
+                    displayReviews(data.data);
+                } else {
+                    displayReviews([]);
+                }
+            })
+            .catch(error => {
+                console.error('리뷰 로드 오류:', error);
+                displayReviews([]);
+            });
+    }
+
+    function displayReviews(reviews) {
+        const reviewList = document.getElementById('reviewList');
+
+        if (reviews.length === 0) {
+            reviewList.innerHTML = '<div class="rep"><div>등록된 리뷰가 없습니다.</div></div>';
+            return;
+        }
+
+        reviewList.innerHTML = '';
+        reviews.forEach(review => {
+            const reviewDiv = document.createElement('div');
+            reviewDiv.className = 'rep';
+            reviewDiv.innerHTML = `
+                <div>${escapeHtml(review.content || '')}</div>
+                <div><b>${escapeHtml(review.author || review.username || 'Anonymous')}</b></div>
+            `;
+            reviewList.appendChild(reviewDiv);
+
+            if (review.replies && review.replies.length > 0) {
+                review.replies.forEach(reply => {
+                    const replyDiv = document.createElement('div');
+                    replyDiv.className = 'rep qna-rep';
+                    replyDiv.innerHTML = `
+                        <div>${escapeHtml(reply.content || '')}</div>
+                        <div><b>${escapeHtml(reply.author || reply.username || 'Admin')}</b></div>
+                    `;
+                    reviewList.appendChild(replyDiv);
+                });
+            }
+        });
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    /**
+     * ✅ 리뷰 작성 (JWT 포함)
+     */
+    function submitReview() {
+        if (!currentProduct) {
+            alert('상품 정보를 불러오는 중입니다.');
+            return;
+        }
+
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) {
+            alert('로그인이 필요합니다.');
+            window.location.href = '/login';
+            return;
+        }
+
+        const content = document.getElementById('reviewContent').value.trim();
+        if (!content) {
+            alert('리뷰 내용을 입력해주세요.');
+            return;
+        }
+
+        const reviewData = {
+            productId: currentProduct.id,
+            content: content,
+            rating: 5
+        };
+
+        fetch('/api/reviews', {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(reviewData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('리뷰가 등록되었습니다.');
+                    document.getElementById('reviewContent').value = '';
+                    loadReviews(currentProduct.id);
+                } else {
+                    alert(data.message || '리뷰 등록에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('리뷰 작성 오류:', error);
+                alert('리뷰 작성 중 오류가 발생했습니다.');
+            });
+    }
+
+    /**
+     * ✅ QnA 목록 로드 (JWT 포함)
+     */
+    function loadQnas(productId) {
+        fetch(`/api/qna/product/${productId}`, {
+            headers: getAuthHeaders()
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.data) {
+                    displayQnas(data.data);
+                } else {
+                    displayQnas([]);
+                }
+            })
+            .catch(error => {
+                console.error('QnA 로드 오류:', error);
+                displayQnas([]);
+            });
+    }
+
+    function displayQnas(qnas) {
+        const qnaList = document.getElementById('qnaList');
+
+        if (qnas.length === 0) {
+            qnaList.innerHTML = '<div class="rep"><div>등록된 문의가 없습니다.</div></div>';
+            return;
+        }
+
+        qnaList.innerHTML = '';
+        qnas.forEach(qna => {
+            const qnaDiv = document.createElement('div');
+            qnaDiv.className = 'rep';
+            qnaDiv.innerHTML = `
+                <div>${escapeHtml(qna.question || '')}</div>
+                <div><b>${escapeHtml(qna.writer || 'Anonymous')}</b></div>
+            `;
+            qnaList.appendChild(qnaDiv);
+
+            if (qna.replies && qna.replies.length > 0) {
+                qna.replies.forEach(reply => {
+                    const replyDiv = document.createElement('div');
+                    replyDiv.className = 'rep qna-rep';
+                    replyDiv.innerHTML = `
+                        <div>${escapeHtml(reply.content || '')}</div>
+                    `;
+                    qnaList.appendChild(replyDiv);
+                });
+            }
+        });
+    }
+
+    /**
+     * ✅ QnA 작성 (JWT 포함)
+     */
+    function submitQna() {
+        if (!currentProduct) {
+            alert('상품 정보를 불러오는 중입니다.');
+            return;
+        }
+
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) {
+            alert('로그인이 필요합니다.');
+            window.location.href = '/login';
+            return;
+        }
+
+        const content = document.getElementById('qnaContent').value.trim();
+        if (!content) {
+            alert('문의 내용을 입력해주세요.');
+            return;
+        }
+
+        const qnaData = {
+            productId: currentProduct.id,
+            title: '상품 문의',
+            question: content
+        };
+
+        fetch('/api/qna', {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(qnaData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('QnA가 등록되었습니다.');
+                    document.getElementById('qnaContent').value = '';
+                    loadQnas(currentProduct.id);
+                } else {
+                    alert(data.message || 'QnA 등록에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('QnA 작성 오류:', error);
+                alert('QnA 작성 중 오류가 발생했습니다.');
+            });
+    }
+
+    function formatPrice(price) {
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    /**
+     * ✅ 바로구매 (JWT 기반)
+     */
+    function buyNow() {
+        console.log('[buyNow] 바로구매 시작');
+        
+        if (!currentProduct) {
+            alert('상품 정보를 불러오는 중입니다.');
+            return;
+        }
+
+        const accessToken = localStorage.getItem('accessToken');
+        console.log('[buyNow] accessToken 확인:', accessToken ? '존재' : '없음');
+        
+        if (!accessToken) {
+            console.warn('[buyNow] accessToken이 없습니다.');
+            alert('로그인이 필요합니다.');
+            window.location.href = '/login';
+            return;
+        }
+
+        console.log('[buyNow] 주문 페이지로 이동');
+        window.location.href = `/user/order_payment?productId=${currentProduct.id}&quantity=${orderQuantity}`;
+    }
+
+    /**
+     * ✅ 장바구니 담기 (JWT 기반) - 개선된 에러 처리
+     */
+    function addToCart() {
+        console.log('[addToCart] 장바구니 담기 시작');
+        
+        if (!currentProduct) {
+            alert('상품 정보를 불러오는 중입니다.');
+            return;
+        }
+
+        const accessToken = localStorage.getItem('accessToken');
+        console.log('[addToCart] accessToken 확인:', accessToken ? '존재' : '없음');
+        
+        if (!accessToken) {
+            console.warn('[addToCart] accessToken이 없습니다.');
+            alert('로그인이 필요합니다.');
+            window.location.href = '/login';
+            return;
+        }
+
+        console.log('[addToCart] API 호출 시작 - productId:', currentProduct.id, 'quantity:', orderQuantity);
+
+        fetch('/api/cart/add', {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+                productId: currentProduct.id,
+                quantity: orderQuantity
+            })
+        })
+            .then(response => {
+                console.log('[addToCart] 응답 상태:', response.status);
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error('로그인이 필요합니다.');
+                    }
+                    throw new Error('장바구니 추가 실패');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('[addToCart] 응답 데이터:', data);
+                if (data.success) {
+                    if (typeof window.updateCartBadge === 'function') {
+                        window.updateCartBadge();
+                    }
+                    if (confirm('상품이 장바구니에 추가되었습니다. 장바구니로 이동하시겠습니까?')) {
+                        window.location.href = '/user/cart';
+                    }
+                } else {
+                    alert(data.message || '장바구니에 상품을 추가하는 중 오류가 발생했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('[addToCart] 장바구니 담기 오류:', error);
+                if (error.message === '로그인이 필요합니다.') {
+                    alert('로그인 세션이 만료되었습니다. 다시 로그인해주세요.');
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('refreshToken');
+                    window.location.href = '/login';
+                } else {
+                    alert('장바구니에 상품을 추가하는 중 오류가 발생했습니다.');
+                }
+            });
+    }
+
+    function loadCategoryMenu() {
+        const categoryMenu = document.getElementById('categoryMenu');
+        categoryMenu.innerHTML = '';
+
+        categoryData.forEach(category => {
+            const li = document.createElement('li');
+            const parentLink = document.createElement('a');
+            parentLink.href = '#';
+            parentLink.textContent = category.parentName;
+            parentLink.onclick = function(e) {
+                e.preventDefault();
+                return false;
+            };
+            li.appendChild(parentLink);
+
+            if (category.children && category.children.length > 0) {
+                const depth2 = document.createElement('ul');
+                depth2.className = 'depth2';
+                
+                category.children.forEach(child => {
+                    const childLi = document.createElement('li');
+                    const childLink = document.createElement('a');
+                    childLink.href = `/user/product/category?category=${encodeURIComponent(child)}`;
+                    childLink.textContent = child;
+                    childLi.appendChild(childLink);
+                    depth2.appendChild(childLi);
+                });
+                
+                li.appendChild(depth2);
+            }
+            categoryMenu.appendChild(li);
+        });
+    }
+
+    /**
+     * ✅ 헤더 네비게이션 로드 (JWT 기반)
+     */
+    function loadHeaderNavigation() {
+        const accessToken = localStorage.getItem('accessToken');
+        const headers = {};
+        if (accessToken) {
+            headers['Authorization'] = `Bearer ${accessToken}`;
+        }
+
+        fetch('/api/user/session-info', { headers: headers })
+            .then(response => response.json())
+            .then(data => {
+                const headerNav = document.getElementById('headerNav');
+                headerNav.innerHTML = '';
+
+                if (data.loggedIn) {
+                    let navHTML = `
+                        <li><a href="/user/my_page">마이페이지</a></li>
+                        <li><a href="/user/board/notice/list">공지사항</a></li>
+                    `;
+                    if (data.isAdmin) {
+                        navHTML += `<li><a href="/admin/dashboard"><b>관리자</b></a></li>`;
+                    }
+                    navHTML += `<li><a href="#" onclick="handleLogout(); return false;">로그아웃</a></li>`;
+                    headerNav.innerHTML = navHTML;
+                } else {
+                    headerNav.innerHTML = `
+                        <li><a href="/login">로그인</a></li>
+                        <li><a href="/signup">회원가입</a></li>
+                        <li><a href="/user/board/notice/list">공지사항</a></li>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('세션 정보 조회 실패:', error);
+                const headerNav = document.getElementById('headerNav');
+                headerNav.innerHTML = `
+                    <li><a href="/login">로그인</a></li>
+                    <li><a href="/signup">회원가입</a></li>
+                    <li><a href="/user/board/notice/list">공지사항</a></li>
+                `;
+            });
+    }
+
+    /**
+     * ✅ 로그아웃 처리 (JWT 삭제)
+     */
+    function handleLogout() {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('userInfo');
+            window.location.href = '/login?logout=true';
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+/* DashboardCard 스타일 */
+.dashboard-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* 카드 헤더 */
+.card-header {
+  padding: 20px;
+  background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%);
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.card-icon {
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  position: relative;
+}
+
+.card-title::before {
+  content: '■';
+  color: #ff6b35;
+  font-size: 10px;
+  position: absolute;
+  left: -15px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* 카드 바디 */
+.card-body {
+  padding: 20px;
+  min-height: 150px;
+}
+
+/* 카드 타입별 스타일 */
+.dashboard-card.sales .card-header {
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+}
+
+.dashboard-card.sales .card-icon {
+  background: #ff6b35;
+  color: white;
+}
+
+.dashboard-card.products .card-header {
+  background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
+}
+
+.dashboard-card.products .card-icon {
+  background: #4285f4;
+  color: white;
+}
+
+.dashboard-card.members .card-header {
+  background: linear-gradient(135deg, #f0fff4 0%, #e6ffe6 100%);
+}
+
+.dashboard-card.members .card-icon {
+  background: #34a853;
+  color: white;
+}
+
+.dashboard-card.board .card-header {
+  background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 100%);
+}
+
+.dashboard-card.board .card-icon {
+  background: #fbbc04;
+  color: white;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .card-header {
+    padding: 15px;
+  }
+  
+  .card-body {
+    padding: 15px;
+    min-height: 120px;
+  }
+  
+  .card-icon {
+    width: 35px;
+    height: 35px;
+    font-size: 20px;
+  }
+  
+  .card-title {
+    font-size: 14px;
+  }
+}

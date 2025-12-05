@@ -1,0 +1,273 @@
+/* 전체 레이아웃 */
+.admin-product-form {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.product-form-main {
+  flex: 1;
+  margin-left: 250px;
+  padding: 40px;
+}
+
+.product-form-main h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.product-form-main h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 30px 0 20px 0;
+}
+
+/* 폼 섹션 */
+.form-section {
+  background: white;
+  border-radius: 8px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 폼 테이블 */
+.form-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+}
+
+.form-table tr {
+  border-bottom: 1px solid #eee;
+}
+
+.form-table th {
+  width: 200px;
+  padding: 20px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  background: #f8f9fa;
+  border-right: 1px solid #eee;
+}
+
+.form-table td {
+  padding: 20px;
+}
+
+.form-table input[type="text"],
+.form-table input[type="number"],
+.form-table select {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.form-table input[type="text"]:focus,
+.form-table input[type="number"]:focus,
+.form-table select:focus {
+  outline: none;
+  border-color: #4361ee;
+}
+
+.form-table input.readonly-input {
+  background: #f8f9fa;
+  color: #666;
+  cursor: not-allowed;
+}
+
+/* 카테고리 선택 */
+.category-select {
+  display: flex;
+  gap: 10px;
+}
+
+.category-select select {
+  flex: 1;
+  max-width: 200px;
+}
+
+/* 파일 업로드 */
+.file-upload-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.file-upload-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background: #28a745;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.file-upload-btn:hover {
+  background: #218838;
+}
+
+.file-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  background: #f8f9fa;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.file-preview img {
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.file-preview .file-name {
+  font-size: 14px;
+  color: #666;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.remove-file-btn {
+  padding: 5px 10px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.remove-file-btn:hover {
+  background: #c82333;
+}
+
+/* 폼 버튼 */
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.cancel-btn,
+.submit-btn {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.cancel-btn {
+  background: white;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.cancel-btn:hover {
+  background: #f8f9fa;
+  border-color: #999;
+}
+
+.submit-btn {
+  background: #4361ee;
+  color: white;
+}
+
+.submit-btn:hover {
+  background: #3651d4;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(67, 97, 238, 0.3);
+}
+
+.submit-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 로딩 오버레이 */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loading-spinner {
+  background: white;
+  padding: 30px 50px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* 반응형 */
+@media (max-width: 1024px) {
+  .product-form-main {
+    margin-left: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-form-main {
+    margin-left: 0;
+    padding: 20px;
+  }
+
+  .form-table th {
+    width: 120px;
+    padding: 15px 10px;
+  }
+
+  .form-table td {
+    padding: 15px 10px;
+  }
+
+  .category-select {
+    flex-direction: column;
+  }
+
+  .category-select select {
+    max-width: 100%;
+  }
+
+  .form-buttons {
+    flex-direction: column;
+  }
+
+  .cancel-btn,
+  .submit-btn {
+    width: 100%;
+  }
+}

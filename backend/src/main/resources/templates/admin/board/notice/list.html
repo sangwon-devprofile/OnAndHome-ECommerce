@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항 목록</title>
+    <link rel="stylesheet" th:href="@{/css/import.css}" />
+    <script th:src="@{/js/oncommon.js}"></script>
+</head>
+<body>
+<div class="on-wrapper">
+    <div class="on-content">
+        <!-- ===== 사이드바 ===== -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <!-- ===== 메인 영역 ===== -->
+        <div class="on-main">
+            <h2 class="mb-30">공지사항 목록</h2>
+
+            <!-- ✅ 검색 영역 (활성화 완료) -->
+            <form th:action="@{/admin/board/notice/list}" method="get" class="flex mb-20 justify-end">
+                <input type="text"
+                       name="kw"
+                       th:value="${kw}"
+                       class="input mr-4"
+                       placeholder="제목 또는 작성자를 입력하세요" />
+                <button type="submit" class="btn-ico btn-ico--srch"></button>
+            </form>
+
+            <!-- ✅ 공지사항 리스트 테이블 -->
+            <div class="grid">
+                <table>
+                    <colgroup>
+                        <col width="10%">
+                        <col>
+                        <col width="20%">
+                        <col width="20%">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>제목</th>
+                        <th>작성자</th>
+                        <th>작성일자</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="notice, iterStat : ${noticeList}">
+                        <td th:text="${iterStat.count}" class="center"></td>
+                        <td class="center">
+                            <a th:href="@{|/admin/board/notice/detail/${notice.id}|}" th:text="${notice.title}"></a>
+                        </td>
+                        <td class="center" th:text="${notice.writer ?: 'admin'}"></td>
+                        <td class="center" th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(noticeList)}">
+                        <td colspan="4" class="center">등록된 공지사항이 없습니다.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <div class="flex mb-20 mt-20 justify-end">
+                <a th:href="@{/admin/board/notice/write}">
+                    <button type="button" class="btn btn--primary">등록</button>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

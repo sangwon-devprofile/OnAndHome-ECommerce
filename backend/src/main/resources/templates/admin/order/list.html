@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>온앤홈 관리자 - 주문관리</title>
+  <link rel="stylesheet" href="/css/import.css" />
+  <script src="/js/oncommon.js"></script>
+</head>
+<body>
+  <!-- 백그라운드 -->
+  <div class="on-wrapper">
+    <!-- 컨텐츠 영역 -->
+    <div class="on-content">
+      <!-- 사이드바 메뉴 -->
+      <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+      <!-- 내부영역 -->
+      <div class="on-main">
+        <h2 class="mb-30">Order List</h2>
+        
+        <!-- 검색 영역 -->
+        <form th:action="@{/admin/order/list}" method="get" class="flex mb-20 justify-end">
+          <input type="text"
+                 name="kw"
+                 th:value="${kw}"
+                 class="input mr-4"
+                 placeholder="상품명 또는 구매자를 입력하세요" />
+          <button type="submit" class="btn-ico btn-ico--srch"></button>
+        </form>
+        
+        <div class="grid">
+          <table>
+            <colgroup>
+              <col>
+              <col width="25%">
+              <col>
+              <col>
+              <col>
+              <col>
+              <col>
+            </colgroup>
+            <thead>
+              <tr>
+                <th scope="col">주문번호</th>
+                <th scope="col">상품명</th>
+                <th scope="col">정상가격</th>
+                <th scope="col">주문가격</th>
+                <th scope="col">구매자 아이디</th>
+                <th scope="col">구매자명</th>
+                <th scope="col">주문일자</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:if="${orders == null or #lists.isEmpty(orders)}">
+                <td colspan="7" class="center">주문 데이터가 없습니다.</td>
+              </tr>
+              <tr th:each="order : ${orders}">
+                <td class="center">
+                  <a th:href="@{/admin/order/detail(id=${order.orderId})}" th:text="${order.orderNumber}">주문번호</a>
+                </td>
+                <td class="center" th:text="${!#lists.isEmpty(order.orderItems) ? order.orderItems[0].productName : '-'}">상품명</td>
+                <td class="center">
+                  <span th:if="${!#lists.isEmpty(order.orderItems)}" th:text="${#numbers.formatInteger(order.orderItems[0].orderPrice, 1, 'COMMA')} + '원'">정상가격</span>
+                  <span th:if="${#lists.isEmpty(order.orderItems)}">-</span>
+                </td>
+                <td class="center" th:text="${#numbers.formatInteger(order.totalPrice, 1, 'COMMA')} + '원'">주문가격</td>
+                <td class="center" th:text="${order.userIdStr}">구매자 아이디</td>
+                <td class="center" th:text="${order.username}">구매자명</td>
+                <td class="center" th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd')}">주문일자</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

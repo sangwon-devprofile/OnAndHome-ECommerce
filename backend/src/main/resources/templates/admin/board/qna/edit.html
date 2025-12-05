@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>온앤홈 관리자</title>
+    <link rel="stylesheet" href="/css/import.css" />
+    <script src="/js/oncommon.js"></script>
+</head>
+<body>
+<div class="on-wrapper">
+    <div class="on-content">
+
+        <!-- ✅ 사이드바 fragment -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="on-main">
+            <h2 class="mb-30">Q&amp;A Board</h2>
+
+            <!-- ✅ 질문 상세 -->
+            <div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">번호</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${qna.id}">01</div>
+                </div>
+
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">작성일자</div>
+                    <div class="on-comp-tbl-td col-10"
+                         th:text="${#temporals.format(qna.createdAt, 'yyyy-MM-dd HH:mm')}">
+                        2025-01-01
+                    </div>
+                </div>
+
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">작성자</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${qna.writer}">이상혁</div>
+                </div>
+
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">제목</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${qna.title}">
+                        주문취소는 어떻게 하나요?
+                    </div>
+                </div>
+
+                <div class="on-comp-tbl-row high-100">
+                    <div class="on-comp-tbl-th col-2">질문 내용</div>
+                    <div class="on-comp-tbl-td col-10 items-start" th:text="${qna.question}">
+                        주문취소하고 싶은데 어디서 하는지 알려주세요
+                    </div>
+                </div>
+            </div>
+
+            <div class="on-border mt-20"></div>
+
+            <!-- ✅ 답변 목록 -->
+            <div class="mt-8" th:if="${#lists.size(answers) > 0}">
+                <div th:each="answer : ${answers}" class="on-comp-tbl-row mt-10">
+                    <div class="on-comp-tbl-th col-2">
+                        <span th:text="${answer.responder}">관리자</span>
+                    </div>
+                    <div class="on-comp-tbl-td col-10 flex justify-between items-start">
+                        <div class="mr-4" th:text="${answer.content}">
+                            고객님 안녕하세요 온앤홈입니다. 주문취소는 고객센터로 연락주시기 바랍니다.
+                        </div>
+
+                        <!-- ✅ 버튼 영역 -->
+                        <div class="flex">
+                            <!-- 수정 -->
+                            <a th:href="@{/admin/board/qna/answer/edit/{answerId}(answerId=${answer.id})}"
+                               class="btn-sm btn--tertiary mr-2">수정</a>
+
+                            <!-- 삭제 -->
+                            <form th:action="@{/admin/board/qna/answer/delete/{answerId}(answerId=${answer.id})}" method="post">
+                                <input type="hidden" name="qnaId" th:value="${qna.id}" />
+                                <button type="submit" class="btn-sm btn--secondary">삭제</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="on-border mt-20"></div>
+
+            <!-- ✅ 답변 등록 -->
+            <form th:action="@{/admin/board/qna/answer/{id}(id=${qna.id})}" method="post">
+                <div class="mt-20">
+                    <div class="on-comp-tbl-row high-80">
+                        <div class="on-comp-tbl-th col-2">답변 등록</div>
+                        <div class="on-comp-tbl-td col-10">
+                            <textarea class="textarea w-full" name="content" placeholder="답변을 입력하세요"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end mt-20">
+                    <a th:href="@{/admin/board/qna/list}" class="btn btn--quarternary-outline mr-4">목록</a>
+                    <button type="submit" class="btn btn--tertiary mr-4">답변등록</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

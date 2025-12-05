@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>On&Home</title>
+    <link rel="stylesheet" href="/css/import.css" />
+    <script src="/js/oncommon.js"></script>
+</head>
+<body>
+<!-- 백그라운드 -->
+<div class="on-main-wrap">
+    <!-- 헤더 -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+
+    <!-- 아이템영역2  -->
+    <div class="on-item02 mb-80 mt-80">
+        <div class="on-item02-inner">
+            <h2 class="sub-title line-under">장바구니</h2>
+            <div class="on-item02 mb-80">
+                <div class="on-item02-inner ">
+                    <div class="border-1p" id="cartItemsContainer">
+                        <!-- 장바구니 아이템이 동적으로 로드됩니다 -->
+                    </div>
+                    <div class="flex justify-end items-center">
+                        <button class="btn btn-sm btn--secondary mr-120" onclick="deleteSelectedItems()">삭제</button>
+                    </div>
+                    <div class="border-2p"></div>
+                    <div class="cart-total">
+                        <h3>총 주문금액</h3>
+                        <div class="cart-total-price">
+                            <h2 id="cartTotalPrice">0</h2><span>원</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-group justify-center">
+                <button class="btn btn-buy" onclick="goToOrder()">구매하러가기</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+
+<script>
+    /**
+     * 카테고리 데이터
+     */
+    const categoryData = [
+        {
+            parentName: 'TV/오디오',
+            children: ['TV', '오디오']
+        },
+        {
+            parentName: '주방가전',
+            children: ['냉장고', '전자렌지', '식기세척기']
+        },
+        {
+            parentName: '생활가전',
+            children: ['세탁기', '청소기']
+        },
+        {
+            parentName: '에어컨/공기청정기',
+            children: ['에어컨', '공기청정기']
+        },
+        {
+            parentName: '기타',
+            children: ['정수기', '안마의자', 'PC']
+        }
+    ];
+
+    /**
+     * 페이지 로드
+     */
+    document.addEventListener('DOMContentLoaded', function() {
+        loadCategoryMenu();
+        loadHeaderNavigation();
+        loadCartItems();
+    });
+
+    /**
+     * 장바구니 아이템 로드
+     */
+    function loadCartItems() {
+        fetch('/api/cart')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('장바구니를 불러올 수 없습니다.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('장바구니 데이터:', data);
+                if (data.success && data.data) {
+                    displayCartItems(data.data);
+                } else {
+                    displayEmptyCart();
+                }
+            })
+            .catch(error => {
+                console.error('장바구니 로드 오류:', error);
+                displayEmptyCart();
+            });
+    }
+
+    /**
+     * 장바구니 아이템 표시
+     */
+    function displayCartItems(cartItems) {
+        const container = document.getElementById('cartItemsContainer');
+
+        if (!cartItems || cartItems.length === 0) {
+            displayEmptyCart();
+            return;
+        }
+
+        container.innerHTML = '<div class="border-1p-nm"></div>';
+
+        let totalPrice = 0;
+
+        cartItems.forEach(item => {
+            const product = item.product;
+            const quantity = item.quantity;
+            const itemTotal = product.salePrice * quantity;
+            totalPrice += itemTotal;
+
+            const itemElement = document.createElement('div');
+            itemElement.className = 'rep';
+            itemElement.innerHTML = `
+                <div class="cart-list">
+                    <div class="cart-check">
+                        <input type="checkbox" class="cart-checkbox" data-cart-id="${item.id}">
+                        <span>${product.name}</span>
+                    </div>
+                    <div class="cart-count">
+                        <div class="cart-count-wrapper">
+                            <span>수량</span>
+                            <div class="flex justify-around">
+                                <span class="btn-etc btn-ico--minus" onclick="decreaseQuantity(${item.id}, ${quantity}, ${product.salePrice})"></span>
+                                <span class="cart-count-num" id="quantity-${item.id}">${quantity}</span>
+                                <span class="btn-etc btn-ico--plus" onclick="increaseQuantity(${item.id}, ${quantity}, ${product.salePrice})"></span>
+                            </div>
+                        </div>
+                        <div class="flex">
+                            <h3 id="price-${item.id}">${formatPrice(itemTotal)}</h3><span class="ml-8">원</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(itemElement);
+        });
+
+        // 총액 업데이트
+        updateTotalPrice();
+    }
+
+    /**
+     * 빈 장바구니 표시
+     */
+    function displayEmptyCart() {
+        const container = document.getElementById('cartItemsContainer');
+        container.innerHTML = `
+            <div class="border-1p-nm"></div>
+            <div class="rep">
+                <div style="text-align: center; padding: 40px;">
+                    <h3>장바구니가 비어있습니다.</h3>
+                    <p style="margin-top: 10px;">
+                        <a href="/" style="color: #007bff; text-decoration: underline;">계속 쇼핑하기</a>
+                    </p>
+                </div>
+            </div>
+        `;
+        document.getElementById('cartTotalPrice').textContent = '0';
+    }
+
+    /**
+     * 수량 증가
+     */
+    function increaseQuantity(cartItemId, currentQuantity, unitPrice) {
+        const newQuantity = currentQuantity + 1;
+        updateQuantity(cartItemId, newQuantity, unitPrice);
+    }
+
+    /**
+     * 수량 감소
+     */
+    function decreaseQuantity(cartItemId, currentQuantity, unitPrice) {
+        if (currentQuantity <= 1) {
+            alert('수량은 최소 1개 이상이어야 합니다.');
+            return;
+        }
+        const newQuantity = currentQuantity - 1;
+        updateQuantity(cartItemId, newQuantity, unitPrice);
+    }
+
+    /**
+     * 수량 업데이트
+     */
+    function updateQuantity(cartItemId, newQuantity, unitPrice) {
+        fetch(`/api/cart/${cartItemId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ quantity: newQuantity })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // UI 업데이트
+                document.getElementById(`quantity-${cartItemId}`).textContent = newQuantity;
+                const newItemTotal = unitPrice * newQuantity;
+                document.getElementById(`price-${cartItemId}`).textContent = formatPrice(newItemTotal);
+                updateTotalPrice();
+            } else {
+                alert(data.message || '수량 업데이트에 실패했습니다.');
+            }
+        })
+        .catch(error => {
+            console.error('수량 업데이트 오류:', error);
+            alert('수량 업데이트 중 오류가 발생했습니다.');
+        });
+    }
+
+    /**
+     * 총액 업데이트
+     */
+    function updateTotalPrice() {
+        let total = 0;
+        const priceElements = document.querySelectorAll('[id^="price-"]');
+        priceElements.forEach(el => {
+            const priceText = el.textContent.replace(/,/g, '');
+            total += parseInt(priceText);
+        });
+        document.getElementById('cartTotalPrice').textContent = formatPrice(total);
+    }
+
+    /**
+     * 선택된 아이템 삭제
+     */
+    function deleteSelectedItems() {
+        const checkboxes = document.querySelectorAll('.cart-checkbox:checked');
+        
+        if (checkboxes.length === 0) {
+            alert('삭제할 상품을 선택해주세요.');
+            return;
+        }
+
+        if (!confirm('선택한 상품을 장바구니에서 삭제하시겠습니까?')) {
+            return;
+        }
+
+        const deletePromises = Array.from(checkboxes).map(checkbox => {
+            const cartItemId = checkbox.getAttribute('data-cart-id');
+            return fetch(`/api/cart/${cartItemId}`, {
+                method: 'DELETE'
+            });
+        });
+
+        Promise.all(deletePromises)
+            .then(responses => Promise.all(responses.map(r => r.json())))
+            .then(results => {
+                const allSuccess = results.every(r => r.success);
+                if (allSuccess) {
+                    alert('선택한 상품이 삭제되었습니다.');
+                    loadCartItems(); // 장바구니 다시 로드
+                } else {
+                    alert('일부 상품 삭제에 실패했습니다.');
+                    loadCartItems();
+                }
+            })
+            .catch(error => {
+                console.error('삭제 오류:', error);
+                alert('상품 삭제 중 오류가 발생했습니다.');
+            });
+    }
+
+    /**
+     * 가격 포맷팅
+     */
+    function formatPrice(price) {
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    /**
+     * 구매하러 가기
+     */
+    function goToOrder() {
+        window.location.href = '/user/order_payment?fromCart=true';
+    }
+
+    /**
+     * 카테고리 메뉴 로드
+     */
+    function loadCategoryMenu() {
+        const categoryMenu = document.getElementById('categoryMenu');
+        categoryMenu.innerHTML = '';
+
+        categoryData.forEach(category => {
+            const li = document.createElement('li');
+
+            const parentLink = document.createElement('a');
+            parentLink.href = '#';
+            parentLink.textContent = category.parentName;
+            parentLink.onclick = function(e) {
+                e.preventDefault();
+                return false;
+            };
+
+            li.appendChild(parentLink);
+
+            if (category.children && category.children.length > 0) {
+                const depth2 = document.createElement('ul');
+                depth2.className = 'depth2';
+
+                category.children.forEach(child => {
+                    const childLi = document.createElement('li');
+                    const childLink = document.createElement('a');
+                    childLink.href = `/user/product/category?category=${encodeURIComponent(child)}`;
+                    childLink.textContent = child;
+                    childLi.appendChild(childLink);
+                    depth2.appendChild(childLi);
+                });
+
+                li.appendChild(depth2);
+            }
+
+            categoryMenu.appendChild(li);
+        });
+    }
+
+    /**
+     * 헤더 네비게이션 로드
+     */
+    function loadHeaderNavigation() {
+        fetch('/api/user/session-info')
+            .then(response => response.json())
+            .then(data => {
+                const headerNav = document.getElementById('headerNav');
+                headerNav.innerHTML = '';
+
+                if (data.loggedIn) {
+                    let navHTML = `
+                        <li><a href="/user/my_page">마이페이지</a></li>
+                        <li><a href="/user/board/notice/list">공지사항</a></li>
+                    `;
+
+                    if (data.isAdmin) {
+                        navHTML += `<li><a href="/admin/dashboard"><b>관리자</b></a></li>`;
+                    }
+
+                    navHTML += `
+                        <li><a href="#" onclick="handleLogout(); return false;">로그아웃</a></li>
+                    `;
+
+                    headerNav.innerHTML = navHTML;
+                } else {
+                    headerNav.innerHTML = `
+                        <li><a href="/login">로그인</a></li>
+                        <li><a href="/signup">회원가입</a></li>
+                        <li><a href="/">공지사항</a></li>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('세션 정보 조회 실패:', error);
+                const headerNav = document.getElementById('headerNav');
+                headerNav.innerHTML = `
+                    <li><a href="/login">로그인</a></li>
+                    <li><a href="/signup">회원가입</a></li>
+                    <li><a href="/">공지사항</a></li>
+                `;
+            });
+    }
+
+    /**
+     * 로그아웃 처리
+     */
+    function handleLogout() {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            window.location.href = '/logout';
+        }
+    }
+</script>
+</body>
+</html>

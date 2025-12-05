@@ -1,0 +1,211 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
+  padding: 20px;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  border-radius: 8px;
+  padding: 40px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.login-header .logo {
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+.login-header .logo img {
+  height: 40px;
+}
+
+.login-header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.logout-message {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.error-message {
+  color: #d32f2f;
+  font-size: 14px;
+  text-align: center;
+  padding: 10px;
+  background-color: #ffebee;
+  border-radius: 4px;
+}
+
+.social-login {
+  margin: 30px 0;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+}
+
+.divider span {
+  padding: 0 15px;
+  color: #666;
+  font-size: 14px;
+}
+
+/* 카카오 로그인 버튼 */
+.kakao-login-btn {
+  width: 100%;
+  height: 50px;
+  background-color: #fee500;
+  border: none;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  color: #000000;
+  transition: background-color 0.2s;
+}
+
+.kakao-login-btn:hover {
+  background-color: #fdd835;
+}
+
+.kakao-login-btn img {
+  width: 24px;
+  height: 24px;
+}
+
+/* 네이버 로그인 버튼 */
+.naver-login-btn {
+  width: 100%;
+  height: 50px;
+  background-color: #03c75a;
+  border: none;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  transition: background-color 0.2s;
+  margin-top: 10px;
+}
+
+.naver-login-btn:hover {
+  background-color: #02b350;
+}
+
+/* 네이버 로그인 버튼 N 아이콘 */
+.naver-login-btn::before {
+  content: "N";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-color: white;
+  color: #03c75a;
+  border-radius: 2px;
+  font-weight: 900;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  line-height: 1;
+}
+
+.login-footer {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.login-footer p {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.login-footer a {
+  color: #1976d2;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-footer a:hover {
+  text-decoration: underline;
+}
+
+.login-links {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #666;
+}
+
+.login-links span {
+  color: #ddd;
+}
+
+.back-to-home {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.back-to-home a {
+  color: #666;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.back-to-home a:hover {
+  color: #333;
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    padding: 30px 20px;
+  }
+
+  .login-header h1 {
+    font-size: 20px;
+  }
+}

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Q&A 상세 - On&Home</title>
+    <link rel="stylesheet" href="/css/import.css" />
+    <script src="/js/oncommon.js"></script>
+</head>
+<body>
+<div class="on-main-wrap">
+    <!-- 헤더 -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <!-- Q&A 상세 영역 -->
+    <div class="on-item02 mb-80 mt-80">
+        <div class="on-item02-inner">
+            <h2 class="sub-title line-under">Q&A 상세</h2>
+            
+            <div class="">
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">번호</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${qna.id}">1</div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">작성일자</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${#temporals.format(qna.createdAt, 'yyyy-MM-dd HH:mm')}">2025-01-01</div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">작성자</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${qna.writer}">작성자</div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">상품명</div>
+                    <div class="on-comp-tbl-td col-10">
+                        <span th:if="${qna.product}" th:text="${qna.product.name}">상품명</span>
+                        <span th:unless="${qna.product}">-</span>
+                    </div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">제목</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${qna.title}">제목</div>
+                </div>
+                <div class="on-comp-tbl-row high-500">
+                    <div class="on-comp-tbl-th col-2">내용</div>
+                    <div class="on-comp-tbl-td col-10 mt-20 items-start" th:text="${qna.question}">내용</div>
+                </div>
+                
+                <!-- 답변 영역 -->
+                <div th:if="${qna.replies != null and !qna.replies.isEmpty()}">
+                    <div th:each="reply : ${qna.replies}">
+                        <div class="on-comp-tbl-row">
+                            <div class="on-comp-tbl-th col-2">답변</div>
+                            <div class="on-comp-tbl-td col-10">
+                                <div><strong>답변자:</strong> <span th:text="${reply.responder}">관리자</span></div>
+                                <div><strong>답변일:</strong> <span th:text="${#temporals.format(reply.createdAt, 'yyyy-MM-dd HH:mm')}">2025-01-01</span></div>
+                            </div>
+                        </div>
+                        <div class="on-comp-tbl-row high-500">
+                            <div class="on-comp-tbl-th col-2">답변내용</div>
+                            <div class="on-comp-tbl-td col-10 mt-20 items-start" th:text="${reply.content}">답변 내용</div>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${qna.replies == null or qna.replies.isEmpty()}">
+                    <div class="on-comp-tbl-row">
+                        <div class="on-comp-tbl-th col-2">답변</div>
+                        <div class="on-comp-tbl-td col-10">답변 대기 중입니다.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end mt-20">
+                <a th:href="@{/user/board/qna/list}">
+                    <button class="btn btn--quarternary-outline mr-4">목록</button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 푸터 -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>On&Home - 주문/결제</title>
+  <link rel="stylesheet" href="/css/import.css" />
+  <script src="/js/oncommon.js"></script>
+  <script src="/js/jwt-utils.js"></script>
+</head>
+<body>
+  <div class="on-main-wrap">
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <div class="on-item02 mb-80 mt-80">
+      <div class="on-item02-inner">
+        <h2 class="sub-title line-under">주문/결제</h2>
+        <h3 class="mb-20">배송정보</h3>
+        <table class="table mb-40">
+          <colgroup>
+            <col width="20%">
+            <col width="30%">
+            <col width="20%">
+            <col width="30%">
+          </colgroup>
+          <tbody>
+            <tr>
+              <th>이름</th>
+              <td><input class="input w-full" id="deliveryName"></td>
+              <th>ID</th>
+              <td><input class="input w-full" id="deliveryId" readonly></td>
+            </tr>
+            <tr>
+              <th>전화번호</th>
+              <td><input class="input w-full" id="deliveryPhone"></td>
+              <th>e-mail</th>
+              <td><input class="input w-full" id="deliveryEmail" readonly></td>
+            </tr>
+            <tr>
+              <th>주소</th>
+              <td colspan="3"><input class="input w-full" id="deliveryAddress"></td>
+            </tr>
+            <tr>
+              <th>요청사항</th>
+              <td colspan="3"><textarea class="textarea w-full" id="deliveryRequest"></textarea></td>
+            </tr>            
+          </tbody>
+        </table>
+        <h3 class="mb-20">주문정보</h3>
+        <table class="table" id="orderInfoTable">
+          <colgroup>
+            <col width="20%">
+            <col width="35%">
+            <col width="10%">
+            <col width="10%">
+            <col width="10%">
+            <col width="">
+          </colgroup>
+          <tbody>
+            <tr><td colspan="6" style="text-align: center; padding: 40px;">로딩중...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="btn-group justify-center mt-40">
+          <button class="btn btn-buy" id="btnPay">결제하기</button>
+      </div>       
+    </div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+  </div>
+
+  <script>
+    let orderProduct = null;
+    let orderQuantity = 1;
+    let currentUserId = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // ✅ 로그인 체크
+      if (!checkLogin(true)) return;
+      
+      loadCategoryMenu();
+      loadHeaderNavigation();
+      loadOrderInfo();
+      loadUserInfo();
+    });
+
+    function getUrlParameter(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    /**
+     * ✅ 주문 정보 로드 (JWT 기반)
+     */
+    function loadOrderInfo() {
+      const productId = getUrlParameter('productId');
+      const quantity = getUrlParameter('quantity') || 1;
+      const fromCart = getUrlParameter('fromCart');
+
+      if (fromCart === 'true') {
+        loadCartOrderInfo();
+        return;
+      }
+
+      if (!productId) {
+        alert('잘못된 접근입니다.');
+        window.location.href = '/';
+        return;
+      }
+
+      orderQuantity = parseInt(quantity);
+
+      fetch(`/api/products/${productId}`, {
+        headers: getAuthHeaders()
+      })
+        .then(response => {
+          if (!response.ok) throw new Error('상품을 찾을 수 없습니다.');
+          return response.json();
+        })
+        .then(data => {
+          if (data.success && data.data) {
+            orderProduct = data.data;
+            displayOrderInfo();
+          } else {
+            throw new Error('상품 정보를 불러올 수 없습니다.');
+          }
+        })
+        .catch(error => {
+          console.error('상품 로드 오류:', error);
+          alert('상품 정보를 불러올 수 없습니다.');
+          window.location.href = '/';
+        });
+    }
+
+    /**
+     * ✅ 장바구니 기반 주문 정보 로드 (JWT 기반)
+     */
+    function loadCartOrderInfo() {
+      fetch('/api/cart', {
+        headers: getAuthHeaders()
+      })
+        .then(response => {
+          if (!response.ok) throw new Error('장바구니를 불러올 수 없습니다.');
+          return response.json();
+        })
+        .then(data => {
+          if (data.success && data.data && data.data.length > 0) {
+            window.cartItems = data.data;
+            displayCartOrderInfo();
+          } else {
+            alert('장바구니가 비어있습니다.');
+            window.location.href = '/user/cart';
+          }
+        })
+        .catch(error => {
+          console.error('장바구니 로드 오류:', error);
+          alert('장바구니 정보를 불러올 수 없습니다.');
+          window.location.href = '/user/cart';
+        });
+    }
+
+    function displayCartOrderInfo() {
+      if (!window.cartItems || window.cartItems.length === 0) return;
+
+      const orderNumber = generateOrderNumber();
+      const tableBody = document.querySelector('#orderInfoTable tbody');
+      
+      let totalPrice = 0;
+      let itemsHtml = '';
+
+      window.cartItems.forEach(item => {
+        const product = item.product;
+        const quantity = item.quantity;
+        const price = product.salePrice > 0 ? product.salePrice : product.price;
+        const itemTotal = price * quantity;
+        totalPrice += itemTotal;
+
+        itemsHtml += `
+          <tr>
+            <th>상품명</th>
+            <td>${escapeHtml(product.name)}</td>
+            <th>수량</th>
+            <td class="center">${quantity}</td>
+            <th>가격</th>
+            <td class="right">${formatPrice(itemTotal)}</td>
+          </tr>
+        `;
+      });
+
+      tableBody.innerHTML = `
+        <tr>
+          <th>주문번호</th>
+          <td colspan="5">${orderNumber}</td>
+        </tr>
+        <tr>
+          <th>주문상품 리스트</th>
+          <th colspan="5"></th>
+        </tr>
+        ${itemsHtml}
+        <tr class="high-50">
+          <th>주문 합계</th>
+          <td colspan="5" class="right"><span class="price-b">${formatPrice(totalPrice)}</span><span class="ml-12">원</span></td>
+        </tr>
+      `;
+    }
+
+    function displayOrderInfo() {
+      if (!orderProduct) return;
+
+      const orderNumber = generateOrderNumber();
+      const tableBody = document.querySelector('#orderInfoTable tbody');
+      
+      const price = orderProduct.salePrice && orderProduct.salePrice > 0 
+        ? orderProduct.salePrice 
+        : orderProduct.price;
+      const totalPrice = price * orderQuantity;
+
+      tableBody.innerHTML = `
+        <tr>
+          <th>주문번호</th>
+          <td colspan="5">${orderNumber}</td>
+        </tr>
+        <tr>
+          <th>주문상품 리스트</th>
+          <th colspan="5"></th>
+        </tr>
+        <tr>
+          <th>상품명</th>
+          <td>${escapeHtml(orderProduct.name)}</td>
+          <th>수량</th>
+          <td class="center">${orderQuantity}</td>
+          <th>가격</th>
+          <td class="right">${formatPrice(price)}</td>
+        </tr>
+        <tr class="high-50">
+          <th>주문 합계</th>
+          <td colspan="5" class="right"><span class="price-b">${formatPrice(totalPrice)}</span><span class="ml-12">원</span></td>
+        </tr>
+      `;
+    }
+
+    function generateOrderNumber() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const random = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+      return `${year}${month}${day}-${random}`;
+    }
+
+    /**
+     * ✅ 사용자 정보 로드 (JWT 기반) - 에러 처리 개선
+     */
+    function loadUserInfo() {
+      console.log('[loadUserInfo] 사용자 정보 로드 시작');
+      
+      fetch('/api/user/my-info', {
+        headers: getAuthHeaders()
+      })
+        .then(response => {
+          console.log('[loadUserInfo] 응답 상태:', response.status);
+          
+          if (!response.ok) {
+            if (response.status === 401) {
+              throw new Error('로그인이 필요합니다.');
+            }
+            throw new Error('사용자 정보를 불러올 수 없습니다.');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('[loadUserInfo] 응답 데이터:', data);
+          
+          if (data.success && data.data) {
+            const user = data.data;
+            window.currentUserId = user.id;
+            document.getElementById('deliveryName').value = user.username || '';
+            document.getElementById('deliveryId').value = user.userId || '';
+            document.getElementById('deliveryPhone').value = user.phone || '';
+            document.getElementById('deliveryEmail').value = user.email || '';
+            document.getElementById('deliveryAddress').value = user.address || '';
+            console.log('[loadUserInfo] 사용자 정보 로드 성공');
+          } else {
+            throw new Error(data.message || '사용자 정보를 불러올 수 없습니다.');
+          }
+        })
+        .catch(error => {
+          console.error('[loadUserInfo] 사용자 정보 로드 실패:', error);
+          alert(error.message || '사용자 정보를 불러올 수 없습니다. 다시 로그인해주세요.');
+          window.location.href = '/login';
+        });
+    }
+
+    /**
+     * ✅ 결제하기 (JWT 기반)
+     */
+    document.getElementById('btnPay').addEventListener('click', function() {
+      const name = document.getElementById('deliveryName').value.trim();
+      const phone = document.getElementById('deliveryPhone').value.trim();
+      const address = document.getElementById('deliveryAddress').value.trim();
+
+      if (!name) {
+        alert('이름을 입력해주세요.');
+        document.getElementById('deliveryName').focus();
+        return;
+      }
+
+      if (!phone) {
+        alert('전화번호를 입력해주세요.');
+        document.getElementById('deliveryPhone').focus();
+        return;
+      }
+
+      if (!address) {
+        alert('주소를 입력해주세요.');
+        document.getElementById('deliveryAddress').focus();
+        return;
+      }
+
+      const fromCart = getUrlParameter('fromCart');
+      const userId = window.currentUserId;
+
+      if (fromCart === 'true' && window.cartItems) {
+        processCartOrder(userId, name, phone, address);
+      } else {
+        processSingleProductOrder(userId, name, phone, address);
+      }
+    });
+
+    /**
+     * ✅ 장바구니 주문 처리 (JWT 기반)
+     */
+    function processCartOrder(userId, name, phone, address) {
+      const orderItems = window.cartItems.map(item => ({
+        productId: item.product.id,
+        quantity: item.quantity
+      }));
+
+      const createOrderRequest = {
+        userId: userId,
+        orderItems: orderItems
+      };
+
+      fetch('/api/orders/create', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(createOrderRequest)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success && data.data) {
+          alert('주문이 완료되었습니다!');
+          window.location.href = '/user/my_order';
+        } else {
+          alert('주문 생성에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+        }
+      })
+      .catch(error => {
+        console.error('주문 생성 오류:', error);
+        alert('주문 생성 중 오류가 발생했습니다.');
+      });
+    }
+
+    /**
+     * ✅ 단일 상품 주문 처리 (JWT 기반)
+     */
+    function processSingleProductOrder(userId, name, phone, address) {
+      const productId = getUrlParameter('productId');
+
+      const createOrderRequest = {
+        userId: userId,
+        orderItems: [
+          {
+            productId: parseInt(productId),
+            quantity: orderQuantity
+          }
+        ]
+      };
+
+      fetch('/api/orders/create', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(createOrderRequest)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success && data.data) {
+          alert('주문이 완료되었습니다!');
+          window.location.href = '/user/my_order';
+        } else {
+          alert('주문 생성에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+        }
+      })
+      .catch(error => {
+        console.error('주문 생성 오류:', error);
+        alert('주문 생성 중 오류가 발생했습니다.');
+      });
+    }
+  </script>
+</body>
+</html>

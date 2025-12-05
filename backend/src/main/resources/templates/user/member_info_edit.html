@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>On&Home</title>
+  <link rel="stylesheet" href="/css/import.css" />
+  <script src="/js/oncommon.js"></script>
+</head>
+<body>
+  <!-- 백그라운드 -->
+  <div class="on-main-wrap">
+    <!-- 헤더 -->
+      <div th:replace="~{fragments/header :: header}"></div>
+
+
+
+    <div class="regeist_wrapper">
+      <div class="regeist_inner">
+        <h2 class="mb-30">회원정보</h2>
+        <div class="border-1p"></div>
+        <div>
+          <table>
+            <tr class="regeist_data_tit">
+              <th>이름</th>
+              <td>
+                <input class="input" type="text" value="모모">
+              </td>
+            </tr>
+            <tr class="regeist_data_tit">
+              <th>ID</th>
+              <td>
+                <input class="input" type="text" value="momo">
+              </td>
+            </tr>
+            <tr class="regeist_data_tit">
+              <th>성별</th>
+              <td>
+                <input type="radio" name="sex" checked >
+                <label class="mr-20">남자</label>
+                <input type="radio" name="sex">
+                <label>여자</label>
+              </td>
+            </tr>
+            <tr class="regeist_data_tit">
+              <th>국적</th>
+              <td>
+                <input type="radio" name="country">
+                <label class="mr-20">내국인</label>
+                <input type="radio" name="country" checked >
+                <label>외국인</label>
+              </td>
+            </tr>
+            <tr class="regeist_data_tit">
+              <th>e-mail</th>
+              <td>
+                <input class="input" type="text" value="momo@naver.com">
+              </td>
+            </tr>
+            <tr class="regeist_data_tit">
+              <th>전화번호</th>
+              <td>
+                <input class="input" type="text" value="010-1234-4567"> 
+              </td>
+            </tr>
+            <tr class="regeist_data_tit">
+              <th>주소</th>
+              <td>
+                <input class="input" type="text" value="서울 강남구 청담동 123-34 JYP빌딩 13층">
+              </td>
+            </tr>                                                                           
+          </table>
+          <div class="border-1p"></div>          
+          <div class="flex justify-center">
+            <a href="/user/"></a><button class="btn btn--tertiary">회원정보 수정</button>
+          </div>   
+        </div>
+        <div>
+        </div>        
+      </div>
+    </div>
+      <div th:replace="~{fragments/footer :: footer}"></div>
+  </div>
+</body>
+</html>

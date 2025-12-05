@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Q&A 게시판 - On&Home</title>
+    <link rel="stylesheet" href="/css/import.css" />
+    <script src="/js/oncommon.js"></script>
+</head>
+<body>
+<!-- 백그라운드 -->
+<div class="on-main-wrap">
+    <!-- 헤더 -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <!-- Q&A 본문 영역 -->
+    <div class="on-item02 mb-80 mt-80">
+        <div class="on-item02-inner">
+            <h2 class="sub-title line-under">Q&A 게시판</h2>
+
+            <!-- 글쓰기 버튼 -->
+            <div class="flex justify-end mb-20">
+                <a th:href="@{/user/qna/write}">
+                    <button class="btn btn--primary">질문 작성</button>
+                </a>
+            </div>
+
+            <!-- 검색창 (상품명으로만 검색) -->
+            <form method="get" th:action="@{/user/board/qna/list}" class="flex mb-20 justify-end">
+                <input type="text"
+                       name="kw"
+                       th:value="${kw}"
+                       placeholder="상품명을 입력하세요"
+                       class="input mr-4" />
+                <button type="submit" class="btn-ico btn-ico--srch"></button>
+            </form>
+
+            <!-- Q&A 목록 테이블 -->
+            <div class="grid">
+                <table>
+                    <colgroup>
+                        <col width="10%">
+                        <col>
+                        <col width="20%">
+                        <col width="20%">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th scope="col">번호</th>
+                        <th scope="col">제목</th>
+                        <th scope="col">작성자</th>
+                        <th scope="col">작성일자</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="qna, iterStat : ${qnaList}">
+                        <td class="center" th:text="${iterStat.count}">1</td>
+                        <td class="center">
+                            <a th:href="@{/user/board/qna/detail/{id}(id=${qna.id})}" th:text="${qna.title}">질문 제목</a>
+                        </td>
+                        <td class="center" th:text="${qna.writer}">작성자</td>
+                        <td class="center" th:text="${#temporals.format(qna.createdAt, 'yyyy-MM-dd')}">2025-10-23</td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(qnaList)}">
+                        <td colspan="4" class="center">등록된 Q&A가 없습니다.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 푸터 -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+</body>
+</html>

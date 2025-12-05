@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>온앤홈 관리자</title>
+  <link rel="stylesheet" href="/css/import.css" />
+  <script src="/js/oncommon.js"></script>
+</head>
+<body>
+  <!-- 백그라운드 -->
+  <div class="on-wrapper">
+    <!-- 컨텐츠 영역 -->
+    <div class="on-content">
+    <!--사이드바 메뉴-->
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+
+        <!-- <내부영역 -->
+      <div class="on-main">
+        <h2 class="mb-30">User Detail</h2>
+        <table class="table mb-40">
+          <colgroup>
+            <col width="20%">
+            <col width="">
+          </colgroup>
+          <tbody>
+            <tr th:if="${error}">
+              <td colspan="2" class="center" style="padding: 40px;">
+                <h3 th:text="${error}">오류</h3>
+              </td>
+            </tr>
+            <tr th:if="${user != null}">
+              <th>이름</th>
+              <td th:text="${user.username != null ? user.username : '-'}">이름</td>
+            </tr>
+            <tr th:if="${user != null}">
+              <th>ID</th>
+              <td th:text="${user.userId}">아이디</td>
+            </tr>    
+            <tr th:if="${user != null}">
+              <th>성별</th>
+              <td th:text="${user.gender != null ? user.gender : '-'}">성별</td>
+            </tr>
+            <tr th:if="${user != null}">
+              <th>생년월일</th>
+              <td th:text="${user.birthDate != null ? user.birthDate : '-'}">생년월일</td>
+            </tr>                                  
+            <tr th:if="${user != null}">
+              <th>e-mail</th>
+              <td th:text="${user.email != null ? user.email : '-'}">이메일</td>
+            </tr>
+            <tr th:if="${user != null}">
+              <th>전화번호</th>
+              <td th:text="${user.phone != null ? user.phone : '-'}">전화번호</td>
+            </tr>
+            <tr th:if="${user != null}">
+              <th>주소</th>
+              <td th:text="${user.address != null ? user.address : '-'}">주소</td>
+            </tr>
+            <tr th:if="${user != null}">
+              <th>권한</th>
+              <td th:text="${user.role == 0 ? '관리자' : '일반사용자'}">권한</td>
+            </tr>
+            <tr th:if="${user != null}">
+              <th>계정상태</th>
+              <td th:text="${user.active ? '활성' : '비활성'}">상태</td>
+            </tr>
+            <tr th:if="${user != null}">
+              <th>가입일시</th>
+              <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}">가입일시</td>
+            </tr>                         
+          </tbody>
+        </table>
+        <div class="flex mb-20 mt-20 justify-end">
+          <a href="/admin/user/list"><button class="btn btn--quarternary-outline">목록</button></a>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

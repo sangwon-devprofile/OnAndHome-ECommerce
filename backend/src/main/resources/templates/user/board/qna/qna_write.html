@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>On&Home | Q&A 작성</title>
+    <link rel="stylesheet" href="/css/import.css" />
+    <script src="/js/oncommon.js"></script>
+</head>
+<body>
+<div class="on-main-wrap">
+    <!-- ✅ 헤더 -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <!-- ✅ Q&A 작성 폼 -->
+    <div class="on-item02 mb-80 mt-80">
+        <div class="on-item02-inner">
+            <h2 class="sub-title line-under">Q&A 작성</h2>
+
+            <form th:action="@{/user/qna/write}" method="post">
+                <div class="mb-4">
+                    <label class="block mb-2 font-bold">제목</label>
+                    <input type="text" name="title" class="input w-full" placeholder="제목을 입력하세요" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block mb-2 font-bold">작성자</label>
+                    <input type="text" name="writer" class="input w-full" placeholder="작성자명을 입력하세요" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block mb-2 font-bold">질문 내용</label>
+                    <textarea name="question" class="textarea w-full" rows="8" placeholder="질문 내용을 입력하세요" required></textarea>
+                </div>
+
+                <!-- ✅ 버튼 영역 -->
+                <div class="flex justify-end mt-6">
+                    <a th:href="@{/user/qna/list}">
+                        <button type="button" class="btn btn--quarternary-outline mr-4">목록</button>
+                    </a>
+                    <button type="submit" class="btn btn--primary">등록</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ✅ 푸터 -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+</body>
+</html>

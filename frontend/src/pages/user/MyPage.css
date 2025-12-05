@@ -1,0 +1,170 @@
+.mypage-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.mypage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #333;
+}
+
+.mypage-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+.admin-btn {
+  padding: 12px 24px;
+  background-color: #ff6b00;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.admin-btn:hover {
+  background-color: #e55d00;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 107, 0, 0.3);
+}
+
+.mypage-content {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.mypage-section {
+  background: #fff;
+}
+
+.mypage-section h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.mypage-menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.mypage-menu-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 28px;
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  min-height: 100px;
+}
+
+.mypage-menu-item:hover {
+  background: #fff;
+  border-color: #ff6b00;
+  box-shadow: 0 6px 16px rgba(255, 107, 0, 0.15);
+  transform: translateY(-3px);
+}
+
+.menu-icon {
+  font-size: 48px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  line-height: 1;
+}
+
+.menu-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+}
+
+.menu-text h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.menu-text p {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* 諛섏쓳???붿옄??*/
+@media (max-width: 768px) {
+  .mypage-container {
+    padding: 20px 16px;
+  }
+
+  .mypage-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .mypage-header h1 {
+    font-size: 24px;
+  }
+
+  .admin-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .mypage-menu {
+    grid-template-columns: 1fr;
+  }
+
+  .mypage-section h2 {
+    font-size: 20px;
+  }
+
+  .mypage-menu-item {
+    padding: 20px;
+    gap: 16px;
+    min-height: 80px;
+  }
+
+  .menu-icon {
+    font-size: 40px;
+    width: 50px;
+    height: 50px;
+  }
+
+  .menu-text h3 {
+    font-size: 16px;
+  }
+
+  .menu-text p {
+    font-size: 13px;
+  }
+}

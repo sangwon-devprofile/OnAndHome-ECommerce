@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>On&Home - 로그인</title>
+  <link rel="stylesheet" href="/css/import.css" />
+  <script src="/js/oncommon.js"></script>
+</head>
+<body>
+  <!-- 백그라운드 -->
+  <div class="on-main-wrap">
+    <!-- 헤더 -->
+      <div th:replace="~{fragments/header :: header}"></div>
+    
+    <div class="login-wrap_user mt-80 mb-40">
+      <div class="login-card_user">
+        <div class="login-logo-wrap">
+          <h3 class="login_header">Login</h3>
+        </div>
+
+        <!-- 로그인 폼 -->
+        <form id="loginForm">
+          <div class="mb-16">
+            <h4 class="login-h4">ID</h4>
+            <input class="input w-full" name="userId" id="userId" placeholder="ID를 입력하세요" required />
+          </div>
+          <div>
+            <h4 class="login-h4">PASSWORD</h4>
+            <input type="password" name="password" id="password" class="input w-full" placeholder="*************" required />
+          </div>
+          <button type="submit" class="btn btn--blk w-full mt-40">로그인</button>
+        </form>
+        
+        <!-- 에러 메시지 표시 -->
+        <div id="errorMessage" style="display: none; color: #d32f2f; margin-top: 10px; text-align: center;"></div>
+        
+        <!-- 링크 -->
+        <div style="margin-top: 20px; text-align: center;">
+          <p>계정이 없으신가요? <a href="/signup" style="color: #1976d2; text-decoration: none;"><b>회원가입</b></a></p>
+        </div>
+        
+        <div class="center mt-20" style="font-size: xx-small;">
+          ©2025 on&home. All rights reserved.
+        </div>
+      </div>
+    </div>
+      <div th:replace="~{fragments/footer :: footer}"></div>
+  </div>
+
+  <script>
+    /**
+     * 로그인 폼 처리 (JWT 기반)
+     */
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const userId = document.getElementById('userId').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const errorMessageDiv = document.getElementById('errorMessage');
+
+      if (!userId || !password) {
+        errorMessageDiv.textContent = '아이디와 비밀번호를 입력하세요.';
+        errorMessageDiv.style.display = 'block';
+        return;
+      }
+
+      try {
+        console.log('로그인 요청 시작:', userId);
+        
+        // JWT 로그인 API 호출
+        const response = await fetch('/api/user/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId: userId,
+            password: password
+          })
+        });
+
+        const data = await response.json();
+        console.log('로그인 응답:', data);
+
+        if (data.success && data.accessToken) {
+          // JWT 토큰을 localStorage에 저장
+          localStorage.setItem('accessToken', data.accessToken);
+          localStorage.setItem('refreshToken', data.refreshToken);
+          
+          // 사용자 정보도 저장 (선택사항)
+          if (data.user) {
+            localStorage.setItem('userInfo', JSON.stringify(data.user));
+          }
+
+          console.log('로그인 성공 - 토큰 저장 완료');
+          
+          // 메인 페이지로 리다이렉트
+          window.location.href = '/user/index';
+          
+        } else {
+          // 로그인 실패
+          errorMessageDiv.textContent = data.message || '아이디 또는 비밀번호가 일치하지 않습니다.';
+          errorMessageDiv.style.display = 'block';
+          console.warn('로그인 실패:', data.message);
+        }
+      } catch (error) {
+        console.error('로그인 오류:', error);
+        errorMessageDiv.textContent = '로그인 처리 중 오류가 발생했습니다.';
+        errorMessageDiv.style.display = 'block';
+      }
+    });
+
+    /**
+     * 페이지 로드 시 로그아웃 메시지 확인
+     */
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('logout')) {
+        console.log('로그아웃되었습니다.');
+      }
+    });
+  </script>
+</body>
+</html>

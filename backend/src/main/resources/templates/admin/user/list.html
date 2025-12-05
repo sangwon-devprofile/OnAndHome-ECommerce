@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>온앤홈 관리자</title>
+  <link rel="stylesheet" href="/css/import.css" />
+  <script src="/js/oncommon.js"></script>
+</head>
+<body>
+<script src="/js/auth.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const deleteBtn = document.getElementById('deleteBtn');
+    
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', function() {
+        // 체크된 체크박스 찾기
+        const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+        
+        if (checkedBoxes.length === 0) {
+          alert('삭제할 회원을 선택해주세요.');
+          return;
+        }
+        
+        // 확인 메시지
+        if (!confirm('선택한 ' + checkedBoxes.length + '건의 회원을 삭제하시겠습니까?')) {
+          return;
+        }
+        
+        // 선택된 user ID 모으기
+        const userIds = Array.from(checkedBoxes).map(cb => cb.dataset.userId);
+        
+        // 삭제 API 호출 (JWT 토큰 포함)
+        fetch('/api/user/delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...AuthUtil.getAuthHeader()
+          },
+          body: JSON.stringify({ userIds: userIds })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert('회원이 성공적으로 삭제되었습니다.');
+            location.reload(); // 페이지 새로고침
+          } else {
+            alert('삭제 실패: ' + (data.message || '알 수 없는 오류가 발생했습니다.'));
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('삭제 중 오류가 발생했습니다.');
+        });
+      });
+    }
+  });
+</script>
+  <!-- 백그라운드 -->
+  <div class="on-wrapper">
+    <!-- 컨텐츠 영역 -->
+    <div class="on-content">
+
+    <!--사이드바 메뉴-->
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <!-- <내부영역 -->
+      <div class="on-main">
+        <h2 class="mb-30">User List</h2>
+        <!-- ✅ 검색 영역 (활성화 완료) -->
+        <form th:action="@{/admin/user/list}" method="get" class="flex mb-20 justify-end">
+          <input type="text"
+                 name="kw"
+                 th:value="${kw}"
+                 class="input mr-4"
+                 placeholder="이름 또는 아이디를 입력하세요" />
+          <button type="submit" class="btn-ico btn-ico--srch"></button>
+        </form>
+        <div class="grid">
+          <table>
+            <colgroup>
+              <col width="5%">
+              <col width="10%">
+              <col>
+              <col>
+              <col>
+              <col>
+              <col>
+              <col>
+            </colgroup>
+            <thead>
+              <tr>
+                <th scope="col">선택</th>
+                <th scope="col">No</th>
+                <th scope="col">이름</th>
+                <th scope="col">ID</th>
+                <th scope="col">성별</th>
+                <th scope="col">연락처</th>
+                <th scope="col">생년월일</th>
+                <th scope="col">가입일자</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:if="${#lists.isEmpty(users)}">
+                <td colspan="8" class="center">사용자 데이터가 없습니다.</td>
+              </tr>
+              <tr th:each="user, iterStat : ${users}">
+                <td class="center"><input type="checkbox" class="user-checkbox" th:data-user-id="${user.id}"></td>
+                <td class="center" th:text="${iterStat.count}">번호</td>
+                <td class="center">
+                  <a th:href="@{/admin/user/detail(id=${user.id})}" th:text="${user.username != null ? user.username : '-'}">이름</a>
+                </td>
+                <td class="center">
+                  <a th:href="@{/admin/user/detail(id=${user.id})}" th:text="${user.userId}">아이디</a>
+                </td>
+                <td class="center" th:text="${user.gender != null ? user.gender : '-'}">성별</td>
+                <td class="center" th:text="${user.phone != null ? user.phone : '-'}">연락처</td>
+                <td class="center" th:text="${user.birthDate != null ? user.birthDate : '-'}">생년월일</td>
+                <td class="center" th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd')}">가입일자</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="flex mb-20 mt-20 justify-end">
+          <button class="btn btn--secondary" id="deleteBtn">삭제</button>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

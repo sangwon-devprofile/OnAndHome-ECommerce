@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>온앤홈 관리자</title>
+    <link rel="stylesheet" href="/css/import.css" />
+    <script src="/js/oncommon.js"></script>
+</head>
+<body>
+<!-- 백그라운드 -->
+<div class="on-wrapper">
+    <!-- 컨텐츠 영역 -->
+    <div class="on-content">
+
+        <!-- ✅ 사이드바 fragment 불러오기 -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <!-- ===== 메인 내부영역 ===== -->
+        <div class="on-main">
+            <h2 class="mb-30">리뷰 게시판</h2>
+
+            <!-- ✅ 검색 영역 (활성화 완료) -->
+            <form th:action="@{/admin/board/review/list}" method="get" class="flex mb-20 justify-end">
+                <input type="text"
+                       name="kw"
+                       th:value="${kw}"
+                       class="input mr-4"
+                       placeholder="상품명 또는 작성자를 입력하세요" />
+                <button type="submit" class="btn-ico btn-ico--srch"></button>
+            </form>
+
+            <!-- ✅ 리뷰 테이블 -->
+            <div class="grid">
+                <table>
+                    <colgroup>
+                        <col width="10%">
+                        <col>
+                        <col width="20%">
+                        <col width="20%">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th scope="col">번호</th>
+                        <th scope="col">상품명</th>
+                        <th scope="col">작성자</th>
+                        <th scope="col">작성일자</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <!-- ✅ 리뷰 목록 반복 -->
+                    <tr th:each="review, stat : ${reviews}">
+                        <td class="center" th:text="${stat.count}">1</td>
+                        <td class="center">
+                            <a th:href="@{|/admin/board/review/detail/${review.id}|}"
+                               th:text="${review.productName}">
+                                상품명
+                            </a>
+                        </td>
+                        <td class="center" th:text="${review.author}">홍길동</td>
+                        <td class="center"
+                            th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd')}">
+                            2025-10-22
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

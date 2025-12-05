@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>온앤홈 관리자 - 주문 상세</title>
+  <link rel="stylesheet" href="/css/import.css" />
+  <script src="/js/oncommon.js"></script>
+</head>
+<body>
+  <!-- 백그라운드 -->
+  <div class="on-wrapper">
+    <!-- 컨텐츠 영역 -->
+    <div class="on-content">
+      <!-- 사이드바 메뉴 -->
+      <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+      
+      <!-- 내부영역 -->
+      <div class="on-main">
+        <h2 class="mb-30">Order Detail</h2>
+        
+        <h3 class="mb-20">배송정보</h3>
+        <table class="table mb-40">
+          <colgroup>
+            <col width="20%">
+            <col width="30%">
+            <col width="20%">
+            <col width="30%">
+          </colgroup>
+          <tbody>
+            <tr th:if="${error}">
+              <td colspan="4" class="center" style="padding: 40px;">
+                <h3 th:text="${error}">오류</h3>
+              </td>
+            </tr>
+            <tr th:if="${order != null}">
+              <th>이름</th>
+              <td th:text="${order.username}">이름</td>
+              <th>ID</th>
+              <td th:text="${order.userIdStr}">아이디</td>
+            </tr>
+            <tr th:if="${order != null}">
+              <th>전화번호</th>
+              <td th:text="${order.userPhone != null ? order.userPhone : '-'}">전화번호</td>
+              <th>e-mail</th>
+              <td th:text="${order.userEmail != null ? order.userEmail : '-'}">이메일</td>
+            </tr>
+            <tr th:if="${order != null}">
+              <th>주소</th>
+              <td colspan="3" th:text="${order.userAddress != null ? order.userAddress : '-'}">주소</td>
+            </tr>
+            <tr th:if="${order != null}">
+              <th>요청사항</th>
+              <td colspan="3">-</td>
+            </tr>            
+          </tbody>
+        </table>
+        
+        <h3 class="mb-20">주문정보</h3>
+        <table class="table">
+          <colgroup>
+            <col width="20%">
+            <col width="35%">
+            <col width="10%">
+            <col width="10%">
+            <col width="10%">
+            <col width="">
+          </colgroup>
+          <tbody>
+            <tr th:if="${order != null}">
+              <th>주문번호</th>
+              <td colspan="5" th:text="${order.orderNumber}">주문번호</td>
+            </tr>
+            <tr th:if="${order != null}">
+              <th>주문일시</th>
+              <td colspan="5" th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm')}">주문일시</td>
+            </tr>
+            <tr th:if="${order != null}">
+              <th>주문상태</th>
+              <td colspan="5" th:text="${order.status}">주문상태</td>
+            </tr>
+            <tr th:if="${order != null}">
+              <th>주문상품 리스트</th>
+              <th colspan="5"></th>
+            </tr>
+            <tr th:if="${order != null}" th:each="item : ${order.orderItems}">
+              <th>상품명</th>
+              <td th:text="${item.productName}">상품명</td>
+              <th>수량</th>
+              <td class="center" th:text="${item.quantity}">수량</td>
+              <th>가격</th>
+              <td class="right" th:text="${#numbers.formatInteger(item.orderPrice * item.quantity, 1, 'COMMA')} + '원'">가격</td>                                
+            </tr>          
+            <tr class="high-50" th:if="${order != null}">
+              <th>주문 합계</th>
+              <td colspan="5" class="right">
+                <span class="price-b" th:text="${#numbers.formatInteger(order.totalPrice, 1, 'COMMA')}">0</span>
+                <span class="ml-12">원</span>
+              </td>
+            </tr>         
+          </tbody>
+        </table>        
+        
+        <div class="flex mb-20 mt-20 justify-end">
+          <a href="/admin/order/list"><button class="btn btn--quarternary-outline">목록</button></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

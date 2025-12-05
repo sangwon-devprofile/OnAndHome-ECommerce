@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>리뷰 답글 수정 | 온앤홈 관리자</title>
+    <link rel="stylesheet" href="/css/import.css" />
+    <script src="/js/oncommon.js"></script>
+</head>
+
+<body>
+<div class="on-wrapper">
+    <div class="on-content">
+
+        <!-- ✅ 사이드바 fragment -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="on-main">
+            <h2 class="mb-30">리뷰 답글 수정</h2>
+
+            <!-- ✅ 리뷰 정보 -->
+            <div class="on-comp-tbl-row">
+                <div class="on-comp-tbl-th col-2">상품명</div>
+                <div class="on-comp-tbl-td col-10" th:text="${review.productName}">
+                    상품명
+                </div>
+            </div>
+
+            <div class="on-comp-tbl-row high-100">
+                <div class="on-comp-tbl-th col-2">리뷰 내용</div>
+                <div class="on-comp-tbl-td col-10" th:text="${review.content}">
+                    리뷰 본문 내용
+                </div>
+            </div>
+
+            <!-- ✅ 답글 수정 폼 -->
+            <form th:action="@{/admin/board/review/reply/edit/{replyId}/{reviewId}(replyId=${reply.id}, reviewId=${review.id})}"
+                  method="post" class="mt-20">
+
+                <div class="on-comp-tbl-row high-100">
+                    <div class="on-comp-tbl-th col-2">답글 수정</div>
+                    <div class="on-comp-tbl-td col-10">
+                        <textarea name="content"
+                                  class="textarea w-full"
+                                  th:text="${reply.content}"
+                                  rows="6"
+                                  placeholder="답글 내용을 수정하세요"></textarea>
+                    </div>
+                </div>
+
+                <!-- ✅ 버튼 -->
+                <div class="flex justify-end mt-20">
+                    <a th:href="@{/admin/board/review/detail/{reviewId}(reviewId=${review.id})}"
+                       class="btn btn--quarternary-outline mr-4">취소</a>
+                    <button type="submit" class="btn btn--tertiary">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

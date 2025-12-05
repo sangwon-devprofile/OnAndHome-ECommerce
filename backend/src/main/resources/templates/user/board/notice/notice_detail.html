@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>On&Home</title>
+  <link rel="stylesheet" href="/css/import.css" />
+  <script src="/js/oncommon.js"></script>
+</head>
+<body>
+  <!-- 백그라운드 -->
+  <div class="on-main-wrap">
+    <!-- 헤더 -->
+      <div th:replace="~{fragments/header :: header}"></div>
+
+
+     <!-- 아이템영역2  -->
+    <div class="on-item02 mb-80 mt-80">
+      <div class="on-item02-inner">
+        <h2 class="sub-title line-under">공지사항</h2>
+        <div th:if="${error}">
+          <div class="on-comp-tbl-row">
+            <div class="on-comp-tbl-td col-12" style="text-align: center; padding: 40px;">
+              <h3 th:text="${error}">오류</h3>
+            </div>
+          </div>
+        </div>
+        <div th:if="${notice != null}">
+          <div class="on-comp-tbl-row">
+            <div class="on-comp-tbl-th col-2">번호</div>
+            <div class="on-comp-tbl-td col-10" th:text="${notice.id}">번호</div>
+          </div>
+          <div class="on-comp-tbl-row">
+            <div class="on-comp-tbl-th col-2">작성일자</div>
+            <div class="on-comp-tbl-td col-10" th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd HH:mm')}">작성일자</div>
+          </div>
+          <div class="on-comp-tbl-row">
+            <div class="on-comp-tbl-th col-2">작성자</div>
+            <div class="on-comp-tbl-td col-10" th:text="${notice.writer != null ? notice.writer : 'admin'}">작성자</div>
+          </div>                    
+          <div class="on-comp-tbl-row">
+            <div class="on-comp-tbl-th col-2">제목</div>
+            <div class="on-comp-tbl-td col-10" th:text="${notice.title}">제목</div>
+          </div>  
+          <div class="on-comp-tbl-row high-500">
+            <div class="on-comp-tbl-th col-2">내용</div>
+            <div class="on-comp-tbl-td col-10 mt-20 items-start" th:text="${notice.content}">내용</div>
+          </div>        
+        </div>
+        <div class="flex justify-end mt-20">
+          <a href="/user/board/notice/list"><button class="btn btn--quarternary-outline mr-4">목록</button></a>
+        </div>        
+            
+      </div>
+    </div>
+      <div th:replace="~{fragments/footer :: footer}"></div>
+  </div>
+
+  <script>
+    /**
+     * 카테고리 데이터
+     */
+    const categoryData = [
+      {
+        parentName: 'TV/오디오',
+        children: ['TV', '오디오']
+      },
+      {
+        parentName: '주방가전',
+        children: ['냉장고', '전자렌지', '식기세척기']
+      },
+      {
+        parentName: '생활가전',
+        children: ['세탁기', '청소기']
+      },
+      {
+        parentName: '에어컨/공기청정기',
+        children: ['에어컨', '공기청정기']
+      },
+      {
+        parentName: '기타',
+        children: ['정수기', '안마의자', 'PC']
+      }
+    ];
+
+    /**
+     * 페이지 로드
+     */
+    document.addEventListener('DOMContentLoaded', function() {
+      loadCategoryMenu();
+      loadHeaderNavigation();
+    });
+
+    /**
+     * 카테고리 메뉴 로드
+     */
+    function loadCategoryMenu() {
+      const categoryMenu = document.getElementById('categoryMenu');
+      categoryMenu.innerHTML = '';
+
+      categoryData.forEach(category => {
+        const li = document.createElement('li');
+        
+        const parentLink = document.createElement('a');
+        parentLink.href = '#';
+        parentLink.textContent = category.parentName;
+        parentLink.onclick = function(e) {
+          e.preventDefault();
+          return false;
+        };
+        
+        li.appendChild(parentLink);
+        
+        if (category.children && category.children.length > 0) {
+          const depth2 = document.createElement('ul');
+          depth2.className = 'depth2';
+          
+          category.children.forEach(child => {
+            const childLi = document.createElement('li');
+            const childLink = document.createElement('a');
+            childLink.href = `/user/product/category?category=${encodeURIComponent(child)}`;
+            childLink.textContent = child;
+            childLi.appendChild(childLink);
+            depth2.appendChild(childLi);
+          });
+          
+          li.appendChild(depth2);
+        }
+        
+        categoryMenu.appendChild(li);
+      });
+    }
+
+    /**
+     * 헤더 네비게이션 로드
+     */
+    function loadHeaderNavigation() {
+      fetch('/api/user/session-info')
+        .then(response => response.json())
+        .then(data => {
+          const headerNav = document.getElementById('headerNav');
+          headerNav.innerHTML = '';
+
+          if (data.loggedIn) {
+            let navHTML = `
+              <li><a href="/user/my_page">마이페이지</a></li>
+              <li><a href="/user/board/notice/list">공지사항</a></li>
+            `;
+
+            if (data.isAdmin) {
+              navHTML += `<li><a href="/admin/dashboard"><b>관리자</b></a></li>`;
+            }
+
+            navHTML += `
+              <li><a href="#" onclick="handleLogout(); return false;">로그아웃</a></li>
+            `;
+
+            headerNav.innerHTML = navHTML;
+          } else {
+            headerNav.innerHTML = `
+              <li><a href="/login">로그인</a></li>
+              <li><a href="/signup">회원가입</a></li>
+              <li><a href="/user/board/notice/list">공지사항</a></li>
+            `;
+          }
+        })
+        .catch(error => {
+          console.error('세션 정보 조회 실패:', error);
+          const headerNav = document.getElementById('headerNav');
+          headerNav.innerHTML = `
+            <li><a href="/login">로그인</a></li>
+            <li><a href="/signup">회원가입</a></li>
+            <li><a href="/user/board/notice/list">공지사항</a></li>
+          `;
+        });
+    }
+
+    /**
+     * 로그아웃 처리
+     */
+    function handleLogout() {
+      if (confirm('로그아웃 하시겠습니까?')) {
+        window.location.href = '/logout';
+      }
+    }
+  </script>
+</body>
+</html>

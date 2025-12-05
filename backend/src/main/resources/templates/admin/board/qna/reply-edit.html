@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Q&A 답변 수정</title>
+    <link rel="stylesheet" href="/css/import.css" />
+</head>
+<body>
+<div class="on-wrapper">
+    <div class="on-content">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="on-main">
+            <h2 class="mb-30">Q&A 답변 수정</h2>
+
+            <div class="on-comp-tbl-row">
+                <div class="on-comp-tbl-th col-2">질문 제목</div>
+                <div class="on-comp-tbl-td col-10" th:text="${reply.qna.title}">교환 정책 문의</div>
+            </div>
+
+            <div class="on-comp-tbl-row high-100">
+                <div class="on-comp-tbl-th col-2">질문 내용</div>
+                <div class="on-comp-tbl-td col-10" th:text="${reply.qna.question}">
+                    상품 교환은 어떻게 하나요?
+                </div>
+            </div>
+
+            <form th:action="@{/admin/board/qna/reply/edit/{replyId}(replyId=${reply.id})}" method="post" class="mt-20">
+                <div class="on-comp-tbl-row high-100">
+                    <div class="on-comp-tbl-th col-2">답변 수정</div>
+                    <div class="on-comp-tbl-td col-10">
+                        <textarea name="content" class="textarea w-full" th:text="${reply.content}" rows="6"></textarea>
+                    </div>
+                </div>
+
+                <div class="flex justify-end mt-20">
+                    <a th:href="@{/admin/board/qna/{id}(id=${reply.qna.id})}"><button class="btn btn--quarternary-outline mr-4">취소</button></a>
+                    <button type="submit" class="btn btn--tertiary">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

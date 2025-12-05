@@ -1,0 +1,51 @@
+<th:block th:fragment="sidebar">
+    <script src="/js/auth.js"></script>
+    <div class="on-side-menu">
+        <div class="side-menu-logo">
+            <a th:href="@{/admin/dashboard}"><h2 class="header-logo"></h2></a>
+        </div>
+
+        <div class="on-side-menu-nav">
+            <ul class="side-menu-list">
+                <li><a th:href="@{/admin/order/list}"><span class="ico_order"></span>주문관리</a></li>
+                <li><a th:href="@{/admin/product/list}"><span class="ico_item"></span>상품관리</a></li>
+                <li>
+                    <a th:href="@{/admin/board/dashboard}"><span class="ico_board"></span>게시판관리</a>
+                    <ul>
+                        <li><a th:href="@{/admin/board/dashboard}">게시판 전체보기</a></li>
+                        <li><a th:href="@{/admin/board/notice/list}">공지사항</a></li>
+                        <li><a th:href="@{/admin/board/review/list}">리뷰</a></li>
+                        <li><a th:href="@{/admin/board/qna/list}">Q&amp;A</a></li>
+                    </ul>
+                </li>
+                <li><a th:href="@{/admin/user/list}"><span class="ico_member"></span>회원관리</a></li>
+                <li><a th:href="@{/user/index}" target="_blank"><span class="ico_member"></span><span>홈페이지 보기</span></a></li>
+            </ul>
+        </div>
+
+        <div class="on-side-menu-user">
+            <span class="on-side-menu-id" id="adminName">Admin</span><span>님</span><br>
+            <span>안녕하세요</span>
+            <div class="on-side-menu-logout">
+                <span style="font-size: 16px;">logout</span>
+                <button class="log-out" id="logoutBtn" type="button"></button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 관리자 정보 표시
+        const user = AuthUtil.getUser();
+        if (user) {
+            document.getElementById('adminName').textContent = user.userId;
+        }
+        
+        // 로그아웃 버튼 이벤트
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            AuthUtil.logout();
+        });
+    </script>
+</th:block>
+
+
+

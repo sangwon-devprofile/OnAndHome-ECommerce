@@ -1,0 +1,193 @@
+.footer-o {
+  width: 100%;
+  margin-top: 0;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* 푸터 배너 섹션 */
+.footer-banner-section {
+  width: 100%;
+  background-color: #fff;
+  padding: 60px 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.footer-banner-inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  gap: 40px;
+}
+
+.footer-banner-left {
+  width: 45%;
+  flex-shrink: 0;
+}
+
+.footer-banner-left img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.footer-banner-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.footer-banner-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.footer-banner-img {
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.footer-banner-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.footer-banner-text {
+  flex: 1;
+}
+
+.footer-banner-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.footer-banner-desc {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* 회사 정보 섹션 */
+.footer-info-section {
+  width: 100%;
+  background-color: #fafafa;
+  padding: 50px 20px;
+}
+
+.footer-info-inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  gap: 100px;
+}
+
+.footer-logo-box {
+  flex-shrink: 0;
+  padding-top: 10px;
+}
+
+.footer-logo {
+  width: 153px;
+  height: 38px;
+  background-image: url('../../../public/images/logo.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  display: block;
+}
+
+.footer-company-box {
+  flex: 1;
+}
+
+.footer-contact {
+  margin-bottom: 30px;
+}
+
+.footer-contact-label {
+  font-size: 16px;
+  color: #666;
+  margin-right: 20px;
+}
+
+.footer-contact-number {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+}
+
+.footer-details {
+  width: 100%;
+}
+
+.footer-details-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.footer-details-table tr {
+  height: 32px;
+}
+
+.footer-label {
+  width: 140px;
+  padding-right: 20px;
+  font-size: 13px;
+  color: #666;
+  vertical-align: top;
+  padding-top: 2px;
+}
+
+.footer-value {
+  font-size: 13px;
+  color: #333;
+  vertical-align: top;
+  padding-top: 2px;
+}
+
+/* 반응형 */
+@media (max-width: 1024px) {
+  .footer-banner-inner {
+    flex-direction: column;
+  }
+
+  .footer-banner-left {
+    width: 100%;
+  }
+
+  .footer-info-inner {
+    flex-direction: column;
+    gap: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-banner-item {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .footer-banner-img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .footer-contact-number {
+    font-size: 22px;
+  }
+
+  .footer-label {
+    width: 120px;
+  }
+}

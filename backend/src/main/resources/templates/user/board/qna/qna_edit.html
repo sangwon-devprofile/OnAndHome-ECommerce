@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>On&Home | Q&A 수정하기</title>
+    <link rel="stylesheet" href="/css/import.css" />
+    <script src="/js/oncommon.js"></script>
+</head>
+<body>
+<div class="on-main-wrap">
+    <!-- ✅ 헤더 -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <!-- ✅ Q&A 수정 폼 -->
+    <div class="on-item02 mb-80 mt-80">
+        <div class="on-item02-inner">
+            <h2 class="sub-title line-under">Q&A 수정하기</h2>
+
+            <form th:action="@{|/user/qna/edit/${qna.id}|}" method="post" th:object="${qna}">
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">작성자</div>
+                    <div class="on-comp-tbl-td col-10">
+                        <input type="text" th:field="*{writer}" class="input-l" readonly />
+                    </div>
+                </div>
+
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">제목</div>
+                    <div class="on-comp-tbl-td col-10">
+                        <input type="text" th:field="*{title}" class="input-l" required />
+                    </div>
+                </div>
+
+                <div class="on-comp-tbl-row high-100">
+                    <div class="on-comp-tbl-th col-2">내용</div>
+                    <div class="on-comp-tbl-td col-10">
+                        <textarea th:field="*{question}" rows="10" class="textarea w-full" required></textarea>
+                    </div>
+                </div>
+
+                <!-- ✅ 버튼 -->
+                <div class="flex justify-end mt-20">
+                    <a th:href="@{|/user/qna/${qna.id}|}" class="btn btn--quarternary-outline mr-4">취소</a>
+                    <button type="submit" class="btn btn--primary">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ✅ 푸터 -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+</body>
+</html>

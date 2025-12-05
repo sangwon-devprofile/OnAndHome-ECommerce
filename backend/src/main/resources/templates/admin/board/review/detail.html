@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>리뷰 상세 | 온앤홈 관리자</title>
+    <link rel="stylesheet" href="/css/import.css" />
+    <script src="/js/oncommon.js"></script>
+</head>
+
+<body>
+<div class="on-wrapper">
+    <div class="on-content">
+
+        <!-- ✅ 사이드바 fragment -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <!-- ✅ 메인 영역 -->
+        <div class="on-main">
+            <h2 class="mb-30">리뷰 상세보기</h2>
+
+            <!-- ✅ 리뷰 본문 -->
+            <div class="on-comp-tbl-row">
+                <div class="on-comp-tbl-th col-2">상품명</div>
+                <div class="on-comp-tbl-td col-10" th:text="${review.productName}">상품명</div>
+            </div>
+
+            <div class="on-comp-tbl-row">
+                <div class="on-comp-tbl-th col-2">작성자</div>
+                <div class="on-comp-tbl-td col-10" th:text="${review.author}">작성자</div>
+            </div>
+
+            <div class="on-comp-tbl-row high-100">
+                <div class="on-comp-tbl-th col-2">내용</div>
+                <div class="on-comp-tbl-td col-10 items-start" th:text="${review.content}">
+                    리뷰 내용
+                </div>
+            </div>
+
+            <div class="on-comp-tbl-row">
+                <div class="on-comp-tbl-th col-2">작성일</div>
+                <div class="on-comp-tbl-td col-10"
+                     th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd HH:mm')}">
+                    2025-10-23 12:00
+                </div>
+            </div>
+
+            <div class="on-border mt-20"></div>
+
+            <!-- ✅ 답글 목록 -->
+            <div class="mt-20">
+                <h3 class="mb-20">답글 목록</h3>
+
+                <div th:if="${#lists.isEmpty(replies)}">
+                    <p>등록된 답글이 없습니다.</p>
+                </div>
+
+                <div th:each="reply : ${replies}" class="on-comp-tbl-row mt-10">
+                    <div class="on-comp-tbl-th col-2" th:text="${reply.author}">관리자</div>
+                    <div class="on-comp-tbl-td col-10 flex justify-between items-start">
+                        <div class="mr-4" th:text="${reply.content}">
+                            답글 내용
+                        </div>
+
+                        <div class="flex">
+                            <!-- ✅ 수정 -->
+                            <a th:href="@{/admin/board/review/reply/edit/{replyId}/{reviewId}(replyId=${reply.id}, reviewId=${review.id})}"
+                               class="btn-sm btn--tertiary mr-2">수정</a>
+
+                            <!-- ✅ 삭제 (확인창 추가) -->
+                            <form th:action="@{/admin/board/review/reply/delete/{replyId}/{reviewId}(replyId=${reply.id}, reviewId=${review.id})}"
+                                  method="post"
+                                  onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                                <button type="submit" class="btn-sm btn--secondary">삭제</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="on-border mt-20"></div>
+
+            <!-- ✅ 새 답글 등록 -->
+            <form th:action="@{/admin/board/review/reply/{reviewId}(reviewId=${review.id})}" method="post">
+                <div class="mt-20">
+                    <div class="on-comp-tbl-row high-80">
+                        <div class="on-comp-tbl-th col-2">답글 등록</div>
+                        <div class="on-comp-tbl-td col-10">
+                            <textarea class="textarea w-full" name="content" placeholder="답글 내용을 입력하세요"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end mt-20">
+                    <a th:href="@{/admin/board/review/list}" class="btn btn--quarternary-outline mr-4">목록</a>
+                    <button type="submit" class="btn btn--tertiary mr-4">답글등록</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

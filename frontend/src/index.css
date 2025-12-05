@@ -1,0 +1,151 @@
+@charset "UTF-8";
+
+/* Reset */
+* {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body, h1, h2, h3, h4, h5, h6, p, a, ol, ul, li, figure, blockquote, dl, dd {
+  margin: 0;
+  padding: 0;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+input, button, textarea, select {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Layout */
+html, body {
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Helper Classes */
+.center {
+  text-align: center !important;
+}
+
+.left {
+  text-align: left !important;
+}
+
+.right {
+  text-align: right !important;
+}
+
+/* Margin */
+.mt-0 { margin-top: 0 !important; }
+.mt-4 { margin-top: 4px !important; }
+.mt-8 { margin-top: 8px !important; }
+.mt-12 { margin-top: 12px !important; }
+.mt-16 { margin-top: 16px !important; }
+.mt-20 { margin-top: 20px !important; }
+.mt-30 { margin-top: 30px !important; }
+.mt-40 { margin-top: 40px !important; }
+.mt-80 { margin-top: 80px !important; }
+.mt-120 { margin-top: 120px !important; }
+
+.mb-0 { margin-bottom: 0 !important; }
+.mb-4 { margin-bottom: 4px !important; }
+.mb-8 { margin-bottom: 8px !important; }
+.mb-12 { margin-bottom: 12px !important; }
+.mb-16 { margin-bottom: 16px !important; }
+.mb-20 { margin-bottom: 20px !important; }
+.mb-30 { margin-bottom: 30px !important; }
+.mb-40 { margin-bottom: 40px !important; }
+.mb-60 { margin-bottom: 60px !important; }
+.mb-80 { margin-bottom: 80px !important; }
+.mb-120 { margin-bottom: 120px !important; }
+
+.ml-0 { margin-left: 0 !important; }
+.ml-4 { margin-left: 4px !important; }
+.ml-8 { margin-left: 8px !important; }
+.ml-12 { margin-left: 12px !important; }
+.ml-16 { margin-left: 16px !important; }
+.ml-20 { margin-left: 20px !important; }
+.ml-200 { margin-left: 200px !important; }
+
+.mr-0 { margin-right: 0 !important; }
+.mr-4 { margin-right: 4px !important; }
+.mr-8 { margin-right: 8px !important; }
+.mr-12 { margin-right: 12px !important; }
+.mr-16 { margin-right: 16px !important; }
+.mr-20 { margin-right: 20px !important; }
+
+/* Width */
+.w-100 { width: 100px !important; }
+.w-150 { width: 150px !important; }
+.w-200 { width: 200px !important; }
+.w-300 { width: 300px !important; }
+.w-400 { width: 400px !important; }
+.w-500 { width: 500px !important; }
+.w-full { width: 100% !important; }
+
+/* Flex */
+.flex { display: flex !important; }
+.flex-row { flex-direction: row !important; }
+.flex-col { flex-direction: column !important; }
+.justify-start { justify-content: flex-start !important; }
+.justify-center { justify-content: center !important; }
+.justify-end { justify-content: flex-end !important; }
+.justify-between { justify-content: space-between !important; }
+.justify-around { justify-content: space-around !important; }
+.justify-evenly { justify-content: space-evenly !important; }
+.items-start { align-items: flex-start !important; }
+.items-center { align-items: center !important; }
+.items-end { align-items: flex-end !important; }
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

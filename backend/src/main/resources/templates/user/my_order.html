@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>On&Home</title>
+    <link rel="stylesheet" href="/css/import.css" />
+    <script src="/js/oncommon.js"></script>
+</head>
+<body>
+<!-- 백그라운드 -->
+<div class="on-main-wrap">
+    <!-- 헤더 -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+
+    <!-- 아이템영역2  -->
+    <div class="on-item02 mb-80 mt-80">
+        <div class="on-item02-inner">
+            <h2 class="sub-title line-under">나의 주문내역</h2>
+            <h3 class="mb-20">배송정보</h3>
+            <table class="table mb-40">
+                <colgroup>
+                    <col width="20%">
+                    <col width="30%">
+                    <col width="20%">
+                    <col width="30%">
+                </colgroup>
+                <tbody id="deliveryInfoTable">
+                <!-- 동적으로 로드될 배송정보 -->
+                </tbody>
+            </table>
+            <h3 class="mb-20">주문정보</h3>
+            <table class="table">
+                <colgroup>
+                    <col width="20%">
+                    <col width="35%">
+                    <col width="10%">
+                    <col width="10%">
+                    <col width="10%">
+                    <col width="">
+                </colgroup>
+                <tbody id="orderInfoTable">
+                <!-- 동적으로 로드될 주문정보 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+
+<script>
+    /**
+     * 카테고리 데이터
+     */
+    const categoryData = [
+        {
+            parentName: 'TV/오디오',
+            children: ['TV', '오디오']
+        },
+        {
+            parentName: '주방가전',
+            children: ['냉장고', '전자렌지', '식기세척기']
+        },
+        {
+            parentName: '생활가전',
+            children: ['세탁기', '청소기']
+        },
+        {
+            parentName: '에어컨/공기청정기',
+            children: ['에어컨', '공기청정기']
+        },
+        {
+            parentName: '기타',
+            children: ['정수기', '안마의자', 'PC']
+        }
+    ];
+
+    /**
+     * 페이지 로드
+     */
+    document.addEventListener('DOMContentLoaded', function() {
+        // JWT 토큰 확인
+        const accessToken = localStorage.getItem('accessToken');
+        
+        if (!accessToken) {
+            alert('로그인이 필요합니다.');
+            window.location.href = '/login';
+            return;
+        }
+
+        loadCategoryMenu();
+        loadHeaderNavigation();
+        loadLatestOrder();
+    });
+
+    /**
+     * 모든 주문 내역 로드
+     */
+    function loadLatestOrder() {
+        const accessToken = localStorage.getItem('accessToken');
+        
+        if (!accessToken) {
+            alert('로그인이 필요합니다.');
+            window.location.href = '/login';
+            return;
+        }
+
+        fetch('/api/user/session-info', {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.loggedIn && data.user) {
+                    const userId = data.user.id;
+                    // 사용자의 주문 목록 가져오기
+                    return fetch(`/api/orders/user/${userId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`
+                        }
+                    });
+                } else {
+                    alert('로그인이 필요합니다.');
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('refreshToken');
+                    window.location.href = '/login';
+                    throw new Error('Not logged in');
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.data && data.data.length > 0) {
+                    const orders = data.data;
+                    displayOrders(orders);
+                } else {
+                    document.getElementById('deliveryInfoTable').innerHTML = '<tr><td colspan="4">주문 내역이 없습니다.</td></tr>';
+                    document.getElementById('orderInfoTable').innerHTML = '<tr><td colspan="6">주문 내역이 없습니다.</td></tr>';
+                }
+            })
+            .catch(error => {
+                console.error('주문 내역 로드 오류:', error);
+                if (error.message !== 'Not logged in') {
+                    alert('주문 내역을 불러오는 중 오류가 발생했습니다.');
+                }
+            });
+    }
+
+    /**
+     * 주문 내역 표시
+     */
+    function displayOrders(orders) {
+        const deliveryTable = document.getElementById('deliveryInfoTable');
+        const orderTable = document.getElementById('orderInfoTable');
+
+        deliveryTable.innerHTML = '';
+        orderTable.innerHTML = '';
+
+        orders.forEach(order => {
+            // 배송 정보
+            const deliveryRow = document.createElement('tr');
+            deliveryRow.innerHTML = `
+                <th>주문번호</th>
+                <td>${order.id}</td>
+                <th>주문날짜</th>
+                <td>${formatDate(order.orderDate)}</td>
+            `;
+            deliveryTable.appendChild(deliveryRow);
+
+            const addressRow = document.createElement('tr');
+            addressRow.innerHTML = `
+                <th>배송지</th>
+                <td colspan="3">${order.deliveryAddress || '-'}</td>
+            `;
+            deliveryTable.appendChild(addressRow);
+
+            const statusRow = document.createElement('tr');
+            statusRow.innerHTML = `
+                <th>배송상태</th>
+                <td colspan="3">${getStatusText(order.status)}</td>
+            `;
+            deliveryTable.appendChild(statusRow);
+
+            // 주문 정보 (주문 항목들)
+            if (order.items && order.items.length > 0) {
+                order.items.forEach((item, index) => {
+                    const itemRow = document.createElement('tr');
+                    itemRow.innerHTML = `
+                        <td>${index === 0 ? formatDate(order.orderDate) : ''}</td>
+                        <td>${item.productName || '-'}</td>
+                        <td>${item.quantity || 0}</td>
+                        <td>${formatPrice(item.price || 0)}</td>
+                        <td>${formatPrice((item.price || 0) * (item.quantity || 0))}</td>
+                        <td>${getStatusText(order.status)}</td>
+                    `;
+                    orderTable.appendChild(itemRow);
+                });
+            }
+        });
+    }
+
+    /**
+     * 날짜 포맷팅
+     */
+    function formatDate(dateString) {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    /**
+     * 가격 포맷팅
+     */
+    function formatPrice(price) {
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    /**
+     * 주문 상태 텍스트
+     */
+    function getStatusText(status) {
+        const statusMap = {
+            'PENDING': '결제대기',
+            'PAID': '결제완료',
+            'PREPARING': '상품준비중',
+            'SHIPPING': '배송중',
+            'DELIVERED': '배송완료',
+            'CANCELLED': '취소됨'
+        };
+        return statusMap[status] || status;
+    }
+
+    /**
+     * 카테고리 메뉴 로드
+     */
+    function loadCategoryMenu() {
+        const categoryMenu = document.getElementById('categoryMenu');
+        if (!categoryMenu) return;
+        
+        categoryMenu.innerHTML = '';
+
+        categoryData.forEach(category => {
+            const li = document.createElement('li');
+            const parentLink = document.createElement('a');
+            parentLink.href = '#';
+            parentLink.textContent = category.parentName;
+            parentLink.onclick = function(e) {
+                e.preventDefault();
+                return false;
+            };
+
+            li.appendChild(parentLink);
+
+            if (category.children && category.children.length > 0) {
+                const depth2 = document.createElement('ul');
+                depth2.className = 'depth2';
+
+                category.children.forEach(child => {
+                    const childLi = document.createElement('li');
+                    const childLink = document.createElement('a');
+                    childLink.href = `/user/product/category?category=${encodeURIComponent(child)}`;
+                    childLink.textContent = child;
+                    childLi.appendChild(childLink);
+                    depth2.appendChild(childLi);
+                });
+
+                li.appendChild(depth2);
+            }
+
+            categoryMenu.appendChild(li);
+        });
+    }
+</script>
+</body>
+</html>

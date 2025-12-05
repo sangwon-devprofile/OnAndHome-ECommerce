@@ -1,0 +1,152 @@
+<th:block th:fragment="header">
+    <header class="on-header">
+        <!-- line01 -->
+        <div class="on-header-top">
+            <div class="on-header-inner">
+                <div>
+                    <ul class="sns-list">
+                        <a href="https://www.facebook.com/?locale=ko_KR" target="_blank"><li class="sns-obj-fb"></li></a>
+                        <a href="https://section.blog.naver.com/" target="_blank"><li class="sns-obj-blg"></li></a>
+                        <a href="https://www.instagram.com/" target="_blank"><li class="sns-obj-ins"></li></a>
+                        <a href="https://www.youtube.com/" target="_blank"><li class="sns-obj-ut"></li></a>
+                    </ul>
+                </div>
+                <div class="login-group">
+                    <ul class="login-group-list" id="headerNav">
+                        <!-- 동적으로 변경될 네비게이션 -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- line02 -->
+        <div class="on-header-top">
+            <div class="on-header-inner2">
+                <a href="/user/product/detail/432"><div class="header-logo-placeholder"></div></a>
+                <div>
+                    <a href="http://localhost:8080/user/index"><h1 class="header-logo ml-200"></h1></a>
+                </div>
+                <div class="header-search-area">
+                    <form id="headerSearchForm" method="get" onsubmit="return handleHeaderSearch(event)" style="display: flex; align-items: center; width: 100%;">
+                        <input type="text" 
+                               id="headerSearchInput"
+                               name="keyword"
+                               class="input-m" 
+                               placeholder="검색어를 입력하세요" />
+                    </form>
+                    <ul class="header-icons">
+                        <a th:href="@{/user/my_page}"><li class="ico-mypage"></li></a>
+                        <a th:href="@{/user/cart}">
+                            <li class="ico-cart">
+                                <span class="cart-badge" id="cartBadge" style="display: none;">0</span>
+                            </li>
+                        </a>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- 메뉴 -->
+        <div class="on-header-top">
+            <div class="on-header-inner">
+                <div class="menu-wrapper">
+                    <ul class="gnb" id="categoryMenu">
+                        <!-- 동적으로 로드될 카테고리 메뉴 -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- ✅ JWT 유틸 로드 -->
+    <script src="/js/jwt-utils.js"></script>
+    
+    <script>
+    function handleHeaderSearch(event) {
+        event.preventDefault();
+        
+        const searchInput = document.getElementById('headerSearchInput');
+        const keyword = searchInput.value.trim();
+        
+        if (!keyword) {
+            alert('검색어를 입력하세요.');
+            return false;
+        }
+        
+        const categoryMap = {
+            'tv': 'TV', '오디오': '오디오', 'audio': '오디오',
+            '냉장고': '냉장고', 'refrigerator': '냉장고',
+            '전자렌지': '전자렌지', 'microwave': '전자렌지',
+            '식기세척기': '식기세척기', 'dishwasher': '식기세척기',
+            '세탁기': '세탁기', 'washer': '세탁기',
+            '청소기': '청소기', 'vacuum': '청소기',
+            '에어컨': '에어컨', 'airconditioner': '에어컨', 'aircon': '에어컨',
+            '공기청정기': '공기청정기', 'airpurifier': '공기청정기',
+            '정수기': '정수기', 'waterpurifier': '정수기',
+            '안마의자': '안마의자', 'massagechair': '안마의자',
+            'pc': 'PC', '컴퓨터': 'PC'
+        };
+        
+        const lowerKeyword = keyword.toLowerCase();
+        let targetCategory = null;
+        
+        for (const [key, value] of Object.entries(categoryMap)) {
+            if (lowerKeyword === key || keyword === value) {
+                targetCategory = value;
+                break;
+            }
+        }
+        
+        if (targetCategory) {
+            window.location.href = `/user/product/category?category=${encodeURIComponent(targetCategory)}`;
+        } else {
+            window.location.href = `/user/product/search?keyword=${encodeURIComponent(keyword)}`;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * ✅ 장바구니 개수 업데이트 (JWT 기반)
+     */
+    function updateCartBadge() {
+        const accessToken = localStorage.getItem('accessToken');
+        
+        if (!accessToken) {
+            const cartBadge = document.getElementById('cartBadge');
+            if (cartBadge) cartBadge.style.display = 'none';
+            return;
+        }
+        
+        fetch('/api/cart/count', {
+            headers: { 'Authorization': `Bearer ${accessToken}` }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const cartBadge = document.getElementById('cartBadge');
+                    const count = data.count;
+                    
+                    if (count > 0) {
+                        cartBadge.textContent = count;
+                        cartBadge.style.display = 'flex';
+                    } else {
+                        cartBadge.style.display = 'none';
+                    }
+                }
+            })
+            .catch(error => console.error('장바구니 개수 조회 실패:', error));
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        updateCartBadge();
+        
+        const searchInput = document.getElementById('headerSearchInput');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') handleHeaderSearch(e);
+            });
+        }
+    });
+    
+    window.updateCartBadge = updateCartBadge;
+    </script>
+</th:block>

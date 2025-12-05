@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>On&Home</title>
+  <link rel="stylesheet" href="/css/import.css" />
+  <script src="/js/oncommon.js"></script>
+</head>
+<body>
+  <!-- 백그라운드 -->
+  <div class="on-main-wrap">
+    <!-- 헤더 -->
+      <div th:replace="~{fragments/header :: header}"></div>
+    <div class="regeist_wrapper mb-40">
+      <div class="regeist_inner">
+        <h2 class="mb-30">나의정보</h2>
+        <div class="border-1p"></div>
+        <div>
+          <form id="editForm">
+            <table>
+              <tr class="regeist_data_tit">
+                <th>이름</th>
+                <td>
+                  <input class="input" type="text" id="username" name="username" value="">
+                </td>
+              </tr>
+              <tr class="regeist_data_tit">
+                <th>ID</th>
+                <td>
+                  <input class="input" type="text" id="userId" name="userId" value="" readonly>
+                </td>
+              </tr>
+              <tr class="regeist_data_tit">
+                <th>성별</th>
+                <td>
+                  <input type="radio" name="gender" id="genderMale" value="M">
+                  <label class="mr-20">남자</label>
+                  <input type="radio" name="gender" id="genderFemale" value="F">
+                  <label>여자</label>
+                </td>
+              </tr>
+              <tr class="regeist_data_tit">
+                <th>국적</th>
+                <td>
+                  <input type="radio" name="nationality" id="countryLocal" value="local">
+                  <label class="mr-20">내국인</label>
+                  <input type="radio" name="nationality" id="countryForeign" value="foreign">
+                  <label>외국인</label>
+                </td>
+              </tr>
+              <tr class="regeist_data_tit">
+                <th>e-mail</th>
+                <td>
+                  <input class="input" type="email" id="email" name="email" value="">
+                </td>
+              </tr>
+              <tr class="regeist_data_tit">
+                <th>전화번호</th>
+                <td>
+                  <input class="input" type="text" id="phone" name="phone" value=""> 
+                </td>
+              </tr>
+              <tr class="regeist_data_tit">
+                <th>주소</th>
+                <td>
+                  <input class="input" type="text" id="address" name="address" value="">
+                </td>
+              </tr>                                                                           
+            </table>
+            <div class="border-1p"></div>          
+            <div class="flex justify-center">
+              <button type="button" class="btn btn--primary" onclick="updateUserInfo()">확인</button>
+            </div>
+          </form>   
+        </div>
+        <div>
+        </div>        
+      </div>
+    </div>
+      <div th:replace="~{fragments/footer :: footer}"></div>
+  </div>
+
+  <script>
+    /**
+     * 카테고리 데이터
+     */
+    const categoryData = [
+      {
+        parentName: 'TV/오디오',
+        children: ['TV', '오디오']
+      },
+      {
+        parentName: '주방가전',
+        children: ['냉장고', '전자렌지', '식기세척기']
+      },
+      {
+        parentName: '생활가전',
+        children: ['세탁기', '청소기']
+      },
+      {
+        parentName: '에어컨/공기청정기',
+        children: ['에어컨', '공기청정기']
+      },
+      {
+        parentName: '기타',
+        children: ['정수기', '안마의자', 'PC']
+      }
+    ];
+
+    // 전역 변수: 사용자 ID
+    let currentUserId = null;
+
+    /**
+     * 페이지 로드
+     */
+    document.addEventListener('DOMContentLoaded', function() {
+      // JWT 토큰 확인
+      const accessToken = localStorage.getItem('accessToken');
+      
+      if (!accessToken) {
+        alert('로그인이 필요합니다.');
+        window.location.href = '/login';
+        return;
+      }
+
+      loadCategoryMenu();
+      loadHeaderNavigation();
+      loadUserInfo();
+    });
+
+    /**
+     * 사용자 정보 로드
+     */
+    function loadUserInfo() {
+      const accessToken = localStorage.getItem('accessToken');
+      
+      if (!accessToken) {
+        alert('로그인이 필요합니다.');
+        window.location.href = '/login';
+        return;
+      }
+
+      fetch('/api/user/my-info', {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('사용자 정보를 불러올 수 없습니다.');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('사용자 정보:', data);
+          if (data.success && data.data) {
+            displayUserInfo(data.data);
+            currentUserId = data.data.id;
+          } else {
+            alert('사용자 정보를 불러올 수 없습니다.');
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            window.location.href = '/login';
+          }
+        })
+        .catch(error => {
+          console.error('사용자 정보 로드 오류:', error);
+          alert('로그인이 필요합니다.');
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          window.location.href = '/login';
+        });
+    }
+
+    /**
+     * 사용자 정보 표시
+     */
+    function displayUserInfo(user) {
+      document.getElementById('username').value = user.username || '';
+      document.getElementById('userId').value = user.userId || '';
+      document.getElementById('email').value = user.email || '';
+      document.getElementById('phone').value = user.phone || '';
+      document.getElementById('address').value = user.address || '';
+
+      // 성별 설정
+      if (user.gender === 'M') {
+        document.getElementById('genderMale').checked = true;
+      } else if (user.gender === 'F') {
+        document.getElementById('genderFemale').checked = true;
+      }
+
+      // 국적 설정
+      if (user.nationality === 'local') {
+        document.getElementById('countryLocal').checked = true;
+      } else if (user.nationality === 'foreign') {
+        document.getElementById('countryForeign').checked = true;
+      }
+    }
+
+    /**
+     * 사용자 정보 수정
+     */
+    function updateUserInfo() {
+      if (!currentUserId) {
+        alert('사용자 정보를 확인할 수 없습니다.');
+        return;
+      }
+
+      // 성별 값 가져오기
+      const genderRadios = document.getElementsByName('gender');
+      let selectedGender = '';
+      for (let radio of genderRadios) {
+        if (radio.checked) {
+          selectedGender = radio.value;
+          break;
+        }
+      }
+
+      // 국적 값 가져오기
+      const nationalityRadios = document.getElementsByName('nationality');
+      let selectedNationality = '';
+      for (let radio of nationalityRadios) {
+        if (radio.checked) {
+          selectedNationality = radio.value;
+          break;
+        }
+      }
+
+      const userData = {
+        id: currentUserId,
+        username: document.getElementById('username').value,
+        userId: document.getElementById('userId').value,
+        gender: selectedGender,
+        nationality: selectedNationality,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        address: document.getElementById('address').value
+      };
+
+      console.log('수정할 사용자 정보:', userData);
+
+      const accessToken = localStorage.getItem('accessToken');
+      
+      if (!accessToken) {
+        alert('로그인이 필요합니다.');
+        window.location.href = '/login';
+        return;
+      }
+
+      fetch('/api/user/update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify(userData)
+      })
+      .then(response => {
+        console.log('업데이트 응답 상태:', response.status);
+        return response.json();
+      })
+      .then(data => {
+        console.log('업데이트 응답:', data);
+        
+        if (data.success) {
+          alert('정보가 수정되었습니다.');
+          window.location.href = '/user/my_info';
+        } else {
+          alert(data.message || '정보 수정에 실패했습니다.');
+        }
+      })
+      .catch(error => {
+        console.error('정보 수정 오류:', error);
+        alert('정보 수정 중 오류가 발생했습니다: ' + error.message);
+      });
+    }
+
+    /**
+     * 카테고리 메뉴 로드
+     */
+    function loadCategoryMenu() {
+      const categoryMenu = document.getElementById('categoryMenu');
+      if (!categoryMenu) return;
+      
+      categoryMenu.innerHTML = '';
+
+      categoryData.forEach(category => {
+        const li = document.createElement('li');
+        
+        const parentLink = document.createElement('a');
+        parentLink.href = '#';
+        parentLink.textContent = category.parentName;
+        parentLink.onclick = function(e) {
+          e.preventDefault();
+          return false;
+        };
+        
+        li.appendChild(parentLink);
+        
+        if (category.children && category.children.length > 0) {
+          const depth2 = document.createElement('ul');
+          depth2.className = 'depth2';
+          
+          category.children.forEach(child => {
+            const childLi = document.createElement('li');
+            const childLink = document.createElement('a');
+            childLink.href = `/user/product/category?category=${encodeURIComponent(child)}`;
+            childLink.textContent = child;
+            childLi.appendChild(childLink);
+            depth2.appendChild(childLi);
+          });
+          
+          li.appendChild(depth2);
+        }
+        
+        categoryMenu.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>

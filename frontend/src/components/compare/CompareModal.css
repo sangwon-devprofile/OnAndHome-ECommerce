@@ -1,0 +1,294 @@
+/* 오버레이 */
+.compare-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.compare-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 비교 모달 */
+.compare-modal {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 999;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.compare-modal.active {
+  transform: translateY(0);
+}
+
+.compare-modal.minimized {
+  max-height: 80px;
+  pointer-events: auto; /* 접혔을 때도 헤더는 클릭 가능 */
+}
+
+/* 접혔을 때 헤더만 보이고 나머지는 클릭 방해 안 함 */
+.compare-modal.minimized .compare-modal-header {
+  border-bottom: none;
+}
+
+/* 헤더 */
+.compare-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  border-bottom: 1px solid #eee;
+  background: #f8f9fa;
+  border-radius: 20px 20px 0 0;
+}
+
+.compare-header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.compare-modal-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+.minimize-btn {
+  padding: 6px 12px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.minimize-btn:hover {
+  background: #f0f0f0;
+}
+
+.compare-header-right {
+  display: flex;
+  gap: 10px;
+}
+
+.clear-all-btn {
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid #ff4444;
+  color: #ff4444;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.clear-all-btn:hover {
+  background: #ff4444;
+  color: white;
+}
+
+.close-btn {
+  width: 32px;
+  height: 32px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: #f0f0f0;
+}
+
+/* 컨텐츠 */
+.compare-modal-content {
+  padding: 30px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.compare-products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+/* 상품 카드 */
+.compare-product-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.compare-product-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.remove-product-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #666;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.remove-product-btn:hover {
+  background: #ff4444;
+  color: white;
+  border-color: #ff4444;
+}
+
+.compare-product-image {
+  width: 100%;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f8f8;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  overflow: hidden;
+  padding: 10px;
+}
+
+.compare-product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.compare-product-info h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+  min-height: 42px;
+}
+
+.compare-product-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ff4444;
+  margin-bottom: 15px;
+}
+
+.compare-product-specs {
+  border-top: 1px solid #f0f0f0;
+  padding-top: 15px;
+}
+
+.spec-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #f8f8f8;
+}
+
+.spec-item:last-child {
+  border-bottom: none;
+}
+
+.spec-label {
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+}
+
+.spec-value {
+  font-size: 13px;
+  color: #333;
+  font-weight: 600;
+}
+
+/* 빈 슬롯 */
+.compare-product-card.empty {
+  border: 2px dashed #ddd;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-slot {
+  text-align: center;
+  color: #999;
+}
+
+.plus-icon {
+  display: block;
+  font-size: 48px;
+  color: #ddd;
+  margin-bottom: 10px;
+}
+
+.empty-slot p {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* 반응형 */
+@media (max-width: 1200px) {
+  .compare-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .compare-products-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .compare-modal-header {
+    padding: 15px 20px;
+  }
+
+  .compare-modal-content {
+    padding: 20px;
+  }
+}

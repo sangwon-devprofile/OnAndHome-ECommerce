@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>온앤홈 관리자</title>
+    <link rel="stylesheet" href="/css/import.css" />
+    <script src="/js/oncommon.js"></script>
+</head>
+<body>
+<!-- 백그라운드 -->
+<div class="on-wrapper">
+    <!-- 컨텐츠 영역 -->
+    <div class="on-content">
+        <!-- 사이드바 메뉴 -->
+        <!--사이드바 메뉴-->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <!-- 내부영역 -->
+        <div class="on-main">
+            <h2 class="mb-30">Product Detail</h2>
+            <div class="">
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">상품코드</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${product?.productCode} ?: '-'"></div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">등록일자</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${product?.createdAt} ? ${#temporals.format(product.createdAt, 'yyyy-MM-dd HH:mm')} : '-'"></div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">상품명</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${product?.name} ?: '-'"></div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">카테고리</div>
+                    <div class="on-comp-tbl-td col-10">
+                        <select id="category1" class="select mr-8" onchange="updateSubCategory()" disabled>
+                            <option value="">선택1</option>
+                            <option value="tv_audio">TV/오디오</option>
+                            <option value="kitchen">주방가전</option>
+                            <option value="living">생활가전</option>
+                            <option value="air">에어컨/공기청정기</option>
+                            <option value="etc">기타</option>
+                        </select>
+                        <select id="category2" class="select" disabled>
+                            <option value="">선택2</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">재고수량</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${product?.stock} ?: '0'"></div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">제조사</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${product?.manufacturer} ?: '-'"></div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">제조국</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${product?.country} ?: '-'"></div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">정상가격</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${product?.price} ? ${#numbers.formatInteger(product.price, 1, 'DEFAULT')} + '원' : '-'"></div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">할인가격</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${product?.salePrice} ? ${#numbers.formatInteger(product.salePrice, 1, 'DEFAULT')} + '원' : '-'"></div>
+                </div>
+            </div>
+            <div class="flex justify-end mt-20">
+                <a href="/admin/product/list"><button class="btn btn--quarternary-outline mr-4">목록</button></a>
+                <a th:href="@{/admin/product/edit/{id}(id=${product?.id})}"><button class="btn btn--tertiary">수정</button></a>
+            </div>
+            <div class="on-border mt-20"></div>
+            <h3 class="mt-20 mb-12">상세스펙</h3>
+            <div class="">
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">카테고리</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${product?.category} ?: '-'"></div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">재고수량</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${product?.stock} ?: '0'"></div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">설명</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${product?.description} ?: '-'"></div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">썸네일 이미지</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${product?.thumbnailImage} ?: '-'"></div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">상세 이미지</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${product?.detailImage} ?: '-'"></div>
+                </div>
+            </div>
+            <div class="flex justify-end mt-20">
+                <a href="/admin/product/list"><button class="btn btn--quarternary-outline mr-4">목록</button></a>
+                <a th:href="@{/admin/product/edit/{id}(id=${product?.id})}"><button class="btn btn--tertiary">수정</button></a>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+    // 카테고리 매핑 데이터
+    const categoryMapping = {
+        'tv_audio': {
+            name: 'TV/오디오',
+            subcategories: {
+                'TV': 'TV',
+                '오디오': '오디오'
+            }
+        },
+        'kitchen': {
+            name: '주방가전',
+            subcategories: {
+                '냉장고': '냉장고',
+                '전자렌지': '전자렌지',
+                '식기세척기': '식기세척기'
+            }
+        },
+        'living': {
+            name: '생활가전',
+            subcategories: {
+                '세탁기': '세탁기',
+                '청소기': '청소기'
+            }
+        },
+        'air': {
+            name: '에어컨/공기청정기',
+            subcategories: {
+                '에어컨': '에어컨',
+                '공기청정기': '공기청정기'
+            }
+        },
+        'etc': {
+            name: '기타',
+            subcategories: {
+                '정수기': '정수기',
+                '안마의자': '안마의자',
+                'PC': 'PC'
+            }
+        }
+    };
+
+    // 상품 카테고리를 Thymeleaf에서 가져오기
+    const productCategory = [[${product?.category}]];
+
+    console.log('상품 카테고리:', productCategory);
+
+    // 페이지 로드 시 실행
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('페이지 로드 완료');
+        if (productCategory) {
+            setCategory(productCategory);
+        } else {
+            console.warn('상품 카테고리가 없습니다.');
+        }
+    });
+
+    /**
+     * 상품 카테고리를 기반으로 select 옵션 선택
+     */
+    function setCategory(category) {
+        console.log('setCategory 호출:', category);
+        const category1 = document.getElementById('category1');
+        const category2 = document.getElementById('category2');
+
+        // 각 카테고리 매핑에서 찾기
+        for (const [key, value] of Object.entries(categoryMapping)) {
+            // subcategory에서 찾기
+            if (value.subcategories[category]) {
+                console.log('카테고리 찾음:', key, category);
+                // 상위 카테고리 선택
+                category1.value = key;
+                
+                // 하위 카테고리 옵션 업데이트
+                updateSubCategory();
+                
+                // 하위 카테고리 선택
+                category2.value = category;
+                console.log('category1 선택된 값:', category1.value);
+                console.log('category2 선택된 값:', category2.value);
+                break;
+            }
+        }
+    }
+
+    /**
+     * 하위 카테고리 업데이트
+     */
+    function updateSubCategory() {
+        const category1 = document.getElementById('category1');
+        const category2 = document.getElementById('category2');
+        const selectedCategory = category1.value;
+
+        // 기존 옵션 초기화
+        category2.innerHTML = '<option value="">선택2</option>';
+
+        if (selectedCategory && categoryMapping[selectedCategory]) {
+            const subcategories = categoryMapping[selectedCategory].subcategories;
+            for (const [key, value] of Object.entries(subcategories)) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = value;
+                category2.appendChild(option);
+            }
+        }
+    }
+</script>
+</body>
+</html>

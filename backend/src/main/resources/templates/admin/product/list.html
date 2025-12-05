@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>온앤홈 관리자 - 상품관리</title>
+    <link rel="stylesheet" href="/css/import.css" />
+    <script src="/js/oncommon.js"></script>
+    <style>
+        .error-message {
+            color: #d32f2f;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        table a {
+            color: #1976d2;
+            text-decoration: none;
+        }
+
+        table a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<!-- 백그라운드 -->
+<div class="on-wrapper">
+    <!-- 컨텐츠 영역 -->
+    <div class="on-content">
+        <!--사이드바 메뉴-->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+
+
+        <!-- 내부영역 -->
+        <div class="on-main">
+            <h2 class="mb-30">Product List</h2>
+
+            <!-- 에러 메시지 -->
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+            <div class="flex mb-20 justify-end">
+                <input type="text" id="searchKeyword" class="input mr-4" placeholder="검색어를 입력하세요" />
+                <button class="btn-ico btn-ico--srch" onclick="searchProducts()"></button>
+            </div>
+
+            <div class="grid">
+                <table id="productTable">
+                    <colgroup>
+                        <col width="5%">
+                        <col width="10%">
+                        <col width="30%">
+                        <col width="10%">
+                        <col width="10%">
+                        <col width="10%">
+                        <col width="25%">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th scope="col">선택</th>
+                        <th scope="col">상품ID</th>
+                        <th scope="col">상품명</th>
+                        <th scope="col">카테고리</th>
+                        <th scope="col">가격</th>
+                        <th scope="col">재고</th>
+                        <th scope="col">작업</th>
+                    </tr>
+                    </thead>
+                    <tbody id="productList">
+                    <!-- 동적으로 로드될 상품 목록 -->
+                    </tbody>
+                </table>
+
+                <!-- 상품 없음 메시지 -->
+                <div id="emptyMessage" class="empty-message" style="display: none;">
+                    <h3>등록된 상품이 없습니다.</h3>
+                    <p>아래의 "등록" 버튼을 클릭하여 새 상품을 등록해주세요.</p>
+                </div>
+            </div>
+
+            <div class="flex mb-20 mt-20 justify-end">
+                <button class="btn btn--secondary" onclick="deleteSelectedProducts()">삭제</button>
+                <a href="/admin/product/create"><button class="btn btn--primary">등록</button></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /**
+     * 페이지 로드 시 상품 목록 로드
+     */
+    document.addEventListener('DOMContentLoaded', function() {
+        loadProducts();
+    });
+
+    /**
+     * 모든 상품 로드
+     */
+    function loadProducts() {
+        fetch('/api/products/list')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.data && data.data.length > 0) {
+                    renderProducts(data.data);
+                    document.getElementById('emptyMessage').style.display = 'none';
+                    document.getElementById('productTable').style.display = 'table';
+                } else {
+                    document.getElementById('productList').innerHTML = '';
+                    document.getElementById('productTable').style.display = 'none';
+                    document.getElementById('emptyMessage').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('상품 목록 로드 오류:', error);
+                showError('상품 목록을 불러올 수 없습니다.');
+                document.getElementById('emptyMessage').style.display = 'block';
+            });
+    }
+
+    /**
+     * 상품 목록 렌더링
+     */
+    function renderProducts(products) {
+        const tbody = document.getElementById('productList');
+        tbody.innerHTML = '';
+
+        products.forEach(product => {
+            const row = document.createElement('tr');
+            const priceFormatted = formatPrice(product.price);
+
+            row.innerHTML = `
+          <td class="center"><input type="checkbox" class="product-checkbox" value="${product.id}"></td>
+          <td class="center"><a href="/admin/product/${product.id}">${product.id}</a></td>
+          <td class="center"><a href="/admin/product/${product.id}">${product.name}</a></td>
+          <td class="center">${product.category || '-'}</td>
+          <td class="center">${priceFormatted}원</td>
+          <td class="center">${product.stock}</td>
+          <td class="center">
+            <div class="flex justify-center items-center">
+                <!--<a href="/admin/product/edit/${product.id}" class="btn btn--small btn--secondary">수정</a>-->
+                <a href="/admin/product/edit/${product.id}"><button class="btn btn-sm btn--tertiary mr-8">수정</button></a>
+                <button class="btn btn-sm btn--secondary" onclick="deleteProduct(${product.id})">삭제</button>
+            </div>
+          </td>
+        `;
+
+            tbody.appendChild(row);
+        });
+    }
+
+    /**
+     * 상품 검색
+     */
+    function searchProducts() {
+        const keyword = document.getElementById('searchKeyword').value.trim();
+
+        if (!keyword) {
+            loadProducts();
+            return;
+        }
+
+        fetch(`/api/products/search?keyword=${encodeURIComponent(keyword)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.data && data.data.length > 0) {
+                    renderProducts(data.data);
+                    document.getElementById('emptyMessage').style.display = 'none';
+                    document.getElementById('productTable').style.display = 'table';
+                } else {
+                    document.getElementById('productList').innerHTML = '';
+                    document.getElementById('productTable').style.display = 'none';
+                    document.getElementById('emptyMessage').innerHTML = `
+              <h3>"${keyword}"에 해당하는 상품이 없습니다.</h3>
+              <p><a href="#" onclick="document.getElementById('searchKeyword').value=''; loadProducts(); return false;">전체 상품 보기</a></p>
+            `;
+                    document.getElementById('emptyMessage').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('상품 검색 오류:', error);
+                showError('상품 검색 중 오류가 발생했습니다.');
+            });
+    }
+
+    /**
+     * 개별 상품 삭제
+     */
+    function deleteProduct(productId) {
+        if (!confirm('이 상품을 삭제하시겠습니까?')) {
+            return;
+        }
+
+        fetch(`/api/products/${productId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('상품이 삭제되었습니다.');
+                    loadProducts();
+                } else {
+                    showError(data.message || '상품 삭제 중 오류가 발생했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('상품 삭제 오류:', error);
+                showError('상품 삭제 중 오류가 발생했습니다.');
+            });
+    }
+
+    /**
+     * 선택된 상품 삭제
+     */
+    function deleteSelectedProducts() {
+        const checkboxes = document.querySelectorAll('.product-checkbox:checked');
+
+        if (checkboxes.length === 0) {
+            alert('삭제할 상품을 선택해주세요.');
+            return;
+        }
+
+        if (!confirm(`${checkboxes.length}개의 상품을 삭제하시겠습니까?`)) {
+            return;
+        }
+
+        const productIds = Array.from(checkboxes).map(cb => cb.value);
+
+        // 각 상품을 개별적으로 삭제
+        let deletedCount = 0;
+        let failedCount = 0;
+
+        productIds.forEach(productId => {
+            fetch(`/api/products/${productId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        deletedCount++;
+                    } else {
+                        failedCount++;
+                    }
+
+                    if (deletedCount + failedCount === productIds.length) {
+                        if (failedCount > 0) {
+                            alert(`${deletedCount}개 삭제 성공, ${failedCount}개 삭제 실패했습니다.`);
+                        } else {
+                            alert('모든 상품이 삭제되었습니다.');
+                        }
+                        loadProducts();
+                    }
+                })
+                .catch(error => {
+                    failedCount++;
+                    if (deletedCount + failedCount === productIds.length) {
+                        alert(`${deletedCount}개 삭제 성공, ${failedCount}개 삭제 실패했습니다.`);
+                        loadProducts();
+                    }
+                });
+        });
+    }
+
+    /**
+     * 가격 포맷팅 (천 단위 쉼표)
+     */
+    function formatPrice(price) {
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    /**
+     * 에러 메시지 표시
+     */
+    function showError(message) {
+        const errorDiv = document.getElementById('errorMessage');
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+
+        setTimeout(() => {
+            errorDiv.style.display = 'none';
+        }, 5000);
+    }
+
+    /**
+     * 검색 입력창에서 Enter 키 처리
+     */
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchKeyword');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchProducts();
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+### GET request to example server
+GET https://examples.http-client.intellij.net/get
+    ?generated-in=IntelliJ IDEA
+
+###
+### 1. 회원가입 (주소 변경: join -> register)
+POST http://localhost:8080/api/user/register
+Content-Type: application/json
+
+{
+  "userId": "admin18",
+  "password": "1111",
+  "email": "register18@test.com",
+  "username": "테스트계정",
+  "phone": "010-1111-2222",
+  "gender": "M",
+  "role": 0,
+  "active": true
+}
+
+### 2. 로그인 (방금 가입한 아이디로 토큰 받기)
+POST http://localhost:8080/api/user/login
+Content-Type: application/json
+
+{
+  "userId": "admin18",
+  "password": "1111"
+}
+### 3. 찜하기 테스트 (로그인해서 나온 토큰을 아래에 넣기!)
+POST http://localhost:8080/api/favorites
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoxLCJpZCI6MTEsInVzZXJJZCI6ImFkbWluMTgiLCJpYXQiOjE3NjQwNDI4MjMsImV4cCI6MTc2NDA0MzQyM30.8Lfxa---aWcTyYIgffFLglGMmiXzDlQ1Fg1_Inpo-04
+
+{
+  "userId": 1,
+  "productId": 10
+}

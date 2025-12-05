@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항 작성</title>
+
+    <!-- ✅ CSS 깨짐 방지 -->
+    <link rel="stylesheet" th:href="@{/css/import.css}" />
+    <script th:src="@{/js/oncommon.js}"></script>
+</head>
+<body>
+<div class="on-wrapper">
+    <div class="on-content">
+        <!-- ✅ 사이드바 fragment -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <!-- ===== 메인 내부영역 ===== -->
+        <div class="on-main">
+            <h2 class="mb-30">공지사항 작성</h2>
+
+            <!-- ✅ DTO 매핑 -->
+            <form th:action="@{/admin/board/notice/write}" th:object="${notice}" method="post">
+
+                <!-- 제목 -->
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">제목</div>
+                    <div class="on-comp-tbl-td col-10">
+                        <input type="text"
+                               th:field="*{title}"
+                               class="input w-full"
+                               placeholder="제목을 입력하세요"
+                               required />
+                    </div>
+                </div>
+
+                <!-- 작성자 -->
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">작성자</div>
+                    <div class="on-comp-tbl-td col-10">
+                        <input type="text"
+                               th:field="*{writer}"
+                               class="input w-full"
+                               placeholder="작성자를 입력하세요"
+                               required />
+                    </div>
+                </div>
+
+                <!-- 내용 -->
+                <div class="on-comp-tbl-row high-500">
+                    <div class="on-comp-tbl-th col-2">내용</div>
+                    <div class="on-comp-tbl-td col-10">
+                        <textarea th:field="*{content}"
+                                  class="textarea w-full high-full"
+                                  placeholder="내용을 입력하세요"
+                                  required></textarea>
+                    </div>
+                </div>
+
+                <!-- 버튼 -->
+                <div class="flex justify-end mt-20">
+                    <button type="submit" class="btn btn--tertiary mr-4">등록</button>
+                    <a th:href="@{/admin/board/notice/list}">
+                        <button type="button" class="btn btn--quarternary-outline">목록</button>
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

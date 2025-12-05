@@ -1,0 +1,185 @@
+<th:block th:fragment="footer">
+
+
+    <footer class="footer-o">
+        <div class="footer-wrapper justify-evenly mt-40">
+            <div class="mt-80">
+                <h1 class="header-logo"></h1>
+            </div>
+            <div>
+                <div>고객센터 <span class="footer-number">1544-7777</span></div>
+                <div class="flex mt-20">
+                    <div>
+                        <ul class="footer-title">
+                            <li>회사명</li>
+                            <li>대표</li>
+                            <li>팩스</li>
+                            <li>이메일</li>
+                            <li>주소</li>
+                            <li>사업자등록번호</li>
+                            <li>통신판매업신고</li>
+                            <li>개인정보 책임자</li>
+                        </ul>
+                    </div>
+                    <div class="ml-20">
+                        <ul class="footer-title">
+                            <li>(주)캡소프트</li>
+                            <li>이주영</li>
+                            <li>02-1544-7778</li>
+                            <li>faker@naver.com</li>
+                            <li>서울 서초구 서초동 123-456</li>
+                            <li>123-456789</li>
+                            <li>카456-7894</li>
+                            <li>최우제</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+    // Footer 스크립트가 한 번만 실행되도록 체크
+    if (!window.footerScriptLoaded) {
+        window.footerScriptLoaded = true;
+        
+        /**
+         * Footer 초기화
+         */
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initFooter);
+        } else {
+            initFooter();
+        }
+        
+        function initFooter() {
+            loadCompanyInfo();
+            loadFooterReviews();
+            loadFooterQnas();
+        }
+
+        /**
+         * 회사 정보 로드
+         */
+        function loadCompanyInfo() {
+            fetch('/api/company/info')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.data) {
+                        const info = data.data;
+                        const phoneEl = document.getElementById('footerPhone');
+                        const companyInfoEl = document.getElementById('footerCompanyInfo');
+                        
+                        if (phoneEl) {
+                            phoneEl.textContent = info.phone || '1544-7777';
+                        }
+                        
+                        if (companyInfoEl) {
+                            companyInfoEl.innerHTML = `
+                                <li>${info.companyName || '(주)하이미디어'}</li>
+                                <li>${info.ceo || '이상혁'}</li>
+                                <li>${info.fax || '02-1544-7778'}</li>
+                                <li>${info.email || 'faker@naver.com'}</li>
+                                <li>${info.address || '서울 서초구 서초동 123-456'}</li>
+                                <li>${info.businessNumber || '123-456789'}</li>
+                                <li>${info.mailOrderNumber || '카456-7894'}</li>
+                                <li>${info.privacyOfficer || '최우제'}</li>
+                            `;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('회사 정보 로드 오류:', error);
+                    // 오류 시 기본값 유지
+                    const companyInfoEl = document.getElementById('footerCompanyInfo');
+                    if (companyInfoEl) {
+                        companyInfoEl.innerHTML = `
+                            <li>(주)하이미디어</li>
+                            <li>이상혁</li>
+                            <li>02-1544-7778</li>
+                            <li>faker@naver.com</li>
+                            <li>서울 서초구 서초동 123-456</li>
+                            <li>123-456789</li>
+                            <li>카456-7894</li>
+                            <li>최우제</li>
+                        `;
+                    }
+                });
+        }
+
+        /**
+         * Footer 리뷰 목록 로드 (최대 8개)
+         */
+        function loadFooterReviews() {
+            fetch('/api/reviews/recent?limit=8')
+                .then(response => response.json())
+                .then(data => {
+                    const reviewList = document.getElementById('footerReviewList');
+                    
+                    if (data.success && data.data && data.data.length > 0) {
+                        reviewList.innerHTML = '';
+                        
+                        // 최대 8개만 표시
+                        const reviews = data.data.slice(0, 8);
+                        reviews.forEach(review => {
+                            const li = document.createElement('li');
+                            // content가 너무 길면 30자로 제한
+                            const content = review.content && review.content.length > 30 
+                                ? review.content.substring(0, 30) + '...' 
+                                : (review.content || '리뷰 내용 없음');
+                            li.textContent = content;
+                            reviewList.appendChild(li);
+                        });
+                    } else {
+                        reviewList.innerHTML = '<li>등록된 리뷰가 없습니다.</li>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Footer 리뷰 로드 오류:', error);
+                    const reviewList = document.getElementById('footerReviewList');
+                    if (reviewList) {
+                        reviewList.innerHTML = '<li>리뷰를 불러올 수 없습니다.</li>';
+                    }
+                });
+        }
+
+        /**
+         * Footer QnA 목록 로드 (최대 8개)
+         */
+        function loadFooterQnas() {
+            fetch('/api/qna/recent?limit=8')
+                .then(response => response.json())
+                .then(data => {
+                    const qnaList = document.getElementById('footerQnaList');
+                    
+                    if (data.success && data.data && data.data.length > 0) {
+                        qnaList.innerHTML = '';
+                        
+                        // 최대 8개만 표시
+                        const qnas = data.data.slice(0, 8);
+                        qnas.forEach(qna => {
+                            const li = document.createElement('li');
+                            // title 또는 question이 너무 길면 30자로 제한
+                            const content = qna.title && qna.title.length > 30 
+                                ? qna.title.substring(0, 30) + '...' 
+                                : (qna.title || qna.question || 'Q&A 내용 없음');
+                            
+                            // 내용이 너무 길면 줄이기
+                            const displayContent = content.length > 30 ? content.substring(0, 30) + '...' : content;
+                            li.textContent = displayContent;
+                            qnaList.appendChild(li);
+                        });
+                    } else {
+                        qnaList.innerHTML = '<li>등록된 문의가 없습니다.</li>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Footer QnA 로드 오류:', error);
+                    const qnaList = document.getElementById('footerQnaList');
+                    if (qnaList) {
+                        qnaList.innerHTML = '<li>Q&A를 불러올 수 없습니다.</li>';
+                    }
+                });
+        }
+    }
+    </script>
+</th:block>

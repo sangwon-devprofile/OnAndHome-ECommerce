@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>On&Home - 장바구니</title>
+    <link rel="stylesheet" href="/css/import.css" />
+    <script src="/js/oncommon.js"></script>
+    <script src="/js/jwt-utils.js"></script>
+</head>
+<body>
+<div class="on-main-wrap">
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <div class="on-item02 mb-80 mt-80">
+        <div class="on-item02-inner">
+            <h2 class="sub-title line-under">장바구니</h2>
+            <div class="on-item02 mb-80">
+                <div class="on-item02-inner ">
+                    <div class="border-1p" id="cartItemsContainer">
+                        <div style="text-align: center; padding: 40px;">로딩중...</div>
+                    </div>
+                    <div class="flex justify-end items-center">
+                        <button class="btn btn-sm btn--secondary mr-120" onclick="deleteSelectedItems()">삭제</button>
+                    </div>
+                    <div class="border-2p"></div>
+                    <div class="cart-total">
+                        <h3>총 주문금액</h3>
+                        <div class="cart-total-price">
+                            <h2 id="cartTotalPrice">0</h2><span>원</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-group justify-center">
+                <button class="btn btn-buy" onclick="goToOrder()">구매하러가기</button>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 로그인 체크
+        if (!checkLogin(true)) return;
+        
+        loadCategoryMenu();
+        loadHeaderNavigation();
+        loadCartItems();
+    });
+
+    /**
+     * ✅ 장바구니 아이템 로드 (JWT 기반)
+     */
+    function loadCartItems() {
+        fetch('/api/cart', {
+            headers: getAuthHeaders()
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('장바구니를 불러올 수 없습니다.');
+                return response.json();
+            })
+            .then(data => {
+                if (data.success && data.data) {
+                    displayCartItems(data.data);
+                } else {
+                    displayEmptyCart();
+                }
+            })
+            .catch(error => {
+                console.error('장바구니 로드 오류:', error);
+                displayEmptyCart();
+            });
+    }
+
+    function displayCartItems(cartItems) {
+        const container = document.getElementById('cartItemsContainer');
+
+        if (!cartItems || cartItems.length === 0) {
+            displayEmptyCart();
+            return;
+        }
+
+        container.innerHTML = '<div class="border-1p-nm"></div>';
+
+        cartItems.forEach(item => {
+            const product = item.product;
+            const quantity = item.quantity;
+            const itemTotal = product.salePrice * quantity;
+
+            const itemElement = document.createElement('div');
+            itemElement.className = 'rep';
+            itemElement.innerHTML = `
+                <div class="cart-list">
+                    <div class="cart-check">
+                        <input type="checkbox" class="cart-checkbox" data-cart-id="${item.id}">
+                        <span>${product.name}</span>
+                    </div>
+                    <div class="cart-count">
+                        <div class="cart-count-wrapper">
+                            <span>수량</span>
+                            <div class="flex justify-around">
+                                <span class="btn-etc btn-ico--minus" onclick="decreaseQuantity(${item.id}, ${quantity}, ${product.salePrice})"></span>
+                                <span class="cart-count-num" id="quantity-${item.id}">${quantity}</span>
+                                <span class="btn-etc btn-ico--plus" onclick="increaseQuantity(${item.id}, ${quantity}, ${product.salePrice})"></span>
+                            </div>
+                        </div>
+                        <div class="flex">
+                            <h3 id="price-${item.id}">${formatPrice(itemTotal)}</h3><span class="ml-8">원</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(itemElement);
+        });
+
+        updateTotalPrice();
+    }
+
+    function increaseQuantity(cartItemId, currentQuantity, unitPrice) {
+        updateQuantity(cartItemId, currentQuantity + 1, unitPrice);
+    }
+
+    function decreaseQuantity(cartItemId, currentQuantity, unitPrice) {
+        if (currentQuantity <= 1) {
+            alert('수량은 최소 1개 이상이어야 합니다.');
+            return;
+        }
+        updateQuantity(cartItemId, currentQuantity - 1, unitPrice);
+    }
+
+    /**
+     * ✅ 수량 업데이트 (JWT 기반)
+     */
+    function updateQuantity(cartItemId, newQuantity, unitPrice) {
+        fetch(`/api/cart/${cartItemId}`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ quantity: newQuantity })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`quantity-${cartItemId}`).textContent = newQuantity;
+                const newItemTotal = unitPrice * newQuantity;
+                document.getElementById(`price-${cartItemId}`).textContent = formatPrice(newItemTotal);
+                
+                const minusBtn = document.querySelector(`[onclick*="decreaseQuantity(${cartItemId}"]`);
+                const plusBtn = document.querySelector(`[onclick*="increaseQuantity(${cartItemId}"]`);
+                if (minusBtn) minusBtn.setAttribute('onclick', `decreaseQuantity(${cartItemId}, ${newQuantity}, ${unitPrice})`);
+                if (plusBtn) plusBtn.setAttribute('onclick', `increaseQuantity(${cartItemId}, ${newQuantity}, ${unitPrice})`);
+                
+                updateTotalPrice();
+            } else {
+                alert(data.message || '수량 업데이트에 실패했습니다.');
+            }
+        })
+        .catch(error => {
+            console.error('수량 업데이트 오류:', error);
+            alert('수량 업데이트 중 오류가 발생했습니다.');
+        });
+    }
+
+    function updateTotalPrice() {
+        let total = 0;
+        const priceElements = document.querySelectorAll('[id^="price-"]');
+        priceElements.forEach(el => {
+            const priceText = el.textContent.replace(/,/g, '');
+            total += parseInt(priceText);
+        });
+        document.getElementById('cartTotalPrice').textContent = formatPrice(total);
+    }
+
+    /**
+     * ✅ 선택 아이템 삭제 (JWT 기반)
+     */
+    function deleteSelectedItems() {
+        const checkboxes = document.querySelectorAll('.cart-checkbox:checked');
+        
+        if (checkboxes.length === 0) {
+            alert('삭제할 상품을 선택해주세요.');
+            return;
+        }
+
+        if (!confirm('선택한 상품을 장바구니에서 삭제하시겠습니까?')) {
+            return;
+        }
+
+        const deletePromises = Array.from(checkboxes).map(checkbox => {
+            const cartItemId = checkbox.getAttribute('data-cart-id');
+            return fetch(`/api/cart/${cartItemId}`, {
+                method: 'DELETE',
+                headers: getAuthHeaders()
+            });
+        });
+
+        Promise.all(deletePromises)
+            .then(responses => Promise.all(responses.map(r => r.json())))
+            .then(results => {
+                const allSuccess = results.every(r => r.success);
+                if (allSuccess) {
+                    alert('선택한 상품이 삭제되었습니다.');
+                    loadCartItems();
+                    if (typeof window.updateCartBadge === 'function') {
+                        window.updateCartBadge();
+                    }
+                } else {
+                    alert('일부 상품 삭제에 실패했습니다.');
+                    loadCartItems();
+                }
+            })
+            .catch(error => {
+                console.error('삭제 오류:', error);
+                alert('상품 삭제 중 오류가 발생했습니다.');
+            });
+    }
+
+    function displayEmptyCart() {
+        const container = document.getElementById('cartItemsContainer');
+        container.innerHTML = `
+            <div class="border-1p-nm"></div>
+            <div class="rep">
+                <div style="text-align: center; padding: 40px;">
+                    <h3>장바구니가 비어있습니다.</h3>
+                    <p style="margin-top: 10px;">
+                        <a href="/user/index" style="color: #007bff; text-decoration: underline;">계속 쇼핑하기</a>
+                    </p>
+                </div>
+            </div>
+        `;
+        document.getElementById('cartTotalPrice').textContent = '0';
+    }
+
+    function goToOrder() {
+        window.location.href = '/user/order_payment?fromCart=true';
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>온앤홈 관리자</title>
+    <link rel="stylesheet" href="/css/import.css" />
+    <script src="/js/oncommon.js"></script>
+</head>
+<body>
+<!-- 백그라운드 -->
+<div class="on-wrapper">
+    <!-- 컨텐츠 영역 -->
+    <div class="on-content">
+        <!-- 사이드바 메뉴 -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <!-- 내부영역 -->
+        <div class="on-main">
+            <h2 class="mb-30">Product Edit</h2>
+            <div class="">
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">상품코드</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${product?.productCode} ?: '-'"></div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">등록일자</div>
+                    <div class="on-comp-tbl-td col-10" th:text="${product?.createdAt} ? ${#temporals.format(product.createdAt, 'yyyy-MM-dd HH:mm')} : '-'"></div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">상품명</div>
+                    <div class="on-comp-tbl-td col-10">
+                        <input class="on-inp" id="name" th:value="${product?.name}">
+                    </div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">카테고리</div>
+                    <div class="on-comp-tbl-td col-10">
+                        <select id="category1" class="select mr-8" onchange="updateSubCategory()">
+                            <option value="">선택1</option>
+                        </select>
+                        <select id="category2" class="select">
+                            <option value="">선택2</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">재고수량</div>
+                    <div class="on-comp-tbl-td col-10">
+                        <input class="on-inp" id="stock" type="number" min="0" th:value="${product?.stock}">
+                    </div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">목록이미지</div>
+                    <div class="on-comp-tbl-td col-10 file-box">
+                        <button type="button" class="btn btn--tertiary file-btn" onclick="document.getElementById('thumbnailFileInput').click()">파일첨부</button>
+                        <input type="file" id="thumbnailFileInput" class="file-input" accept="image/*" style="display:none;" onchange="uploadThumbnailImage(this)">
+                        <div class="file-input-wrap">
+                            <input class="on-inp w-400 file-name" id="thumbnailImage" readonly th:value="${product?.thumbnailImage}">
+                            <button type="button" class="file-clear" onclick="clearThumbnailImage()">✕</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">상세페이지</div>
+                    <div class="on-comp-tbl-td col-10 file-box">
+                        <button type="button" class="btn btn--tertiary file-btn" onclick="document.getElementById('detailFileInput').click()">파일첨부</button>
+                        <input type="file" id="detailFileInput" class="file-input" accept="image/*" style="display:none;" onchange="uploadDetailImage(this)">
+                        <div class="file-input-wrap">
+                            <input class="on-inp w-400 file-name" id="detailImage" readonly th:value="${product?.detailImage}">
+                            <button type="button" class="file-clear" onclick="clearDetailImage()">✕</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">제조사</div>
+                    <div class="on-comp-tbl-td col-10">
+                        <input class="on-inp" id="manufacturer" th:value="${product?.manufacturer}">
+                    </div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">제조국</div>
+                    <div class="on-comp-tbl-td col-10">
+                        <input class="on-inp" id="country" th:value="${product?.country}">
+                    </div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">정상가격</div>
+                    <div class="on-comp-tbl-td col-10">
+                        <input class="on-inp" id="price" type="number" min="0" th:value="${product?.price}">
+                    </div>
+                </div>
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">할인가격</div>
+                    <div class="on-comp-tbl-td col-10">
+                        <input class="on-inp" id="salePrice" type="number" min="0" th:value="${product?.salePrice}">
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end mt-20">
+                <a href="/admin/product/list"><button type="button" class="btn btn--quarternary-outline mr-4">목록</button></a>
+                <button type="button" class="btn btn--primary" onclick="submitProduct()">등록</button>
+            </div>
+            <div class="on-border mt-20"></div>
+            <h3 class="mt-20 mb-12">상세스펙</h3>
+            <div class="">
+                <div class="on-comp-tbl-row">
+                    <div class="on-comp-tbl-th col-2">추가상품</div>
+                    <div class="on-comp-tbl-td col-10">
+                        <input class="on-inp" id="description" th:value="${product?.description}">
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end mt-20">
+                <a href="/admin/product/list"><button type="button" class="btn btn--quarternary-outline mr-4">목록</button></a>
+                <button type="button" class="btn btn--primary" onclick="submitProduct()">수정</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script th:inline="javascript">
+    // 전역 변수
+    const productId = [[${product?.id}]];
+    const currentCategory = [[${product?.category}]];
+    let thumbnailImageUrl = [[${product?.thumbnailImage}]] || '';
+    let detailImageUrl = [[${product?.detailImage}]] || '';
+
+    // 소분류 카테고리 데이터
+    let categoriesData = []; // API에서 가져온 카테고리 데이터
+
+    // 페이지 로드 시 카테고리 데이터 가져오기
+    document.addEventListener('DOMContentLoaded', async function() {
+        await loadCategories();
+        
+        if (currentCategory) {
+            setCurrentCategory(currentCategory);
+        }
+    });
+
+    // 카테고리 데이터 로드
+    async function loadCategories() {
+        try {
+            const response = await fetch('/api/admin/products/categories');
+            if (!response.ok) {
+                throw new Error('카테고리 데이터 로드 실패');
+            }
+            
+            categoriesData = await response.json();
+            console.log('카테고리 데이터 로드 성공:', categoriesData);
+            
+            // 대카테고리 선택 박스 채우기
+            populateMainCategories();
+            
+        } catch (error) {
+            console.error('카테고리 로드 오류:', error);
+            alert('카테고리 데이터를 불러오는데 실패했습니다.');
+        }
+    }
+
+    // 대카테고리 선택 박스 채우기
+    function populateMainCategories() {
+        const category1Select = document.getElementById('category1');
+        category1Select.innerHTML = '<option value="">선택1</option>';
+        
+        categoriesData.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category.parentCategory;
+            option.textContent = category.parentCategoryName;
+            category1Select.appendChild(option);
+        });
+    }
+
+    // 현재 상품의 카테고리 설정
+    function setCurrentCategory(categoryValue) {
+        // 소분류에서 대분류 찾기
+        const parentCategory = categoriesData.find(cat => 
+            cat.subCategories.includes(categoryValue)
+        );
+        
+        if (parentCategory) {
+            document.getElementById('category1').value = parentCategory.parentCategory;
+            updateSubCategory();
+            document.getElementById('category2').value = categoryValue;
+        }
+    }
+
+    // 소분류 업데이트 함수
+    function updateSubCategory() {
+        const category1Value = document.getElementById('category1').value;
+        const category2Select = document.getElementById('category2');
+        const currentValue = category2Select.value;
+
+        // 기존 옵션 제거
+        category2Select.innerHTML = '<option value="">선택2</option>';
+
+        if (category1Value) {
+            const selectedCategory = categoriesData.find(cat => cat.parentCategory === category1Value);
+            
+            if (selectedCategory && selectedCategory.subCategories) {
+                selectedCategory.subCategories.forEach(sub => {
+                    const option = document.createElement('option');
+                    option.value = sub;
+                    option.textContent = sub;
+                    category2Select.appendChild(option);
+                });
+                
+                // 이전 선택값이 있으면 유지
+                if (currentValue) {
+                    category2Select.value = currentValue;
+                }
+            }
+        }
+    }
+
+    /**
+     * 목록 이미지 업로드
+     */
+    async function uploadThumbnailImage(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+            alert('이미지 파일만 업로드 가능합니다.');
+            input.value = '';
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            alert('파일 크기는 5MB를 초과할 수 없습니다.');
+            input.value = '';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await fetch('/api/upload/image', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                thumbnailImageUrl = result.fileUrl;
+                document.getElementById('thumbnailImage').value = file.name;
+                console.log('목록 이미지 업로드 성공:', thumbnailImageUrl);
+            } else {
+                alert(result.message || '이미지 업로드에 실패했습니다.');
+                input.value = '';
+            }
+        } catch (error) {
+            console.error('업로드 오류:', error);
+            alert('이미지 업로드 중 오류가 발생했습니다.');
+            input.value = '';
+        }
+    }
+
+    /**
+     * 상세 이미지 업로드
+     */
+    async function uploadDetailImage(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+            alert('이미지 파일만 업로드 가능합니다.');
+            input.value = '';
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            alert('파일 크기는 5MB를 초과할 수 없습니다.');
+            input.value = '';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await fetch('/api/upload/image', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                detailImageUrl = result.fileUrl;
+                document.getElementById('detailImage').value = file.name;
+                console.log('상세 이미지 업로드 성공:', detailImageUrl);
+            } else {
+                alert(result.message || '이미지 업로드에 실패했습니다.');
+                input.value = '';
+            }
+        } catch (error) {
+            console.error('업로드 오류:', error);
+            alert('이미지 업로드 중 오류가 발생했습니다.');
+            input.value = '';
+        }
+    }
+
+    /**
+     * 목록 이미지 삭제
+     */
+    function clearThumbnailImage() {
+        document.getElementById('thumbnailFileInput').value = '';
+        document.getElementById('thumbnailImage').value = '';
+        thumbnailImageUrl = '';
+    }
+
+    /**
+     * 상세 이미지 삭제
+     */
+    function clearDetailImage() {
+        document.getElementById('detailFileInput').value = '';
+        document.getElementById('detailImage').value = '';
+        detailImageUrl = '';
+    }
+
+    /**
+     * 상품 수정 처리
+     */
+    function submitProduct() {
+        // 필수 필드 검증
+        const name = document.getElementById('name').value.trim();
+        const category = document.getElementById('category2').value.trim();
+        const price = parseInt(document.getElementById('price').value) || 0;
+        const salePrice = parseInt(document.getElementById('salePrice').value) || null;
+        const stock = parseInt(document.getElementById('stock').value) || 0;
+
+        if (!name) {
+            alert('상품명은 필수입니다.');
+            return;
+        }
+
+        if (!category) {
+            alert('카테고리는 필수입니다.');
+            return;
+        }
+
+        if (price < 0) {
+            alert('정상가격은 0 이상이어야 합니다.');
+            return;
+        }
+
+        if (salePrice !== null && salePrice < 0) {
+            alert('할인가격은 0 이상이어야 합니다.');
+            return;
+        }
+
+        if (stock < 0) {
+            alert('재고수량은 0 이상이어야 합니다.');
+            return;
+        }
+
+        // 제조사, 제조국 가져오기
+        const manufacturer = document.getElementById('manufacturer').value.trim();
+        const country = document.getElementById('country').value.trim();
+
+        // 폼 데이터 생성
+        const data = {
+            name: name,
+            category: category,
+            description: document.getElementById('description').value.trim(),
+            price: price,
+            salePrice: salePrice,
+            stock: stock,
+            thumbnailImage: thumbnailImageUrl,
+            detailImage: detailImageUrl,
+            manufacturer: manufacturer,
+            country: country
+        };
+
+        console.log('전송 데이터:', data);
+
+        // API 요청
+        fetch(`/api/products/${productId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('상품이 성공적으로 수정되었습니다.');
+                    window.location.href = `/admin/product/${productId}`;
+                } else {
+                    alert(result.message || '상품 수정 중 오류가 발생했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('수정 오류:', error);
+                alert('상품 수정 중 오류가 발생했습니다.');
+            });
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+### GET request to example server
+GET https://examples.http-client.intellij.net/get
+    ?generated-in=IntelliJ IDEA
+
+###
+### 1. 로그인 요청 (여기서 토큰을 받아야 함)
+POST http://localhost:8080/api/member/login
+Content-Type: application/json
+
+{
+  "email": "user1@test.com",
+  "password": "1111"
+}

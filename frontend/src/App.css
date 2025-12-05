@@ -1,0 +1,110 @@
+/* Reset CSS */
+* {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body, h1, h2, h3, h4, h5, h6, p, a, ol, ul, li, figure, blockquote, dl, dd {
+  margin: 0;
+  padding: 0;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+input, button, textarea, select {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Layout */
+html, body {
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Utilities */
+.loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 18px;
+  color: #666;
+}
+
+/* Colors */
+:root {
+  /* Text */
+  --txt-medium-color: #737373;
+  --txt-dark-color: #212121;
+  --txt-white-color: #fff;
+  --txt-black-color: #000;
+  
+  /* Border */
+  --border-ultra-light-color: #e2e2e2;
+  --border-light-color: #b6b6b6;
+  --border-medium-color: #5b5b5b;
+  --border-dark-color: #2e2e2e;
+  
+  /* Background */
+  --bg-primary-color: #0f0d6e;
+  --bg-secondary-color: #e94738;
+  --bg-tertiary-color: #58995a;
+  --bg-quarternary-color: #212121;
+  --bg-ultra-light-color: #f4f4f4;
+  --bg-medium-color: #5b5b5b;
+  --bg-white-color: #fff;
+  --bg-screen-color: #f6f6fe;
+}

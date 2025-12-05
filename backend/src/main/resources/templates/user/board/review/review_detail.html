@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>리뷰 상세 - On&Home</title>
+  <link rel="stylesheet" href="/css/import.css" />
+  <script src="/js/oncommon.js"></script>
+</head>
+<body>
+  <!-- 백그라운드 -->
+  <div class="on-main-wrap">
+    <!-- 헤더 -->
+      <div th:replace="~{fragments/header :: header}"></div>
+
+     <!-- 아이템영역2  -->
+    <div class="on-item02 mb-80 mt-80">
+      <div class="on-item02-inner">
+        <h2 class="sub-title line-under">리뷰 상세</h2>
+        <div class="">
+          <div class="on-comp-tbl-row">
+            <div class="on-comp-tbl-th col-2">번호</div>
+            <div class="on-comp-tbl-td col-10" th:text="${review.id}">01</div>
+          </div>
+          <div class="on-comp-tbl-row">
+            <div class="on-comp-tbl-th col-2">작성일자</div>
+            <div class="on-comp-tbl-td col-10" th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd HH:mm')}">2025-01-01</div>
+          </div>            
+          <div class="on-comp-tbl-row">
+            <div class="on-comp-tbl-th col-2">작성자</div>
+            <div class="on-comp-tbl-td col-10" th:text="${review.author}">작성자</div>
+          </div>
+          <div class="on-comp-tbl-row">
+            <div class="on-comp-tbl-th col-2">상품명</div>
+            <div class="on-comp-tbl-td col-10" th:text="${review.productName}">상품명</div>
+          </div>
+          <div class="on-comp-tbl-row">
+            <div class="on-comp-tbl-th col-2">평점</div>
+            <div class="on-comp-tbl-td col-10">
+              <span th:text="${review.rating}">5</span> / 5
+            </div>
+          </div>
+          <div class="on-comp-tbl-row high-500">
+            <div class="on-comp-tbl-th col-2">내용</div>
+            <div class="on-comp-tbl-td col-10 mt-20 items-start" th:text="${review.content}">리뷰 내용</div>
+          </div>
+          
+          <!-- 이미지가 있을 경우 표시 -->
+          <div th:if="${review.imageUrl != null and !review.imageUrl.isEmpty()}" class="on-comp-tbl-row">
+            <div class="on-comp-tbl-th col-2">이미지</div>
+            <div class="on-comp-tbl-td col-10">
+              <img th:src="${review.imageUrl}" alt="리뷰 이미지" style="max-width: 500px; height: auto;">
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex justify-end mt-20">
+          <a th:href="@{/user/board/review/list}">
+            <button class="btn btn--quarternary-outline mr-4">목록</button>
+          </a>
+        </div>        
+      </div>
+    </div>
+    
+    <!-- 푸터 -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+  </div>
+</body>
+</html>
