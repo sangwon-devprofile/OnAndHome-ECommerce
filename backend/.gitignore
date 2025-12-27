@@ -35,6 +35,15 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# application.properties 보안 관리
+src/main/resources/application.properties
+
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
 /uploads/61c8fa9eb8ea4d0b8c6a48fab486d24f.png
 /uploads/0b83907f490f47a597051815b23c412f.png
 /uploads/1935f3e79cfb441ea1a4d3c716efe8ff.png

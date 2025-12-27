@@ -1,0 +1,36 @@
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"OnAndHomeApplication.java:21","message":"Application main started","data":null,"timestamp":1766819936245}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"OnAndHomeApplication.java:21","message":"Application main started","data":null,"timestamp":1766819937273}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"D","location":"BeanPostProcessor","message":"Bean tomcatServletWebServerFactory took 238ms","data":null,"timestamp":1766819947088}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"D","location":"BeanPostProcessor","message":"Bean entityManagerFactory took 6779ms","data":null,"timestamp":1766819954843}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"D","location":"BeanPostProcessor","message":"Bean noticeRepository took 179ms","data":null,"timestamp":1766819955169}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"D","location":"BeanPostProcessor","message":"Bean notificationRepository took 284ms","data":null,"timestamp":1766819955461}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"D","location":"BeanPostProcessor","message":"Bean userRepository took 1472ms","data":null,"timestamp":1766819956941}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"D","location":"BeanPostProcessor","message":"Bean orderRepository took 559ms","data":null,"timestamp":1766819958070}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"D","location":"BeanPostProcessor","message":"Bean productRepository took 640ms","data":null,"timestamp":1766819958748}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"D","location":"BeanPostProcessor","message":"Bean reviewRepository took 165ms","data":null,"timestamp":1766819958979}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"C","location":"DataInitializer.java:23","message":"initData bean creation started","data":null,"timestamp":1766819960360}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"C","location":"DataInitializer.java:38","message":"initData bean creation finished","data":"Duration: 3ms","timestamp":1766819960365}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"D","location":"BeanPostProcessor","message":"Bean simpAnnotationMethodMessageHandler took 105ms","data":null,"timestamp":1766819960975}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:117","message":"filterChain initialization started","data":null,"timestamp":1766819961291}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"D","location":"BeanPostProcessor","message":"Bean requestMappingHandlerMapping took 234ms","data":null,"timestamp":1766819961680}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"D","location":"BeanPostProcessor","message":"Bean mvcHandlerMappingIntrospector took 411ms","data":null,"timestamp":1766819961763}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:269","message":"filterChain initialization finished","data":"Duration: 565ms","timestamp":1766819961858}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"D","location":"BeanPostProcessor","message":"Bean requestMappingHandlerAdapter took 232ms","data":null,"timestamp":1766819962254}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"D","location":"BeanPostProcessor","message":"Bean classPathFileSystemWatcher took 548ms","data":null,"timestamp":1766819963483}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"C","location":"DataInitializer.java:27","message":"initData execution started","data":null,"timestamp":1766819963594}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"C","location":"DataInitializer.java:34","message":"initData execution finished","data":"Duration: 0ms","timestamp":1766819963595}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"OnAndHomeApplication.java:26","message":"Application main finished","data":"Duration: 26322ms","timestamp":1766819963598}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:117","message":"filterChain initialization started","data":null,"timestamp":1766821625946}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:269","message":"filterChain initialization finished","data":"Duration: 565ms","timestamp":1766821626519}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:117","message":"filterChain initialization started","data":null,"timestamp":1766823784158}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:269","message":"filterChain initialization finished","data":"Duration: 419ms","timestamp":1766823784584}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:117","message":"filterChain initialization started","data":null,"timestamp":1766827511811}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:269","message":"filterChain initialization finished","data":"Duration: 542ms","timestamp":1766827512363}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:117","message":"filterChain initialization started","data":null,"timestamp":1766830054556}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:269","message":"filterChain initialization finished","data":"Duration: 1055ms","timestamp":1766830055632}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:117","message":"filterChain initialization started","data":null,"timestamp":1766830876267}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:269","message":"filterChain initialization finished","data":"Duration: 1391ms","timestamp":1766830877669}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:117","message":"filterChain initialization started","data":null,"timestamp":1766831395516}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:269","message":"filterChain initialization finished","data":"Duration: 542ms","timestamp":1766831396067}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:117","message":"filterChain initialization started","data":null,"timestamp":1766831786293}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:269","message":"filterChain initialization finished","data":"Duration: 1488ms","timestamp":1766831787818}

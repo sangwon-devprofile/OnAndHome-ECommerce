@@ -92,6 +92,7 @@ public class AdminProductRestController {
             @RequestParam(value = "salePrice", required = false) Integer salePrice,
             @RequestParam(value = "stock", required = false, defaultValue = "0") Integer stock,
             @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "status", required = false, defaultValue = "판매중") String status,
             @RequestParam(value = "thumbnailImage", required = false) MultipartFile thumbnailImage,
             @RequestParam(value = "detailImage", required = false) MultipartFile detailImage) {
         
@@ -111,6 +112,7 @@ public class AdminProductRestController {
             productDTO.setSalePrice(salePrice != null ? salePrice : price);
             productDTO.setStock(stock);
             productDTO.setDescription(description);
+            productDTO.setStatus(status);
             
             // 파일 업로드 처리
             if (thumbnailImage != null && !thumbnailImage.isEmpty()) {
@@ -159,6 +161,7 @@ public class AdminProductRestController {
             @RequestParam(value = "salePrice", required = false) Integer salePrice,
             @RequestParam(value = "stock", required = false, defaultValue = "0") Integer stock,
             @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "status", required = false, defaultValue = "판매중") String status,
             @RequestParam(value = "thumbnailImage", required = false) MultipartFile thumbnailImage,
             @RequestParam(value = "detailImage", required = false) MultipartFile detailImage) {
         
@@ -178,6 +181,7 @@ public class AdminProductRestController {
             productDTO.setSalePrice(salePrice != null ? salePrice : price);
             productDTO.setStock(stock);
             productDTO.setDescription(description);
+            productDTO.setStatus(status);
             
             // 파일 업로드 처리
             if (thumbnailImage != null && !thumbnailImage.isEmpty()) {
@@ -393,8 +397,8 @@ public class AdminProductRestController {
         try {
             String newStatus = request.get("status");
             
-            // 상태 변경 로직 구현 (ProductService에 메서드 추가 필요)
-            // productService.updateStatus(productId, newStatus);
+            // 상태 변경 로직 구현
+            productService.updateStatus(productId, newStatus);
             
             response.put("success", true);
             response.put("message", "상품 상태가 변경되었습니다.");

@@ -1,5 +1,7 @@
 package com.onandhome.security.filter;
 
+import org.springframework.lang.NonNull;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
@@ -152,6 +154,12 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             return true; // JWT 검증 건너뛰기
         }
 
+        // ✅ 웹소켓 관련 모든 요청은 JWT 체크에서 제외 (노이즈 및 401 방지)
+        if (path.startsWith("/ws/")) {
+            log.info("웹소켓 관련 요청 JWT 체크 제외: {}", path);
+            return true;
+        }
+
         // ⭐ 나머지는 모두 JWT 체크 필수!
         // 인증이 필요한 API들:
         // - /api/user/** (사용자 정보 조회/수정)
@@ -180,27 +188,39 @@ public class JWTCheckFilter extends OncePerRequestFilter {
      * @param filterChain - 다음 필터로 요청을 전달하기 위한 체인
      */
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+      @NonNull FilterChain filterChain) throws ServletException, IOException {
+
+        // 요청 경로 추출
+        String path = request.getRequestURI();
 
         // HTTP 요청 헤더에서 Authorization 값 가져오기
         // 형식: "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
         String authHeaderStr = request.getHeader("Authorization");
+        String accessToken = null;
 
         try {
-            // Authorization 헤더 검증
-            // 헤더가 없거나 "Bearer "로 시작하지 않으면 예외 발생
-            if (authHeaderStr == null || !authHeaderStr.startsWith("Bearer ")) {
-                throw new Exception("Authorization header is missing or invalid");
+            // 1. Authorization 헤더 확인
+            if (authHeaderStr != null && authHeaderStr.startsWith("Bearer ")) {
+                accessToken = authHeaderStr.substring(7);
+                log.info("헤더에서 토큰 추출 성공");
+            } 
+            
+            // 2. 헤더에 없으면 쿼리 파라미터 확인 (웹소켓 등)
+            if (accessToken == null || accessToken.isEmpty()) {
+                accessToken = request.getParameter("token");
+                if (accessToken != null) {
+                    log.info("파라미터에서 토큰 추출 성공");
+                }
             }
 
-            // "Bearer " 제거하고 실제 JWT 토큰만 추출 (7번째 문자부터 끝까지)
-            // "Bearer eyJhbGci..." → "eyJhbGci..."
-            String accessToken = authHeaderStr.substring(7);
-            
+            // 토큰이 없으면 예외 발생
+            if (accessToken == null || accessToken.isEmpty()) {
+                log.warn("인증 토큰이 누락되었습니다: {}", path);
+                throw new Exception("Authorization header or token parameter is missing");
+            }
+
             // JWTUtil.validateToken()으로 토큰 검증 및 Payload(사용자 정보) 추출
-            // 반환값: {id: 1, userId: "user123", role: 1, marketingConsent: true}
-            // 실패 시 CustomJWTException 발생 → catch 블록에서 처리
             Map<String, Object> claims = jwtUtil.validateToken(accessToken);
 
             // 클레임에서 사용자 정보 추출

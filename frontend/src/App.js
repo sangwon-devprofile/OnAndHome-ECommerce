@@ -137,7 +137,13 @@ const AppContent = () => {
   }, [isConnected, notifications]);
 
   return (
-    <Router>
+    <Router
+      future={{
+      v7_startTransition: true,
+      v7_relativeSplatPath: true,
+    }}
+  >
+    <Toaster position="top-right" />
       <Toaster position="top-right" />
       <Routes>
         {/* 사용자 페이지 */}

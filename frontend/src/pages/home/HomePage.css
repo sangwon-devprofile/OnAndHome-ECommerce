@@ -227,6 +227,28 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+/* 품절 오버레이 추가 */
+.sold-out-overlay-small {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 8px 16px;
+  font-weight: bold;
+  font-size: 14px;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 10;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.item-thum-wrapper.is-sold-out {
+  cursor: not-allowed;
+}
+
 /* 아이템 영역4 */
 .on-item04 {
   width: 100%;

@@ -20,9 +20,17 @@ export const useWebSocket = (userId) => {
     console.log("=== 웹소켓 연결 시작 ===");
     console.log("userId:", userId);
 
+    // localStorage에서 토큰 가져오기
+    const token = localStorage.getItem("accessToken");
+
     // WebSocket 연결 생성 (SockJS → STOMP)
     // /ws 엔드포인트로 서버와 실시간 연결 시도
-    const socket = new SockJS("http://localhost:8080/ws");
+    // 보안을 위해 쿼리 파라미터로 토큰 전달
+    const socketUrl = token 
+      ? `http://localhost:8080/ws?token=${token}`
+      : "http://localhost:8080/ws";
+    
+    const socket = new SockJS(socketUrl);
 
     // STOMP 클라이언트 생성
     // reconnectDelay, heartbeat 등은 연결 안정성 향상 설정

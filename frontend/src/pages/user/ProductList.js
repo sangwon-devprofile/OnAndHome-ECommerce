@@ -253,6 +253,8 @@ const ProductList = () => {
             <form className="product-search-form" onSubmit={handleSearchSubmit}>
               <input
                 type="text"
+                id="product-search"
+                name="q"
                 className="product-search-input"
                 placeholder={listPlaceholder}
                 value={searchInput}
@@ -293,7 +295,7 @@ const ProductList = () => {
                       <img
                         src={getImageUrl(product.thumbnailImage)}
                         alt={product.name}
-                        className={product.stock === 0 ? "out-of-stock" : ""}
+                        className={(product.stock === 0 || product.status === '판매중지') ? "out-of-stock" : ""}
                         onError={(e) => {
                           e.target.src = "/images/placeholder.png";
                           e.target.onerror = null;
@@ -301,7 +303,7 @@ const ProductList = () => {
                       />
                       
                       {/* 품절 표시 */}
-                      {(product.stock === 0 || product.stock === null) && (
+                      {(product.stock === 0 || product.stock === null || product.status === '판매중지') && (
                         <div className="sold-out-overlay">
                           <div className="sold-out-badge">
                             <span>SOLD OUT</span>

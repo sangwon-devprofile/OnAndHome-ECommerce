@@ -65,6 +65,11 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+// bootRun 설정: IPv4 우선 순위 및 성능 최적화
+bootRun {
+    systemProperty "java.net.preferIPv4Stack", "true"
+}
+
 // 컴파일 옵션
 tasks.withType(JavaCompile).configureEach {
 	options.encoding = 'UTF-8'

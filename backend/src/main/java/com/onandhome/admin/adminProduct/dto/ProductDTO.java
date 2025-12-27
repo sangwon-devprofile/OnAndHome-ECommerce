@@ -36,6 +36,8 @@ public class ProductDTO {
 
     private String country; // 제조국
 
+    private String status; // 상품 상태
+
     private LocalDateTime createdAt; // 등록일자
 
     private LocalDateTime updatedAt; // 수정일자
@@ -62,6 +64,7 @@ public class ProductDTO {
                 .category(product.getCategory())
                 .manufacturer(product.getManufacturer())
                 .country(product.getCountry())
+                .status(product.getStatus())
                 .createdAt(product.getCreatedAt())
                 .updatedAt(product.getUpdatedAt())
                 .build();
@@ -84,6 +87,7 @@ public class ProductDTO {
                 .category(this.category)
                 .manufacturer(this.manufacturer)
                 .country(this.country)
+                .status(this.status != null ? this.status : "판매중")
                 .createdAt(this.createdAt)
                 .updatedAt(this.updatedAt)
                 .build();

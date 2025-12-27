@@ -167,11 +167,26 @@ public class ProductService {
         if (productDTO.getCountry() != null) {
             product.setCountry(productDTO.getCountry());
         }
+        if (productDTO.getStatus() != null) {
+            product.setStatus(productDTO.getStatus());
+        }
 
         Product updatedProduct = productRepository.save(product);
         log.info("상품 수정: {} (ID: {})", id, updatedProduct.getName());
 
         return ProductDTO.fromEntity(updatedProduct);
+    }
+
+    /**
+     * 상품 상태 변경
+     */
+    public void updateStatus(Long id, String status) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
+        
+        product.setStatus(status);
+        productRepository.save(product);
+        log.info("상품 상태 변경: {} -> {}", id, status);
     }
 
     /**

@@ -20,9 +20,15 @@ class WebSocketService {
       return;
     }
 
+    // localStorage에서 토큰 가져오기
+    const token = localStorage.getItem("accessToken");
+    const socketUrl = token 
+      ? `http://localhost:8080/ws?token=${token}`
+      : "http://localhost:8080/ws";
+
     // WebSocket(SockJS) + STOMP 클라이언트 생성
     this.client = new Client({
-      webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
+      webSocketFactory: () => new SockJS(socketUrl),
       reconnectDelay: this.reconnectDelay,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,

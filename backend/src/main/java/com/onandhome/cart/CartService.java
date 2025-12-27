@@ -1,7 +1,6 @@
 package com.onandhome.cart;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import com.onandhome.cart.entity.CartItem;

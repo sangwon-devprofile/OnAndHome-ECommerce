@@ -63,8 +63,12 @@ const HomePage = () => {
     return price?.toLocaleString() || '0';
   };
 
-  const handleProductClick = (productId) => {
-    navigate(`/products/${productId}`);
+  const handleProductClick = (product) => {
+    if (product.stock === 0 || product.status === '판매중지') {
+      alert("품절된 상품입니다.");
+      return;
+    }
+    navigate(`/products/${product.productId}`);
   };
 
   const handleSlideClick = (productId) => {
@@ -147,38 +151,64 @@ const HomePage = () => {
             {products.length > 0 && (
               <>
                 <div className="item-array">
-                  {products.slice(0, 3).map((product) => (
-                    <div
-                      key={product.productId}
-                      className="item-thum-wrapper"
-                      onClick={() => handleProductClick(product.productId)}
-                    >
-                      <img src={product.mainImg || '/images/placeholder.png'} alt={product.productName} />
-                      <div className="item-info">
-                        <div className="item-title">{product.productName}</div>
-                        <ul className="price-info">
-                          <li className="price-info-sale">{formatPrice(product.salePrice)}원</li>
-                        </ul>
+                  {products.slice(0, 3).map((product) => {
+                    const isSoldOut = product.stock === 0 || product.status === '판매중지';
+                    return (
+                      <div
+                        key={product.productId}
+                        className={`item-thum-wrapper ${isSoldOut ? 'is-sold-out' : ''}`}
+                        onClick={() => handleProductClick(product)}
+                        style={{ position: 'relative' }}
+                      >
+                        <img 
+                          src={product.mainImg || '/images/placeholder.png'} 
+                          alt={product.productName} 
+                          style={isSoldOut ? { filter: 'grayscale(1) opacity(0.6)' } : {}}
+                        />
+                        {isSoldOut && (
+                          <div className="sold-out-overlay-small">
+                            <span>SOLD OUT</span>
+                          </div>
+                        )}
+                        <div className="item-info">
+                          <div className="item-title">{product.productName}</div>
+                          <ul className="price-info">
+                            <li className="price-info-sale">{formatPrice(product.salePrice)}원</li>
+                          </ul>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 <div className="item-array">
-                  {products.slice(3, 6).map((product) => (
-                    <div
-                      key={product.productId}
-                      className="item-thum-wrapper"
-                      onClick={() => handleProductClick(product.productId)}
-                    >
-                      <img src={product.mainImg || '/images/placeholder.png'} alt={product.productName} />
-                      <div className="item-info">
-                        <div className="item-title">{product.productName}</div>
-                        <ul className="price-info">
-                          <li className="price-info-sale">{formatPrice(product.salePrice)}원</li>
-                        </ul>
+                  {products.slice(3, 6).map((product) => {
+                    const isSoldOut = product.stock === 0 || product.status === '판매중지';
+                    return (
+                      <div
+                        key={product.productId}
+                        className={`item-thum-wrapper ${isSoldOut ? 'is-sold-out' : ''}`}
+                        onClick={() => handleProductClick(product)}
+                        style={{ position: 'relative' }}
+                      >
+                        <img 
+                          src={product.mainImg || '/images/placeholder.png'} 
+                          alt={product.productName} 
+                          style={isSoldOut ? { filter: 'grayscale(1) opacity(0.6)' } : {}}
+                        />
+                        {isSoldOut && (
+                          <div className="sold-out-overlay-small">
+                            <span>SOLD OUT</span>
+                          </div>
+                        )}
+                        <div className="item-info">
+                          <div className="item-title">{product.productName}</div>
+                          <ul className="price-info">
+                            <li className="price-info-sale">{formatPrice(product.salePrice)}원</li>
+                          </ul>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </>
             )}
@@ -194,38 +224,64 @@ const HomePage = () => {
             {topProducts.length > 0 && (
               <>
                 <div className="item-array">
-                  {topProducts.slice(0, 3).map((product) => (
-                    <div
-                      key={product.productId}
-                      className="item-thum-wrapper"
-                      onClick={() => handleProductClick(product.productId)}
-                    >
-                      <img src={product.mainImg || '/images/placeholder.png'} alt={product.productName} />
-                      <div className="item-info">
-                        <div className="item-title">{product.productName}</div>
-                        <ul className="price-info">
-                          <li className="price-info-sale">{formatPrice(product.salePrice)}원</li>
-                        </ul>
+                  {topProducts.slice(0, 3).map((product) => {
+                    const isSoldOut = product.stock === 0 || product.status === '판매중지';
+                    return (
+                      <div
+                        key={product.productId}
+                        className={`item-thum-wrapper ${isSoldOut ? 'is-sold-out' : ''}`}
+                        onClick={() => handleProductClick(product)}
+                        style={{ position: 'relative' }}
+                      >
+                        <img 
+                          src={product.mainImg || '/images/placeholder.png'} 
+                          alt={product.productName} 
+                          style={isSoldOut ? { filter: 'grayscale(1) opacity(0.6)' } : {}}
+                        />
+                        {isSoldOut && (
+                          <div className="sold-out-overlay-small">
+                            <span>SOLD OUT</span>
+                          </div>
+                        )}
+                        <div className="item-info">
+                          <div className="item-title">{product.productName}</div>
+                          <ul className="price-info">
+                            <li className="price-info-sale">{formatPrice(product.salePrice)}원</li>
+                          </ul>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 <div className="item-array">
-                  {topProducts.slice(3, 6).map((product) => (
-                    <div
-                      key={product.productId}
-                      className="item-thum-wrapper"
-                      onClick={() => handleProductClick(product.productId)}
-                    >
-                      <img src={product.mainImg || '/images/placeholder.png'} alt={product.productName} />
-                      <div className="item-info">
-                        <div className="item-title">{product.productName}</div>
-                        <ul className="price-info">
-                          <li className="price-info-sale">{formatPrice(product.salePrice)}원</li>
-                        </ul>
+                  {topProducts.slice(3, 6).map((product) => {
+                    const isSoldOut = product.stock === 0 || product.status === '판매중지';
+                    return (
+                      <div
+                        key={product.productId}
+                        className={`item-thum-wrapper ${isSoldOut ? 'is-sold-out' : ''}`}
+                        onClick={() => handleProductClick(product)}
+                        style={{ position: 'relative' }}
+                      >
+                        <img 
+                          src={product.mainImg || '/images/placeholder.png'} 
+                          alt={product.productName} 
+                          style={isSoldOut ? { filter: 'grayscale(1) opacity(0.6)' } : {}}
+                        />
+                        {isSoldOut && (
+                          <div className="sold-out-overlay-small">
+                            <span>SOLD OUT</span>
+                          </div>
+                        )}
+                        <div className="item-info">
+                          <div className="item-title">{product.productName}</div>
+                          <ul className="price-info">
+                            <li className="price-info-sale">{formatPrice(product.salePrice)}원</li>
+                          </ul>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </>
             )}

@@ -1,7 +1,9 @@
 package com.onandhome.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.socket.config.WebSocketMessageBrokerStats;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -43,10 +45,22 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws")
 
                 // React 개발 환경(CORS 허용)
-                .setAllowedOriginPatterns("http://localhost:3000")
+                .setAllowedOriginPatterns("http://localhost:3000", "http://127.0.0.1:3000")
 
                 // WebSocket을 지원하지 않는 브라우저에서도 통신 가능하도록 SockJS 사용
                 .withSockJS();
+    }
+
+    /**
+     * WebSocket 통계 로그 설정
+     * 실행 시 "WebSocketMessageBrokerStats[...]" 로그가 반복적으로 출력되는 것을 방지하기 위해
+     * 로깅 주기를 0으로 설정하여 비활성화합니다.
+     */
+    @Bean
+    public WebSocketMessageBrokerStats customWebSocketMessageBrokerStats() {
+        WebSocketMessageBrokerStats stats = new WebSocketMessageBrokerStats();
+        stats.setLoggingPeriod(0); // 0으로 설정하면 통계 로그를 출력하지 않음
+        return stats;
     }
 }
 

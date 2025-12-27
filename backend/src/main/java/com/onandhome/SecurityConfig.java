@@ -1,5 +1,8 @@
 package com.onandhome;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.List;
 
@@ -113,6 +116,10 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        // #region agent log
+        logToDebugFile("B", "SecurityConfig.java:117", "filterChain initialization started", null);
+        // #endregion
+        long start = System.currentTimeMillis();
         log.info("==================== Security Config ====================");
 
         /**
@@ -266,8 +273,24 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
         );
 
+        long end = System.currentTimeMillis();
+        // #region agent log
+        logToDebugFile("B", "SecurityConfig.java:269", "filterChain initialization finished", "Duration: " + (end - start) + "ms");
+        // #endregion
         return http.build();
     }
+
+    // #region agent log
+    private void logToDebugFile(String hypothesisId, String location, String message, Object data) {
+        try {
+            String logLine = String.format("{\"sessionId\":\"debug-session\",\"runId\":\"run1\",\"hypothesisId\":\"%s\",\"location\":\"%s\",\"message\":\"%s\",\"data\":%s,\"timestamp\":%d}\n",
+                hypothesisId, location, message, data == null ? "null" : "\"" + data.toString().replace("\"", "\\\"") + "\"", System.currentTimeMillis());
+            Files.write(Paths.get("c:\\OnAndHome-ECommerce\\.cursor\\debug.log"), logLine.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        } catch (Exception e) {
+            // ignore
+        }
+    }
+    // #endregion
 
     /**
      * CORS 설정 (소셜 로그인 + JWT 대응 완성본)
@@ -289,7 +312,7 @@ public class SecurityConfig {
         ));
 
         // Methods 허용
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
 
         // Headers 허용
         config.setAllowedHeaders(List.of("*"));

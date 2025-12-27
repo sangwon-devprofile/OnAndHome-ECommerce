@@ -307,6 +307,8 @@ useEffect(() => {
           <form className="home-search-form" onSubmit={handleSearchSubmit}>
             <input
               type="text"
+              id="home-search"
+              name="searchKeyword"
               className="home-search-input"
               placeholder={homePlaceholder}
               value={searchKeyword}
@@ -392,19 +394,20 @@ useEffect(() => {
                   <Link
                     to={`/products/${product.id}`}
                     key={product.id}
-                    className={`product-card ${(product.stock === 0 || product.stock === null) ? 'out-of-stock' : ''}`}
+                    className={`product-card ${(product.stock === 0 || product.stock === null || product.status === '판매중지') ? 'out-of-stock' : ''}`}
                   >
                     <div className="product-image">
                       <img
                         src={getImageUrl(product.thumbnailImage)}
                         alt={product.name}
+                        style={(product.stock === 0 || product.stock === null || product.status === '판매중지') ? { filter: 'grayscale(1) opacity(0.6)' } : {}}
                         onError={(e) => {
                           e.target.src = "/images/item.png";
                         }}
                       />
 
                       {/* 품절 표시 */}
-                      {(product.stock === 0 || product.stock === null) && (
+                      {(product.stock === 0 || product.stock === null || product.status === '판매중지') && (
                         <div className="sold-out-overlay">
                           <div className="sold-out-badge">
                             <span>SOLD OUT</span>
@@ -510,19 +513,20 @@ useEffect(() => {
                   <Link
                     to={`/products/${product.id}`}
                     key={product.id}
-                    className={`product-card ${(product.stock === 0 || product.stock === null) ? 'out-of-stock' : ''}`}
+                    className={`product-card ${(product.stock === 0 || product.stock === null || product.status === '판매중지') ? 'out-of-stock' : ''}`}
                   >
                     <div className="product-image">
                       <img
                         src={getImageUrl(product.thumbnailImage)}
                         alt={product.name}
+                        style={(product.stock === 0 || product.stock === null || product.status === '판매중지') ? { filter: 'grayscale(1) opacity(0.6)' } : {}}
                         onError={(e) => {
                           e.target.src = "/images/item.png";
                         }}
                       />
 
                       {/* 품절 표시 */}
-                      {(product.stock === 0 || product.stock === null) && (
+                      {(product.stock === 0 || product.stock === null || product.status === '판매중지') && (
                         <div className="sold-out-overlay">
                           <div className="sold-out-badge">
                             <span>SOLD OUT</span>

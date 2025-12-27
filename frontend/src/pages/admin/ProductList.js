@@ -59,8 +59,8 @@ const ProductList = () => {
         const mappedProducts = response.data.map((product) => ({
           ...product,
           checked: false,
-          // 재고에 따른 상태 자동 설정
-          status: product.stock === 0 ? '품절' : '판매중'
+          // 재고가 0이면 품절, 아니면 백엔드 상태값 유지
+          status: product.stock === 0 ? '품절' : (product.status || '판매중')
         }));
         
         console.log('Mapped products:', mappedProducts);
@@ -196,9 +196,11 @@ const ProductList = () => {
 
   const handleStatusChange = async (productId, currentStatus) => {
     const newStatus = currentStatus === '판매중' ? '판매중지' : '판매중';
+    console.log(`[DEBUG] 상태 변경 시도: ID=${productId}, 현재=${currentStatus}, 변경=${newStatus}`);
     
     try {
       const token = localStorage.getItem('accessToken');
+      console.log("[DEBUG] 토큰 유무:", !!token);
       
       if (!token) {
         alert('로그인이 필요합니다.');
@@ -216,6 +218,8 @@ const ProductList = () => {
           }
         }
       );
+      
+      console.log("[DEBUG] 상태 변경 응답:", response.data);
       
       if (response.data && response.data.success) {
         // 로컬 상태 업데이트
@@ -425,7 +429,9 @@ const ProductList = () => {
             <span className="separator">|</span>
             <span>판매중: {filteredProducts.filter(p => p.status === '판매중').length}개</span>
             <span className="separator">|</span>
-            <span>품절: {filteredProducts.filter(p => p.stock === 0 || p.status === '품절').length}개</span>
+            <span>품절: {filteredProducts.filter(p => p.status === '품절').length}개</span>
+            <span className="separator">|</span>
+            <span>중지: {filteredProducts.filter(p => p.status === '판매중지').length}개</span>
           </div>
         </div>
       </div>

@@ -62,6 +62,11 @@ public class Product {
 	@JsonProperty("country")
 	private String country; // 제조국
 
+	@Column(length = 20)
+	@JsonProperty("status")
+	@Builder.Default
+	private String status = "판매중"; // 상품 상태 (판매중, 품절, 판매중지 등)
+
 	@Column(name = "created_at")
 	@JsonProperty("createdAt")
 	private LocalDateTime createdAt; // 등록일자

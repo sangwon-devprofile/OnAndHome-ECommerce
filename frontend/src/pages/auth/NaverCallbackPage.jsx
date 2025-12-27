@@ -186,17 +186,6 @@ const NaverCallbackPage = () => {
             margin: "0 auto 20px",
           }}
         ></div>
-        <h2 style={{ marginBottom: "10px", color: "#333" }}>
-          네이버 로그인 처리 중...
-        </h2>
-        <p style={{ color: "#666", fontSize: "14px" }}>잠시만 기다려주세요.</p>
-
-        <style>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
       </div>
     </div>
   );

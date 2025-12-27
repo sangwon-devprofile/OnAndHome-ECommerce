@@ -564,6 +564,8 @@ const ProductDetail = () => {
                 height: "auto",
                 display: "block",
                 objectFit: "contain",
+                // 추가: 판매중지 또는 재고없음 시 흐리게 처리
+                filter: (product.status === '판매중지' || product.stock === 0 || product.stock === null) ? 'grayscale(1) opacity(0.6)' : 'none'
               }}
               onError={(e) => {
                 e.target.src = "/images/item.png";
@@ -639,12 +641,21 @@ const ProductDetail = () => {
               >
                 {isFavorite ? "❤️" : "🤍"}
               </button>
+              {/* 판매 상태에 따른 버튼 분기 처리 */}
+              {(product.status === '판매중지' || product.stock === 0) ? (
+                <button className="btn btn-buy" disabled style={{ backgroundColor: '#ccc', cursor: 'not-allowed', width: '100%' }}>
+                  품절된 상품입니다
+                </button>
+              ) : (
+                <>
               <button className="btn btn-buy" onClick={handleBuyNow}>
                 바로구매
               </button>
               <button className="btn btn-cart" onClick={handleAddToCart}>
                 장바구니 담기
               </button>
+              </>
+              )}
             </div>
 
             <div className="order-summary">
