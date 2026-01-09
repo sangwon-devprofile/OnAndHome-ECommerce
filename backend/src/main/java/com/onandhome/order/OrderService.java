@@ -33,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 public class OrderService {
 
     private final OrderRepository orderRepo;
-    private final OrderItemRepository orderItemRepo;
     private final UserRepository userRepo;
     private final ProductRepository productRepo;
     private final CartItemRepository cartRepo;

@@ -196,7 +196,7 @@ public class AdminOrderRestController {
         // 사용자 정보
         if (order.getUser() != null) {
             dto.setUserId(order.getUser().getUserId());
-            dto.setUserName(order.getUser().getUsername());
+            dto.setUsername(order.getUser().getUsername());
             dto.setPhone(order.getUser().getPhone());
             dto.setEmail(order.getUser().getEmail());
             dto.setUserEmail(order.getUser().getEmail());

@@ -1,8 +1,6 @@
 package com.onandhome.user;
 
 import com.onandhome.user.dto.UserDTO;
-import com.onandhome.user.entity.User;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +21,6 @@ public class UserRestController {
 
     private final UserService userService;
     private final com.onandhome.util.JWTUtil jwtUtil;
-    private static final String SESSION_USER_KEY = "loginUser";
 
     /**
      * 현재 로그인한 사용자 정보 조회 - JWT 기반

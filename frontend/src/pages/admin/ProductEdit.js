@@ -30,7 +30,7 @@ const ProductEdit = () => {
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [detailPreview, setDetailPreview] = useState(null);
   
-  // 카테고리 ?�이??state
+  // 카테고리 데이터 state
   const [categories, setCategories] = useState([]);
   const [selectedMainCategory, setSelectedMainCategory] = useState(null);
 
@@ -39,15 +39,15 @@ const ProductEdit = () => {
     fetchProductData();
   }, [id]);
 
-  // 카테고리 ?�이??가?�오�?
+  // 카테고리 데이터 가져오기
   const fetchCategories = async () => {
     try {
       const response = await apiClient.get('/api/admin/products/categories');
       setCategories(response.data);
-      console.log('카테고리 ?�이??로드 ?�공:', response.data);
+      console.log('카테고리 데이터 로드 성공:', response.data);
     } catch (error) {
-      console.error('카테고리 로드 ?�패:', error);
-      alert('카테고리 ?�이?��? 불러?�는???�패?�습?�다.');
+      console.error('카테고리 로드 실패:', error);
+      alert('카테고리 데이터를 불러오는데 실패했습니다.');
     }
   };
 
@@ -59,7 +59,7 @@ const ProductEdit = () => {
 
       console.log('Fetched product:', product);
 
-      // ?�세?�펙 ?�싱
+      // 상세스펙 파싱
       let specs = {};
       try {
         specs = product.description ? JSON.parse(product.description) : {};
@@ -83,7 +83,7 @@ const ProductEdit = () => {
         detailImage: null
       });
 
-      // ?��?지 미리보기 ?�정
+      // 이미지 미리보기 설정
       if (product.thumbnailImage) {
         setThumbnailPreview(product.thumbnailImage);
       }
@@ -92,15 +92,15 @@ const ProductEdit = () => {
       }
 
     } catch (error) {
-      console.error('?�품 ?�보 조회 ?�패:', error);
-      alert('?�품 ?�보�?불러?????�습?�다.');
+      console.error('상품 정보 조회 실패:', error);
+      alert('상품 정보를 불러올 수 없습니다.');
       navigate('/admin/products');
     } finally {
       setFetchLoading(false);
     }
   };
 
-  // ?�재 ?�품??카테고리??맞는 ?�카테고리 찾기
+  // 현재 상품의 카테고리에 맞는 대카테고리 찾기
   useEffect(() => {
     if (formData.category && categories.length > 0) {
       const mainCat = categories.find(cat => 
@@ -120,17 +120,17 @@ const ProductEdit = () => {
     }));
   };
 
-  // ?�카테고리 ?�택 ?�들??
+  // 대카테고리 선택 핸들러
   const handleMainCategoryChange = (e) => {
     const mainCategoryValue = e.target.value;
     setSelectedMainCategory(mainCategoryValue);
     setFormData(prev => ({
       ...prev,
-      category: '' // ?�카?�고�?초기??
+      category: '' // 서브카테고리 초기화
     }));
   };
 
-  // ?�카?�고�??�택 ?�들??
+  // 서브카테고리 선택 핸들러
   const handleSubCategoryChange = (e) => {
     const subCategoryValue = e.target.value;
     setFormData(prev => ({
@@ -185,7 +185,7 @@ const ProductEdit = () => {
     e.preventDefault();
 
     if (!formData.name || !formData.category || !formData.price) {
-      alert('?�품�? 카테고리, ?�상가격�? ?�수 ?�력 ??��?�니??');
+      alert('상품명, 카테고리, 정상가격은 필수 입력 항목입니다.');
       return;
     }
 
@@ -204,7 +204,7 @@ const ProductEdit = () => {
       submitData.append('stock', formData.stock || 0);
       submitData.append('description', formData.additionalFeatures || '');
 
-      // ?�일???�제 File 객체???�만 추�?
+      // 파일이 실제 File 객체일 때만 추가
       if (formData.thumbnailImage instanceof File) {
         submitData.append('thumbnailImage', formData.thumbnailImage);
         console.log('Uploading new thumbnail image');
@@ -216,7 +216,7 @@ const ProductEdit = () => {
 
       console.log('Updating product data...');
       
-      // FormData ?�용 로깅
+      // FormData 내용 로깅
       for (let pair of submitData.entries()) {
         console.log(pair[0] + ': ' + pair[1]);
       }
@@ -234,19 +234,19 @@ const ProductEdit = () => {
       console.log('Product updated:', response.data);
       
       if (response.data && response.data.success) {
-        alert('?�품???�정?�었?�니??');
+        alert('상품이 수정되었습니다.');
         navigate('/admin/products');
       } else {
-        alert(response.data.message || '?�품 ?�정???�패?�습?�다.');
+        alert(response.data.message || '상품 수정에 실패했습니다.');
       }
 
     } catch (error) {
-      console.error('?�품 ?�정 ?�패:', error);
+      console.error('상품 수정 실패:', error);
       
       if (error.response?.data?.message) {
-        alert(`?�품 ?�정 ?�패: ${error.response.data.message}`);
+        alert(`상품 수정 실패: ${error.response.data.message}`);
       } else {
-        alert('?�품 ?�정 �??�류가 발생?�습?�다.');
+        alert('상품 수정 중 오류가 발생했습니다.');
       }
     } finally {
       setLoading(false);
@@ -254,12 +254,12 @@ const ProductEdit = () => {
   };
 
   const handleCancel = () => {
-    if (window.confirm('?�정 중인 ?�용????��?�니?? 취소?�시겠습?�까?')) {
+    if (window.confirm('수정 중인 내용이 삭제됩니다. 취소하시겠습니까?')) {
       navigate('/admin/products');
     }
   };
 
-  // ?�재 ?�택???�카테고리???�카?�고�?목록 가?�오�?
+  // 현재 선택된 대카테고리의 서브카테고리 목록 가져오기
   const getCurrentSubCategories = () => {
     if (!selectedMainCategory) return [];
     const mainCat = categories.find(cat => cat.parentCategory === selectedMainCategory);
@@ -272,7 +272,7 @@ const ProductEdit = () => {
         <AdminSidebar />
         <div className="product-form-main">
           <div className="loading-overlay">
-            <div className="loading-spinner">로딩 �?..</div>
+            <div className="loading-spinner">로딩 중...</div>
           </div>
         </div>
       </div>
@@ -288,7 +288,7 @@ const ProductEdit = () => {
 
         {loading && (
           <div className="loading-overlay">
-            <div className="loading-spinner">?�정 �?..</div>
+            <div className="loading-spinner">수정 중...</div>
           </div>
         )}
 
@@ -297,7 +297,7 @@ const ProductEdit = () => {
             <table className="form-table">
               <tbody>
                 <tr>
-                  <th>?�품코드</th>
+                  <th>상품코드</th>
                   <td>
                     <input
                       type="text"
@@ -308,7 +308,7 @@ const ProductEdit = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>?�록?�자</th>
+                  <th>등록일자</th>
                   <td>
                     <input
                       type="text"
@@ -319,14 +319,14 @@ const ProductEdit = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>?�품�?/th>
+                  <th>상품명</th>
                   <td>
                     <input
                       type="text"
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="?�품명을 ?�력?�세??
+                      placeholder="상품명을 입력하세요"
                       required
                     />
                   </td>
@@ -340,7 +340,7 @@ const ProductEdit = () => {
                         onChange={handleMainCategoryChange}
                         required
                       >
-                        <option value="">?�택1</option>
+                        <option value="">선택</option>
                         {categories.map(cat => (
                           <option key={cat.parentCategory} value={cat.parentCategory}>
                             {cat.parentCategoryName}
@@ -353,7 +353,7 @@ const ProductEdit = () => {
                         disabled={!selectedMainCategory}
                         required
                       >
-                        <option value="">?�택2</option>
+                        <option value="">선택2</option>
                         {getCurrentSubCategories().map(subCat => (
                           <option key={subCat} value={subCat}>{subCat}</option>
                         ))}
@@ -362,24 +362,24 @@ const ProductEdit = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>?�고?�량</th>
+                  <th>재고수량</th>
                   <td>
                     <input
                       type="number"
                       name="stock"
                       value={formData.stock}
                       onChange={handleInputChange}
-                      placeholder="?�고 ?�량"
+                      placeholder="재고 수량"
                       min="0"
                     />
                   </td>
                 </tr>
                 <tr>
-                  <th>목록?��?지</th>
+                  <th>목록이미지</th>
                   <td>
                     <div className="file-upload-container">
                       <label className="file-upload-btn">
-                        ?�일첨�?
+                        파일첨부
                         <input
                           type="file"
                           accept="image/*"
@@ -407,11 +407,11 @@ const ProductEdit = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>?�세?�이지</th>
+                  <th>상세페이지</th>
                   <td>
                     <div className="file-upload-container">
                       <label className="file-upload-btn">
-                        ?�일첨�?
+                        파일첨부
                         <input
                           type="file"
                           accept="image/*"
@@ -439,52 +439,52 @@ const ProductEdit = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>?�조??/th>
+                  <th>제조사</th>
                   <td>
                     <input
                       type="text"
                       name="manufacturer"
                       value={formData.manufacturer}
                       onChange={handleInputChange}
-                      placeholder="?�조??
+                      placeholder="제조사"
                     />
                   </td>
                 </tr>
                 <tr>
-                  <th>?�조�?/th>
+                  <th>제조국</th>
                   <td>
                     <input
                       type="text"
                       name="country"
                       value={formData.country}
                       onChange={handleInputChange}
-                      placeholder="?�조�?
+                      placeholder="제조국"
                     />
                   </td>
                 </tr>
                 <tr>
-                  <th>?�상가�?/th>
+                  <th>정상가격</th>
                   <td>
                     <input
                       type="number"
                       name="price"
                       value={formData.price}
                       onChange={handleInputChange}
-                      placeholder="?�상가�?
+                      placeholder="정상가격"
                       required
                       min="0"
                     />
                   </td>
                 </tr>
                 <tr>
-                  <th>?�인가�?/th>
+                  <th>할인가격</th>
                   <td>
                     <input
                       type="number"
                       name="salePrice"
                       value={formData.salePrice}
                       onChange={handleInputChange}
-                      placeholder="?�인가�?
+                      placeholder="할인가격"
                       min="0"
                     />
                   </td>
@@ -497,24 +497,24 @@ const ProductEdit = () => {
                 목록
               </button>
               <button type="submit" className="submit-btn" disabled={loading}>
-                ?�록
+                등록
               </button>
             </div>
           </div>
 
           <div className="form-section">
-            <h2>?�세?�펙</h2>
+            <h2>상세스펙</h2>
             <table className="form-table">
               <tbody>
                 <tr>
-                  <th>추�??�품</th>
+                  <th>추가구성품</th>
                   <td>
                     <input
                       type="text"
                       name="additionalFeatures"
                       value={formData.additionalFeatures}
                       onChange={handleInputChange}
-                      placeholder="추�??�품"
+                      placeholder="추가구성품"
                     />
                   </td>
                 </tr>
@@ -526,7 +526,7 @@ const ProductEdit = () => {
                 목록
               </button>
               <button type="submit" className="submit-btn" disabled={loading}>
-                ?�정
+                수정
               </button>
             </div>
           </div>
@@ -537,4 +537,3 @@ const ProductEdit = () => {
 };
 
 export default ProductEdit;
-

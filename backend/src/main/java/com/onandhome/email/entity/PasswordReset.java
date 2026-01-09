@@ -29,6 +29,7 @@ public class PasswordReset {
     @Column(nullable = false)
     private LocalDateTime expiresAt;
     
+    @Builder.Default
     @Column(nullable = false)
     private boolean verified = false;
     

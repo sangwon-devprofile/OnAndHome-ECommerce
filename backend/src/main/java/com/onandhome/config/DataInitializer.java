@@ -1,6 +1,5 @@
 package com.onandhome.config;
 
-import com.onandhome.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -11,8 +10,6 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 @Slf4j
 public class DataInitializer {
-    
-    private final UserRepository userRepository;
     
     /**
      * 애플리케이션 시작 시 초기 데이터 설정

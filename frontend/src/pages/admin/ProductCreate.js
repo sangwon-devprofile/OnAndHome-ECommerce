@@ -32,7 +32,7 @@ const ProductCreate = () => {
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [detailPreview, setDetailPreview] = useState(null);
 
-  // 카테고리 ?�이??state
+  // 카테고리 데이터 state
   const [categories, setCategories] = useState([]);
   const [selectedMainCategory, setSelectedMainCategory] = useState('');
 
@@ -40,20 +40,20 @@ const ProductCreate = () => {
     fetchCategories();
   }, []);
 
-  // 카테고리 ?�이??가?�오�?
+  // 카테고리 데이터 가져오기
   const fetchCategories = async () => {
     try {
       const response = await apiClient.get('/api/admin/products/categories');
       setCategories(response.data);
-      console.log('카테고리 ?�이??로드 ?�공:', response.data);
+      console.log('카테고리 데이터 로드 성공:', response.data);
     } catch (error) {
-      console.error('카테고리 로드 ?�패:', error);
+      console.error('카테고리 로드 실패:', error);
       
       if (error.response?.status === 401) {
-        alert('로그?�이 ?�요?�니??');
+        alert('로그인이 필요합니다.');
         navigate('/admin/login');
       } else {
-        alert('카테고리 ?�이?��? 불러?�는???�패?�습?�다.');
+        alert('카테고리 데이터를 불러오는데 실패했습니다.');
       }
     }
   };
@@ -66,17 +66,17 @@ const ProductCreate = () => {
     }));
   };
 
-  // ?�카테고리 ?�택 ?�들??
+  // 대카테고리 선택 핸들러
   const handleMainCategoryChange = (e) => {
     const mainCategoryValue = e.target.value;
     setSelectedMainCategory(mainCategoryValue);
     setFormData(prev => ({
       ...prev,
-      category: '' // ?�카?�고�?초기??
+      category: '' // 서브카테고리 초기화
     }));
   };
 
-  // ?�카?�고�??�택 ?�들??
+  // 서브카테고리 선택 핸들러
   const handleSubCategoryChange = (e) => {
     const subCategoryValue = e.target.value;
     setFormData(prev => ({
@@ -85,7 +85,7 @@ const ProductCreate = () => {
     }));
   };
 
-  // ?�재 ?�택???�카테고리???�카?�고�?목록 가?�오�?
+  // 현재 선택된 대카테고리의 서브카테고리 목록 가져오기
   const getCurrentSubCategories = () => {
     if (!selectedMainCategory) return [];
     const mainCat = categories.find(cat => cat.parentCategory === selectedMainCategory);
@@ -128,15 +128,15 @@ const ProductCreate = () => {
     e.preventDefault();
 
     if (!formData.name || !formData.category || !formData.price) {
-      alert('?�품�? 카테고리, ?�상가격�? ?�수 ?�력 ??��?�니??');
+      alert('상품명, 카테고리, 정상가격은 필수 입력 항목입니다.');
       return;
     }
 
-    // JWT ?�큰 ?�인
+    // JWT 토큰 확인
     const token = localStorage.getItem('accessToken');
     
     if (!token) {
-      alert('로그?�이 ?�요?�니?? ?�시 로그?�해주세??');
+      alert('로그인이 필요합니다. 다시 로그인해주세요.');
       navigate('/admin/login');
       return;
     }
@@ -155,13 +155,13 @@ const ProductCreate = () => {
       submitData.append('salePrice', formData.salePrice || formData.price);
       submitData.append('stock', formData.stock || 0);
       
-      // ?�세?�펙??문자?�로 ?�??
+      // 상세스펙 문자열로 합침
       const specs = [
-        formData.size && `?�기: ${formData.size}`,
+        formData.size && `크기: ${formData.size}`,
         formData.weight && `무게: ${formData.weight}`,
-        formData.power && `?�압: ${formData.power}`,
-        formData.material && `?�질: ${formData.material}`,
-        formData.additionalFeatures && `추�??�품: ${formData.additionalFeatures}`
+        formData.power && `전압: ${formData.power}`,
+        formData.material && `재질: ${formData.material}`,
+        formData.additionalFeatures && `추가구성품: ${formData.additionalFeatures}`
       ].filter(Boolean).join(', ');
       
       submitData.append('description', specs);
@@ -177,7 +177,7 @@ const ProductCreate = () => {
 
       console.log('Submitting product data...');
       
-      // FormData ?�용 로깅
+      // FormData 내용 로깅
       for (let pair of submitData.entries()) {
         console.log(pair[0] + ': ' + pair[1]);
       }
@@ -196,24 +196,24 @@ const ProductCreate = () => {
       console.log('Product created:', response.data);
       
       if (response.data && response.data.success) {
-        alert('?�품???�록?�었?�니??');
+        alert('상품이 등록되었습니다.');
         navigate('/admin/products');
       } else {
-        alert(response.data.message || '?�품 ?�록???�패?�습?�다.');
+        alert(response.data.message || '상품 등록에 실패했습니다.');
       }
 
     } catch (error) {
-      console.error('?�품 ?�록 ?�패:', error);
+      console.error('상품 등록 실패:', error);
       
       if (error.response?.status === 401) {
-        alert('로그?�이 만료?�었?�니?? ?�시 로그?�해주세??');
+        alert('로그인이 만료되었습니다. 다시 로그인해주세요.');
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         navigate('/admin/login');
       } else if (error.response?.data?.message) {
-        alert(`?�품 ?�록 ?�패: ${error.response.data.message}`);
+        alert(`상품 등록 실패: ${error.response.data.message}`);
       } else {
-        alert('?�품 ?�록 �??�류가 발생?�습?�다.');
+        alert('상품 등록 중 오류가 발생했습니다.');
       }
     } finally {
       setLoading(false);
@@ -221,7 +221,7 @@ const ProductCreate = () => {
   };
 
   const handleCancel = () => {
-    if (window.confirm('?�성 중인 ?�용????��?�니?? 취소?�시겠습?�까?')) {
+    if (window.confirm('작성 중인 내용이 삭제됩니다. 취소하시겠습니까?')) {
       navigate('/admin/products');
     }
   };
@@ -235,7 +235,7 @@ const ProductCreate = () => {
 
         {loading && (
           <div className="loading-overlay">
-            <div className="loading-spinner">?�록 �?..</div>
+            <div className="loading-spinner">등록 중...</div>
           </div>
         )}
 
@@ -244,14 +244,14 @@ const ProductCreate = () => {
             <table className="form-table">
               <tbody>
                 <tr>
-                  <th>?�품�?/th>
+                  <th>상품명</th>
                   <td>
                     <input
                       type="text"
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="?�품명을 ?�력?�세??
+                      placeholder="상품명을 입력하세요"
                       required
                     />
                   </td>
@@ -265,7 +265,7 @@ const ProductCreate = () => {
                         onChange={handleMainCategoryChange}
                         required
                       >
-                        <option value="">?�택1</option>
+                        <option value="">선택</option>
                         {categories.map(cat => (
                           <option key={cat.parentCategory} value={cat.parentCategory}>
                             {cat.parentCategoryName}
@@ -278,7 +278,7 @@ const ProductCreate = () => {
                         disabled={!selectedMainCategory}
                         required
                       >
-                        <option value="">?�택2</option>
+                        <option value="">선택2</option>
                         {getCurrentSubCategories().map(subCat => (
                           <option key={subCat} value={subCat}>{subCat}</option>
                         ))}
@@ -287,24 +287,24 @@ const ProductCreate = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>?�고?�량</th>
+                  <th>재고수량</th>
                   <td>
                     <input
                       type="number"
                       name="stock"
                       value={formData.stock}
                       onChange={handleInputChange}
-                      placeholder="?�고 ?�량"
+                      placeholder="재고 수량"
                       min="0"
                     />
                   </td>
                 </tr>
                 <tr>
-                  <th>목록?��?지</th>
+                  <th>목록이미지</th>
                   <td>
                     <div className="file-upload-container">
                       <label className="file-upload-btn">
-                        ?�일첨�?
+                        파일첨부
                         <input
                           type="file"
                           accept="image/*"
@@ -328,11 +328,11 @@ const ProductCreate = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>?�세?�이지</th>
+                  <th>상세페이지</th>
                   <td>
                     <div className="file-upload-container">
                       <label className="file-upload-btn">
-                        ?�일첨�?
+                        파일첨부
                         <input
                           type="file"
                           accept="image/*"
@@ -356,52 +356,52 @@ const ProductCreate = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>?�조??/th>
+                  <th>제조사</th>
                   <td>
                     <input
                       type="text"
                       name="manufacturer"
                       value={formData.manufacturer}
                       onChange={handleInputChange}
-                      placeholder="?�조??
+                      placeholder="제조사"
                     />
                   </td>
                 </tr>
                 <tr>
-                  <th>?�조�?/th>
+                  <th>제조국</th>
                   <td>
                     <input
                       type="text"
                       name="country"
                       value={formData.country}
                       onChange={handleInputChange}
-                      placeholder="?�조�?
+                      placeholder="제조국"
                     />
                   </td>
                 </tr>
                 <tr>
-                  <th>?�상가�?/th>
+                  <th>정상가격</th>
                   <td>
                     <input
                       type="number"
                       name="price"
                       value={formData.price}
                       onChange={handleInputChange}
-                      placeholder="?�상가�?
+                      placeholder="정상가격"
                       required
                       min="0"
                     />
                   </td>
                 </tr>
                 <tr>
-                  <th>?�인가�?/th>
+                  <th>할인가격</th>
                   <td>
                     <input
                       type="number"
                       name="salePrice"
                       value={formData.salePrice}
                       onChange={handleInputChange}
-                      placeholder="?�인가�?
+                      placeholder="할인가격"
                       min="0"
                     />
                   </td>
@@ -414,24 +414,24 @@ const ProductCreate = () => {
                 목록
               </button>
               <button type="submit" className="submit-btn" disabled={loading}>
-                ?�록
+                등록
               </button>
             </div>
           </div>
 
           <div className="form-section">
-            <h2>?�세?�펙</h2>
+            <h2>상세스펙</h2>
             <table className="form-table">
               <tbody>
                 <tr>
-                  <th>?�기</th>
+                  <th>크기</th>
                   <td>
                     <input
                       type="text"
                       name="size"
                       value={formData.size}
                       onChange={handleInputChange}
-                      placeholder="?�기"
+                      placeholder="크기"
                     />
                   </td>
                 </tr>
@@ -448,50 +448,50 @@ const ProductCreate = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>?�압</th>
+                  <th>전압</th>
                   <td>
                     <input
                       type="text"
                       name="power"
                       value={formData.power}
                       onChange={handleInputChange}
-                      placeholder="?�압"
+                      placeholder="전압"
                     />
                   </td>
                 </tr>
                 <tr>
-                  <th>?�질</th>
+                  <th>재질</th>
                   <td>
                     <input
                       type="text"
                       name="material"
                       value={formData.material}
                       onChange={handleInputChange}
-                      placeholder="?�질"
+                      placeholder="재질"
                     />
                   </td>
                 </tr>
                 <tr>
-                  <th>추�??�품</th>
+                  <th>추가구성품</th>
                   <td>
                     <input
                       type="text"
                       name="additionalFeatures"
                       value={formData.additionalFeatures}
                       onChange={handleInputChange}
-                      placeholder="추�??�품"
+                      placeholder="추가구성품"
                     />
                   </td>
                 </tr>
                 <tr>
-                  <th>?�고?�량</th>
+                  <th>재고수량</th>
                   <td>
                     <input
                       type="text"
                       name="productCode2"
                       value={formData.productCode2}
                       onChange={handleInputChange}
-                      placeholder="?�품코드"
+                      placeholder="상품코드"
                     />
                   </td>
                 </tr>
@@ -503,7 +503,7 @@ const ProductCreate = () => {
                 목록
               </button>
               <button type="submit" className="submit-btn" disabled={loading}>
-                ?�록
+                등록
               </button>
             </div>
           </div>
@@ -514,4 +514,3 @@ const ProductCreate = () => {
 };
 
 export default ProductCreate;
-

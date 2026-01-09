@@ -1,6 +1,5 @@
 package com.onandhome.user;
 
-import com.onandhome.email.service.EmailService;
 import com.onandhome.user.dto.UserDTO;
 import com.onandhome.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ public class UserController {
 
     private final UserService userService;
     private final JWTUtil jwtUtil;
-    private final EmailService emailService;
 
     /**
      * 회원가입 API

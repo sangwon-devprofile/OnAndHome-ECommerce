@@ -1,6 +1,5 @@
 package com.onandhome.auth.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onandhome.auth.dto.NaverTokenResponse;
 import com.onandhome.auth.dto.NaverUserInfo;
 import com.onandhome.user.UserRepository;
@@ -24,7 +23,6 @@ public class NaverAuthService {
 
     private final UserRepository userRepository;
     private final RestTemplate restTemplate = new RestTemplate();
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${naver.client-id}")
     private String clientId;

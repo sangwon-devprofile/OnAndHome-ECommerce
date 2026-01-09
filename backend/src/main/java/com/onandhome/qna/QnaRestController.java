@@ -38,7 +38,6 @@ import java.util.Comparator;
 public class QnaRestController {
 
     private final QnaService qnaService;
-    private final QnaReplyService qnaReplyService;
     private final ProductRepository productRepository;
     private final QnaRepository qnaRepository;
     private final UserRepository userRepository;

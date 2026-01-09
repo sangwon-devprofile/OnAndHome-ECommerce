@@ -14,7 +14,6 @@ import org.springframework.util.LinkedMultiValueMap; // 스프링 서비스 빈�
 import org.springframework.util.MultiValueMap; // key-value 형태의 body를 보내기 위한 Map
 import org.springframework.web.client.RestTemplate; // 그 Map의 인터페이스
 
-import com.fasterxml.jackson.databind.ObjectMapper; // 외부 API 호출용 스프링 기본 HTTP 클라이언트
 import com.onandhome.auth.dto.KakaoTokenResponse;
 import com.onandhome.auth.dto.KakaoUserInfo;
 import com.onandhome.user.UserRepository;
@@ -33,9 +32,6 @@ public class KakaoAuthService {
 
     // 외부 API 호출용 객체 (카카오 서버와 통신)
     private final RestTemplate restTemplate = new RestTemplate();
-
-    // JSON을 자바 객체로 변환할 때 사용
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     // application.yml에서 값 주입 (client-id)
     @Value("${kakao.client-id}")

@@ -9,9 +9,9 @@ const CartFloatingButton = () => {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const { isAuthenticated } = useSelector((state) => state.user);
 
-  // ?�바구니 개수 로드
+  // 장바구니 개수 로드
   const loadCartCount = async () => {
-    // 로그?�하지 ?��? 경우 API ?�출?��? ?�음
+    // 로그인하지 않은 경우 API 호출하지 않음
     if (!isAuthenticated) {
       setCartCount(0);
       return;
@@ -20,10 +20,10 @@ const CartFloatingButton = () => {
     try {
       const response = await cartAPI.getCartCount();
       if (response.success) {
-        setCartCount(response.data || response.count || 0);  // data ?�는 count ?�드 ?�인
+        setCartCount(response.data || response.count || 0);  // data 또는 count 필드 확인
       }
     } catch (error) {
-      console.debug('?�바구니 개수 조회 ?�패:', error.message);
+      console.debug('장바구니 개수 조회 실패:', error.message);
       setCartCount(0);
     }
   };
@@ -31,7 +31,7 @@ const CartFloatingButton = () => {
   useEffect(() => {
     loadCartCount();
     
-    // 로그?�한 경우?�만 5초마???�바구니 개수 갱신
+    // 로그인한 경우에만 5초마다 장바구니 개수 갱신
     if (isAuthenticated) {
       const interval = setInterval(() => {
         loadCartCount();
@@ -47,7 +47,7 @@ const CartFloatingButton = () => {
 
   const handleClose = () => {
     setIsPanelOpen(false);
-    loadCartCount(); // ?�널 ?�을 ??개수 갱신
+    loadCartCount(); // 패널 닫을 때 개수 갱신
   };
 
   return (
@@ -70,7 +70,7 @@ const CartFloatingButton = () => {
         {cartCount > 0 && (
           <div className="cart-count">{cartCount}</div>
         )}
-        <div className="cart-text">?�바구니</div>
+        <div className="cart-text">장바구니</div>
       </div>
 
       <CartSidePanel 

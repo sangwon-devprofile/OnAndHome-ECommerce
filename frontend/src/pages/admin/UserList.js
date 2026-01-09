@@ -7,35 +7,35 @@ import "./UserList.css";
 const UserList = () => {
   const navigate = useNavigate();
 
-  // ?�원 목록 ?�태
+  // 회원 목록 상태
   const [users, setUsers] = useState([]);
 
-  // 로딩 ?�태 (API ?�청 �?
+  // 로딩 상태 (API 요청 중)
   const [loading, setLoading] = useState(false);
 
-  // ?�체 ?�택 체크박스 ?�태
+  // 전체 선택 체크박스 상태
   const [selectAll, setSelectAll] = useState(false);
 
-  // 검?�어
+  // 검색어
   const [searchTerm, setSearchTerm] = useState("");
 
-  // ?�이�??�태
+  // 페이지 상태
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   // API 기본 URL
   const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
 
-  // 컴포?�트 �??�더�????�원 목록 불러?�기
+  // 컴포넌트 마운트 시 회원 목록 불러오기
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  // ?�원 목록 조회 (검???�함)
+  // 회원 목록 조회 (검색 포함)
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      // 검???�라미터 구성
+      // 검색 파라미터 구성
       const params = new URLSearchParams();
       if (searchTerm && searchTerm.trim()) {
         params.append("kw", searchTerm.trim());
@@ -53,11 +53,11 @@ const UserList = () => {
         },
       });
 
-      // API 결과�??�면???�이?�로 변??
+      // API 결과를 화면용 데이터로 변환
       if (response.data && Array.isArray(response.data)) {
         const mappedUsers = response.data.map((user, index) => ({
           ...user,
-          checked: false, // 개별 ?�택 체크박스 기본�?
+          checked: false, // 개별 선택 체크박스 기본값
           no: (currentPage - 1) * itemsPerPage + index + 1, // 목록 번호
         }));
 
@@ -66,15 +66,15 @@ const UserList = () => {
         setUsers([]);
       }
     } catch (error) {
-      // ?�류 메시지 처리
+      // 오류 메시지 처리
       if (error.response) {
         if (error.response.status === 401 || error.response.status === 403) {
-          alert("?�증 ?�류: ?�시 로그?�해주세??");
+          alert("인증 오류: 다시 로그인해주세요.");
         } else {
-          alert("?�원 목록??불러?�는???�패?�습?�다.");
+          alert("회원 목록을 불러오는데 실패했습니다.");
         }
       } else {
-        alert("?�버???�결?????�습?�다.");
+        alert("서버에 연결할 수 없습니다.");
       }
       setUsers([]);
     } finally {
@@ -83,14 +83,14 @@ const UserList = () => {
     }
   };
 
-  // ?�체 ?�택 체크박스 ?�릭 ??모든 ?�원 ?�택/?�제
+  // 전체 선택 체크박스 클릭 시 모든 회원 선택/해제
   const handleSelectAll = (e) => {
     const checked = e.target.checked;
     setSelectAll(checked);
     setUsers(users.map((user) => ({ ...user, checked })));
   };
 
-  // 개별 ?�원 ?�택
+  // 개별 회원 선택
   const handleSelectUser = (userId) => {
     const updatedUsers = users.map((user) =>
       user.id === userId ? { ...user, checked: !user.checked } : user
@@ -98,30 +98,30 @@ const UserList = () => {
 
     setUsers(updatedUsers);
 
-    // 모든 ??��???�택?�면 selectAll 체크 ?�성??
+    // 모든 행이 선택되면 selectAll 체크 활성화
     const allChecked = updatedUsers.every((user) => user.checked);
     setSelectAll(allChecked);
   };
 
-  // 검???�행
+  // 검색 실행
   const handleSearch = (e) => {
     e.preventDefault();
     setCurrentPage(1);
     fetchUsers();
   };
 
-  // ?�택???�원 ??�� (?�중 ??��)
+  // 선택된 회원 삭제 (다중 삭제)
   const handleDeleteSelected = async () => {
     const selectedUsers = users.filter((user) => user.checked);
 
     if (selectedUsers.length === 0) {
-      alert("??��???�원???�택?�주?�요.");
+      alert("삭제할 회원을 선택해주세요.");
       return;
     }
 
     if (
       !window.confirm(
-        `?�택??${selectedUsers.length}명의 ?�원????��?�시겠습?�까?\n\n???�업?� ?�돌�????�습?�다.`
+        `선택한 ${selectedUsers.length}명의 회원을 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.`
       )
     ) {
       return;
@@ -145,32 +145,32 @@ const UserList = () => {
 
       if (response.data && response.data.success) {
         alert(response.data.message);
-        await fetchUsers(); // 목록 ?�로고침
+        await fetchUsers(); // 목록 새로고침
       } else {
-        alert(response.data.message || "?�원 ??��???�패?�습?�다.");
+        alert(response.data.message || "회원 삭제에 실패했습니다.");
       }
     } catch (error) {
       if (error.response?.status === 403) {
-        alert("?�원 ??�� 권한???�습?�다.");
+        alert("회원 삭제 권한이 없습니다.");
       } else if (error.response?.status === 404) {
-        alert("?��? ?�원??찾을 ???�습?�다.");
+        alert("해당 회원을 찾을 수 없습니다.");
         fetchUsers();
       } else {
-        alert("?�원 ??�� �??�류가 발생?�습?�다.");
+        alert("회원 삭제 중 오류가 발생했습니다.");
       }
     } finally {
       setLoading(false);
     }
   };
 
-  // ?�이지 변�?
+  // 페이지 변경
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
     }
   };
 
-  // ?�짜 ?�맷 YYYY-MM-DD
+  // 날짜 포맷 YYYY-MM-DD
   const formatDate = (dateString) => {
     if (!dateString) return "-";
     try {
@@ -184,7 +184,7 @@ const UserList = () => {
     }
   };
 
-  // ?�화번호 ?�맷
+  // 전화번호 포맷
   const formatPhone = (phone) => {
     if (!phone) return "-";
     const cleaned = phone.replace(/\D/g, "");
@@ -200,21 +200,21 @@ const UserList = () => {
     return phone;
   };
 
-  // ?�별 ?�맷 (KOR/ENG/M/F/Male/Female 모두 처리)
+  // 성별 포맷 (KOR/ENG/M/F/Male/Female 모두 처리)
   const formatGender = (gender) => {
     if (!gender) return "-";
-    if (gender.toUpperCase() === "MALE" || gender === "?�자" || gender === "M")
-      return "?�자";
+    if (gender.toUpperCase() === "MALE" || gender === "남자" || gender === "M")
+      return "남자";
     if (
       gender.toUpperCase() === "FEMALE" ||
-      gender === "?�자" ||
+      gender === "여자" ||
       gender === "F"
     )
-      return "?�자";
+      return "여자";
     return gender;
   };
 
-  // ?�이지?�이??계산
+  // 페이지네이션 계산
   const totalPages = Math.max(1, Math.ceil(users.length / itemsPerPage));
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -228,35 +228,35 @@ const UserList = () => {
         <div className="page-header">
           <h1>User List</h1>
 
-          {/* 검???�력�?*/}
+          {/* 검색 입력창 */}
           <div className="search-box">
             <form onSubmit={handleSearch}>
               <input
                 type="text"
-                placeholder="?�름 ?�는 ?�이?��? ?�력?�세??
+                placeholder="이름 또는 아이디를 입력하세요"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <button type="submit" className="search-btn">
-                ?��
+                🔍
               </button>
             </form>
           </div>
         </div>
 
-        {/* 로딩 ?�면 */}
+        {/* 로딩 화면 */}
         {loading && (
           <div className="loading-overlay">
-            <div className="loading-spinner">로딩 �?..</div>
+            <div className="loading-spinner">로딩 중...</div>
           </div>
         )}
 
-        {/* ?�원 ?�이�?*/}
+        {/* 회원 테이블 */}
         <div className="user-table-container">
           <table className="user-table">
             <thead>
               <tr>
-                {/* ?�체 ?�택 체크박스 */}
+                {/* 전체 선택 체크박스 */}
                 <th style={{ width: "50px" }}>
                   <input
                     type="checkbox"
@@ -266,12 +266,12 @@ const UserList = () => {
                   />
                 </th>
                 <th style={{ width: "80px" }}>No</th>
-                <th>?�름</th>
+                <th>이름</th>
                 <th>ID</th>
-                <th>?�별</th>
-                <th>?�락�?/th>
-                <th>?�년?�일</th>
-                <th>가?�일??/th>
+                <th>성별</th>
+                <th>연락처</th>
+                <th>생년월일</th>
+                <th>가입일자</th>
               </tr>
             </thead>
 
@@ -283,7 +283,7 @@ const UserList = () => {
                     onClick={() => navigate(`/admin/users/${user.id}`)}
                     style={{ cursor: "pointer" }}
                   >
-                    {/* 개별 ?�택 체크박스 */}
+                    {/* 개별 선택 체크박스 */}
                     <td onClick={(e) => e.stopPropagation()}>
                       <input
                         type="checkbox"
@@ -303,7 +303,7 @@ const UserList = () => {
               ) : (
                 <tr>
                   <td colSpan="8" className="no-data">
-                    {loading ? "로딩 �?.." : "?�록???�원???�습?�다."}
+                    {loading ? "로딩 중..." : "등록된 회원이 없습니다."}
                   </td>
                 </tr>
               )}
@@ -311,7 +311,7 @@ const UserList = () => {
           </table>
         </div>
 
-        {/* ??�� 버튼 + ?�이지?�이??*/}
+        {/* 삭제 버튼 + 페이지네이션 */}
         <div
           className="table-footer"
           style={{
@@ -327,7 +327,7 @@ const UserList = () => {
             position: "relative",
           }}
         >
-          {/* ?�택 ?�원 ??�� */}
+          {/* 선택 회원 삭제 */}
           <button
             className="user-list-delete-btn"
             style={{
@@ -345,17 +345,17 @@ const UserList = () => {
             }}
             onClick={handleDeleteSelected}
           >
-            ??��
+            삭제
           </button>
 
-          {/* ?�이지?�이??*/}
+          {/* 페이지네이션 */}
           <div className="pagination">
             <button
               className="page-btn"
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1 || loading}
             >
-              ?�전
+              이전
             </button>
             <span className="page-info">
               {currentPage} / {totalPages}
@@ -365,7 +365,7 @@ const UserList = () => {
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage >= totalPages || loading}
             >
-              ?�음
+              다음
             </button>
           </div>
         </div>
@@ -375,4 +375,3 @@ const UserList = () => {
 };
 
 export default UserList;
-

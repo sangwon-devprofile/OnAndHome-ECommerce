@@ -410,9 +410,9 @@ public class AdminController {
             long totalReviews = reviewRepository.count();
             long totalQnas = qnaRepository.count();
             // 게시판 통계
-            model.addAttribute("totalNotices", noticeService.findAll().size());
-            model.addAttribute("totalReviews", reviewRepository.count());
-            model.addAttribute("totalQnas", qnaRepository.count());
+            model.addAttribute("totalNotices", totalNotices);
+            model.addAttribute("totalReviews", totalReviews);
+            model.addAttribute("totalQnas", totalQnas);
 
         } catch (Exception e) {
             // 오류 발생 시 전체 항목 기본값 처리

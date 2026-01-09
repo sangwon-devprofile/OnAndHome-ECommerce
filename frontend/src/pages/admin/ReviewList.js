@@ -29,7 +29,7 @@ const ReviewList = () => {
         }
       });
 
-      console.log('리뷰 목록 ?�답:', response.data);
+      console.log('리뷰 목록 응답:', response.data);
 
       if (response.data && Array.isArray(response.data)) {
         const reviewsWithCheck = response.data.map(review => ({
@@ -41,8 +41,8 @@ const ReviewList = () => {
         setReviews([]);
       }
     } catch (error) {
-      console.error('리뷰 목록 조회 ?�패:', error);
-      alert('리뷰 목록??불러?�는???�패?�습?�다.');
+      console.error('리뷰 목록 조회 실패:', error);
+      alert('리뷰 목록을 불러오는데 실패했습니다.');
       setReviews([]);
     } finally {
       setLoading(false);
@@ -66,7 +66,7 @@ const ReviewList = () => {
   };
 
   const handleSearch = () => {
-    // 검??기능?� ?�터링으�?구현
+    // 검색 기능은 필터링으로 구현
     fetchReviews();
   };
 
@@ -74,11 +74,11 @@ const ReviewList = () => {
     const selectedReviews = reviews.filter(review => review.checked);
 
     if (selectedReviews.length === 0) {
-      alert('??��??리뷰�??�택?�주?�요.');
+      alert('삭제할 리뷰를 선택해주세요.');
       return;
     }
 
-    if (!window.confirm(`?�택??${selectedReviews.length}개의 리뷰�???��?�시겠습?�까?\n\n???�업?� ?�돌�????�습?�다.`)) {
+    if (!window.confirm(`선택한 ${selectedReviews.length}개의 리뷰를 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.`)) {
       return;
     }
 
@@ -99,15 +99,15 @@ const ReviewList = () => {
       );
 
       if (response.data && response.data.success) {
-        alert(response.data.message || `${selectedReviews.length}개의 리뷰가 ??��?�었?�니??`);
+        alert(response.data.message || `${selectedReviews.length}개의 리뷰가 삭제되었습니다.`);
         await fetchReviews();
         setSelectAll(false);
       } else {
-        alert(response.data.message || '리뷰 ??��???�패?�습?�다.');
+        alert(response.data.message || '리뷰 삭제에 실패했습니다.');
       }
     } catch (error) {
-      console.error('리뷰 ??�� ?�패:', error);
-      alert('리뷰 ??�� �??�류가 발생?�습?�다.');
+      console.error('리뷰 삭제 실패:', error);
+      alert('리뷰 삭제 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
@@ -138,14 +138,14 @@ const ReviewList = () => {
     for (let i = 1; i <= 5; i++) {
       stars.push(
         <span key={i} className={i <= rating ? 'star filled' : 'star'}>
-          ??
+          ★
         </span>
       );
     }
     return <div className="rating-stars">{stars}</div>;
   };
 
-  // 검?�어 ?�터�?
+  // 검색어 필터링
   const filteredReviews = reviews.filter(review => {
     if (!searchKeyword.trim()) return true;
 
@@ -157,7 +157,7 @@ const ReviewList = () => {
     );
   });
 
-  // ?�이지?�이??
+  // 페이지네이션
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredReviews.slice(indexOfFirstItem, indexOfLastItem);
@@ -172,7 +172,7 @@ const ReviewList = () => {
       <div className="admin-review-list">
         <AdminSidebar />
         <div className="review-list-main">
-          <div className="loading">로딩 �?..</div>
+          <div className="loading">로딩 중...</div>
         </div>
       </div>
     );
@@ -184,23 +184,23 @@ const ReviewList = () => {
 
       <div className="review-list-main">
         <div className="page-header">
-          <h1>리뷰 관�?/h1>
+          <h1>리뷰 관리</h1>
 
           <div className="search-box">
             <input
               type="text"
-              placeholder="?�품�? ?�성?? ?�용???�력?�세??
+              placeholder="상품명, 작성자, 내용을 입력하세요"
               value={searchKeyword}
               onChange={(e) => setSearchKeyword(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             />
             <button onClick={handleSearch} className="search-btn">
-              ?��
+              🔍
             </button>
           </div>
         </div>
 
-        {/* 리뷰 목록 ?�이�?*/}
+        {/* 리뷰 목록 테이블 */}
         <div className="table-container">
           <table className="admin-table">
             <thead>
@@ -214,18 +214,18 @@ const ReviewList = () => {
                   />
                 </th>
                 <th style={{ width: '80px' }}>번호</th>
-                <th style={{ width: '200px' }}>?�품�?/th>
-                <th>?�용</th>
-                <th style={{ width: '120px' }}>?�점</th>
-                <th style={{ width: '120px' }}>?�성??/th>
-                <th style={{ width: '150px' }}>?�성?�자</th>
+                <th style={{ width: '200px' }}>상품명</th>
+                <th>내용</th>
+                <th style={{ width: '120px' }}>평점</th>
+                <th style={{ width: '120px' }}>작성자</th>
+                <th style={{ width: '150px' }}>작성일자</th>
               </tr>
             </thead>
             <tbody>
               {currentItems.length === 0 ? (
                 <tr>
                   <td colSpan="7" className="no-data">
-                    리뷰가 ?�습?�다.
+                    리뷰가 없습니다.
                   </td>
                 </tr>
               ) : (
@@ -259,17 +259,17 @@ const ReviewList = () => {
           </table>
         </div>
 
-        {/* ?�이�??�단 */}
+        {/* 테이블 하단 */}
         <div className="table-footer">
           <button
             className="delete-btn"
             onClick={handleDeleteSelected}
             disabled={loading || reviews.filter(r => r.checked).length === 0}
           >
-            ??��
+            삭제
           </button>
 
-          {/* ?�이지?�이??*/}
+          {/* 페이지네이션 */}
           {totalPages > 1 && (
             <div className="pagination">
               <button
@@ -277,7 +277,7 @@ const ReviewList = () => {
                 disabled={currentPage === 1}
                 className="page-button"
               >
-                ?�전
+                이전
               </button>
 
               {[...Array(totalPages)].map((_, index) => (
@@ -295,15 +295,15 @@ const ReviewList = () => {
                 disabled={currentPage === totalPages}
                 className="page-button"
               >
-                ?�음
+                다음
               </button>
             </div>
           )}
         </div>
 
-        {/* ?�계 ?�보 */}
+        {/* 통계 정보 */}
         <div className="review-stats">
-          <p>?�체 리뷰: {filteredReviews.length}�?/p>
+          <p>전체 리뷰: {filteredReviews.length}개</p>
         </div>
       </div>
     </div>
@@ -311,4 +311,3 @@ const ReviewList = () => {
 };
 
 export default ReviewList;
-

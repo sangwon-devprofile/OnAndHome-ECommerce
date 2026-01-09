@@ -39,8 +39,12 @@ public class FileStorageService {
             throw new IllegalArgumentException("업로드할 파일이 없습니다.");
         }
 
-        // 원본 파일명
-        String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
+        // 원본 파일명 (null 체크)
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null) {
+            originalFilename = "file";
+        }
+        originalFilename = StringUtils.cleanPath(originalFilename);
 
         // 확장자 추출
         String ext = "";

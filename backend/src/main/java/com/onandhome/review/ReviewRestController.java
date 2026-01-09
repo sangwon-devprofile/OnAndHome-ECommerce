@@ -3,9 +3,7 @@ package com.onandhome.review;
 import com.onandhome.review.dto.ReviewDTO;
 import com.onandhome.review.dto.ReviewLikeResponseDTO;
 import com.onandhome.review.entity.Review;
-import com.onandhome.review.entity.ReviewReply;
 import com.onandhome.user.UserRepository;
-import com.onandhome.user.UserService;
 import com.onandhome.user.dto.UserDTO;
 import com.onandhome.user.entity.User;
 import com.onandhome.util.JWTUtil;
@@ -35,7 +33,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ReviewRestController {
 
     private final ReviewService reviewService;
-    private final UserService userService;
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final JWTUtil jwtUtil;

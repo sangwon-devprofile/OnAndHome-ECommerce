@@ -11,7 +11,7 @@ const CompareSelectModal = ({ isOpen, onClose, onSelect }) => {
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  // �?번째 비교 ?�품??카테고리 가?�오�?
+  // 첫 번째 비교 상품의 카테고리 가져오기
   const filterCategory =
     compareItems.length > 0 ? compareItems[0].category : null;
 
@@ -26,7 +26,7 @@ const CompareSelectModal = ({ isOpen, onClose, onSelect }) => {
     try {
       const response = await productAPI.getAllProductsForUser();
       if (response.success && response.products) {
-        // 카테고리 ?�터�??�용
+        // 카테고리 필터링 적용
         let filteredProducts = response.products;
 
         if (filterCategory) {
@@ -38,7 +38,7 @@ const CompareSelectModal = ({ isOpen, onClose, onSelect }) => {
         setProducts(filteredProducts);
       }
     } catch (error) {
-      console.error("?�품 조회 ?�류:", error);
+      console.error("상품 조회 오류:", error);
     } finally {
       setLoading(false);
     }
@@ -50,18 +50,18 @@ const CompareSelectModal = ({ isOpen, onClose, onSelect }) => {
   };
 
   const getImageUrl = (imagePath) => {
-    console.log("?�본 imagePath:", imagePath);
+    console.log("원본 imagePath:", imagePath);
 
     if (!imagePath) return "/images/no-image.png";
 
-    // uploads/ 경로�?백엔???�버?�서 가?�오�?
+    // uploads/ 경로는 백엔드 서버에서 가져오기
     if (imagePath.startsWith("uploads/") || imagePath.startsWith("/uploads/")) {
       return `http://localhost:8080${
         imagePath.startsWith("/") ? "" : "/"
       }${imagePath}`;
     }
 
-    // 짧�? ?�름?�면 public/product_img/ ?�더?�서 가?�오�?
+    // 짧은 이름이면 public/product_img/ 폴더에서 가져오기
     if (!imagePath.includes("/") && !imagePath.startsWith("http")) {
       return `/product_img/${imagePath}.jpg`;
     }
@@ -75,12 +75,12 @@ const CompareSelectModal = ({ isOpen, onClose, onSelect }) => {
 
   const handleConfirm = () => {
     if (!selectedProduct) {
-      alert("비교???�품???�택?�주?�요.");
+      alert("비교할 상품을 선택해주세요.");
       return;
     }
 
     if (compareItems.length >= 4) {
-      alert("최�? 4�??�품까�? 비교?????�습?�다.");
+      alert("최대 4개 상품까지 비교할 수 있습니다.");
       return;
     }
 
@@ -89,7 +89,7 @@ const CompareSelectModal = ({ isOpen, onClose, onSelect }) => {
     );
 
     if (isAlreadySelected) {
-      alert("?��? ?�택???�품?�니??");
+      alert("이미 선택된 상품입니다.");
       return;
     }
 
@@ -123,7 +123,7 @@ const CompareSelectModal = ({ isOpen, onClose, onSelect }) => {
       >
         <div className="compare-select-header">
           <h2>
-            비교???�품???�택?�세??
+            비교할 상품을 선택하세요
             {filterCategory && (
               <span className="category-filter">
                 {" "}
@@ -138,12 +138,12 @@ const CompareSelectModal = ({ isOpen, onClose, onSelect }) => {
 
         <div className="compare-select-content">
           {loading ? (
-            <div className="loading">로딩 �?..</div>
+            <div className="loading">로딩 중...</div>
           ) : products.length === 0 ? (
             <div className="loading">
               {filterCategory
-                ? `${filterCategory} 카테고리??비교 가?�한 ?�품???�습?�다.`
-                : "비교 가?�한 ?�품???�습?�다."}
+                ? `${filterCategory} 카테고리에 비교 가능한 상품이 없습니다.`
+                : "비교 가능한 상품이 없습니다."}
             </div>
           ) : (
             <div className="product-grid-modal">
@@ -172,8 +172,8 @@ const CompareSelectModal = ({ isOpen, onClose, onSelect }) => {
                       <h3 className="product-name-modal">{product.name}</h3>
                       <div className="product-price-modal">
                         {product.salePrice && product.salePrice < product.price
-                          ? `${formatPrice(product.salePrice)}??
-                          : `${formatPrice(product.price)}??}
+                          ? `${formatPrice(product.salePrice)}원`
+                          : `${formatPrice(product.price)}원`}
                       </div>
                     </div>
                     {isSelected && (
@@ -197,7 +197,7 @@ const CompareSelectModal = ({ isOpen, onClose, onSelect }) => {
 
         <div className="compare-select-footer">
           <button className="confirm-btn" onClick={handleConfirm}>
-            비교?�기
+            비교하기
           </button>
         </div>
       </div>

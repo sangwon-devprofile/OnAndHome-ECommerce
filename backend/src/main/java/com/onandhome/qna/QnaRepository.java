@@ -1,6 +1,5 @@
 package com.onandhome.qna;
 
-import com.onandhome.admin.adminProduct.entity.Product;
 import com.onandhome.qna.entity.Qna;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -16,10 +16,10 @@ const ProductCard = ({ product }) => {
   const productId = product.id || product.productId;
   const isInCompare = compareItems.some((item) => item.id === productId);
 
-  // �??�태 관�?
+  // 찜 상태 관리
   const [isFavorite, setIsFavorite] = useState(false);
 
-  // 초기 �??�태 ?�인
+  // 초기 찜 상태 확인
   useEffect(() => {
     const checkFavoriteStatus = async () => {
       const token = localStorage.getItem("accessToken");
@@ -31,7 +31,7 @@ const ProductCard = ({ product }) => {
           setIsFavorite(response.isFavorite);
         }
       } catch (error) {
-        console.error("�??�태 ?�인 ?�류:", error);
+        console.error("찜 상태 확인 오류:", error);
       }
     };
 
@@ -45,16 +45,16 @@ const ProductCard = ({ product }) => {
   };
 
   const handleCompareToggle = (e) => {
-    e.stopPropagation(); // 카드 ?�릭 ?�벤??방�?
+    e.stopPropagation(); // 카드 클릭 이벤트 방지
 
     if (isInCompare) {
       dispatch(removeFromCompare(productId));
     } else {
       if (compareItems.length >= 4) {
-        alert("최�? 4�??�품까�? 비교?????�습?�다.");
+        alert("최대 4개 상품까지 비교할 수 있습니다.");
         return;
       }
-      // 비교?�기???�?�할 ?�이???�규??
+      // 비교하기에 필요한 데이터 정규화
       const compareProduct = {
         ...product,
         id: productId,
@@ -65,11 +65,11 @@ const ProductCard = ({ product }) => {
   };
 
   const handleFavoriteToggle = async (e) => {
-    e.stopPropagation(); // 카드 ?�릭 ?�벤??방�?
+    e.stopPropagation(); // 카드 클릭 이벤트 방지
 
     const token = localStorage.getItem("accessToken");
     if (!token) {
-      alert("로그?�이 ?�요?�니??");
+      alert("로그인이 필요합니다.");
       navigate("/login");
       return;
     }
@@ -80,22 +80,22 @@ const ProductCard = ({ product }) => {
         setIsFavorite(response.isFavorite);
       }
     } catch (error) {
-      console.error("찜하�??�류:", error);
-      alert("찜하�?처리 �??�류가 발생?�습?�다.");
+      console.error("찜하기 오류:", error);
+      alert("찜하기 처리 중 오류가 발생했습니다.");
     }
   };
 
   const getImageUrl = (imagePath) => {
     if (!imagePath) return "/images/no-image.png";
 
-    // uploads/ 경로�?백엔???�버?�서 가?�오�?
+    // uploads/ 경로는 백엔드 서버에서 가져오기
     if (imagePath.startsWith("uploads/") || imagePath.startsWith("/uploads/")) {
       return `http://localhost:8080${
         imagePath.startsWith("/") ? "" : "/"
       }${imagePath}`;
     }
 
-    // 짧�? ?�름?�면 public/product_img/ ?�더?�서 가?�오�?
+    // 짧은 이름이면 public/product_img/ 폴더에서 가져오기
     if (!imagePath.includes("/") && !imagePath.startsWith("http")) {
       return `/product_img/${imagePath}.jpg`;
     }
@@ -103,7 +103,7 @@ const ProductCard = ({ product }) => {
     return imagePath;
   };
 
-  // ?��?지 ?�드 ?�선?�위: thumbnailImage > image > mainImg
+  // 이미지 소스 우선순위: thumbnailImage > image > mainImg
   const imageSource = product.thumbnailImage || product.image || product.mainImg;
 
   return (
@@ -119,11 +119,11 @@ const ProductCard = ({ product }) => {
           }}
         />
 
-        {/* 찜하�?버튼 */}
+        {/* 찜하기 버튼 */}
         <button
           className={`favorite-btn-card ${isFavorite ? "active" : ""}`}
           onClick={handleFavoriteToggle}
-          title={isFavorite ? "�?취소" : "찜하�?}
+          title={isFavorite ? "찜 취소" : "찜하기"}
         >
           <svg
             viewBox="0 0 24 24"
@@ -138,7 +138,7 @@ const ProductCard = ({ product }) => {
         <button
           className={`compare-btn ${isInCompare ? "active" : ""}`}
           onClick={handleCompareToggle}
-          title={isInCompare ? "비교 취소" : "비교?�기"}
+          title={isInCompare ? "비교 취소" : "비교하기"}
         >
           <svg
             width="20"
@@ -154,7 +154,7 @@ const ProductCard = ({ product }) => {
       </div>
       <div className="product-info">
         <h3 className="product-name">{product.name || product.productName}</h3>
-        <p className="product-price">{(product.price || product.salePrice)?.toLocaleString()}??/p>
+        <p className="product-price">{(product.price || product.salePrice)?.toLocaleString()}원</p>
       </div>
     </div>
   );

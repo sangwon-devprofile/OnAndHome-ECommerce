@@ -23,8 +23,7 @@ public class OrderDTO {
 
     private Long userIdLong;           // User 엔티티의 기본키 (DB 기준 ID)
     private String userId;             // 사용자의 로그인 아이디
-    private String userName;           // 사용자의 이름
-    private String username;           // 동일 기능 별칭 (프론트에서 중복된 호칭으로 쓰여 호환 유지)
+    private String username;           // 사용자의 이름
     private String userEmail;          // 사용자 이메일
     private String userPhone;          // 사용자 연락처
     private String userAddress;        // 사용자 주소 (회원 정보 기준)
@@ -70,8 +69,7 @@ public class OrderDTO {
                 .orderNumber(order.getOrderNumber())
                 .userIdLong(order.getUser().getId())                       // DB PK
                 .userId(order.getUser().getUserId())                       // 로그인 ID
-                .userName(order.getUser().getUsername())
-                .username(order.getUser().getUsername())                  // 별칭
+                .username(order.getUser().getUsername())                  // 사용자 이름
                 .userEmail(order.getUser().getEmail())
                 .userPhone(order.getUser().getPhone())
                 .userAddress(order.getUser().getAddress())

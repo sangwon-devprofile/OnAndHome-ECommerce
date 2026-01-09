@@ -1,6 +1,5 @@
 package com.onandhome.auth.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onandhome.auth.dto.GoogleTokenResponse;
 import com.onandhome.auth.dto.GoogleUserInfo;
 import com.onandhome.user.UserRepository;
@@ -50,7 +49,6 @@ public class GoogleAuthService {
     
     private final UserRepository userRepository;
     private final RestTemplate restTemplate = new RestTemplate();
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     // application.properties에서 주입받는 구글 OAuth 설정값
     @Value("${google.client-id}")

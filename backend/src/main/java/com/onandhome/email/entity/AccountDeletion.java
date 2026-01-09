@@ -29,6 +29,7 @@ public class AccountDeletion {
     @Column(nullable = false)
     private LocalDateTime expiresAt;
     
+    @Builder.Default
     @Column(nullable = false)
     private boolean verified = false;
     

@@ -225,9 +225,6 @@ public class AdminReviewRestController {
         Map<String, Object> response = new HashMap<>();
         
         try {
-            Review review = reviewRepository.findById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("리뷰를 찾을 수 없습니다."));
-            
             reviewService.deleteReview(id);
             
             response.put("success", true);

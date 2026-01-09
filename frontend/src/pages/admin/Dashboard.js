@@ -158,25 +158,25 @@ const Dashboard = () => {
         </div>
 
         <div className="dashboard-grid">
-          {/* 매출?�황 카드 */}
+          {/* 매출현황 카드 */}
           <DashboardCard title="매출현황" type="sales">
             <div className="card-content">
               <div className="data-row">
                 <span className="label">오늘의 주문</span>
                 <span className="value">
-                  {dashboardData.sales.todayOrders} �?
+                  {dashboardData.sales.todayOrders} 건
                 </span>
               </div>
               <div className="data-row">
                 <span className="label">오늘의 매출</span>
                 <span className="value">
-                  {formatCurrency(dashboardData.sales.todayRevenue)} ??
+                  {formatCurrency(dashboardData.sales.todayRevenue)} 원
                 </span>
               </div>
               <div className="data-row">
                 <span className="label">이달의 매출</span>
                 <span className="value highlight">
-                  {formatCurrency(dashboardData.sales.monthRevenue)} ??
+                  {formatCurrency(dashboardData.sales.monthRevenue)} 원
                 </span>
               </div>
             </div>
@@ -186,9 +186,9 @@ const Dashboard = () => {
           <DashboardCard title="상품 현황" type="products">
             <div className="card-content">
               <div className="data-row clickable" onClick={goToProductList}>
-                <span className="label">?�체?�품</span>
+                <span className="label">전체상품</span>
                 <span className="value">
-                  {dashboardData.products.totalProducts} �?
+                  {dashboardData.products.totalProducts} 건
                 </span>
               </div>
               <div className="data-row clickable" onClick={goToProductList}>

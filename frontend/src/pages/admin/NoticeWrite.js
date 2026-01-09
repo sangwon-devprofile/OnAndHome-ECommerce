@@ -25,30 +25,30 @@ const NoticeWrite = () => {
     e.preventDefault();
     
     if (!formData.title.trim()) {
-      alert('?�목???�력?�주?�요.');
+      alert('제목을 입력해주세요.');
       return;
     }
     
     if (!formData.content.trim()) {
-      alert('?�용???�력?�주?�요.');
+      alert('내용을 입력해주세요.');
       return;
     }
 
     setLoading(true);
     try {
       await noticeApi.createNotice(formData);
-      alert('공�??�항???�록?�었?�니??');
+      alert('공지사항이 등록되었습니다.');
       navigate('/admin/notices');
     } catch (error) {
-      console.error('공�??�항 ?�록 ?�패:', error);
-      alert('공�??�항 ?�록???�패?�습?�다.');
+      console.error('공지사항 등록 실패:', error);
+      alert('공지사항 등록에 실패했습니다.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleCancel = () => {
-    if (window.confirm('?�성??취소?�시겠습?�까? ?�성 중인 ?�용?� ?�?�되지 ?�습?�다.')) {
+    if (window.confirm('작성을 취소하시겠습니까? 작성 중인 내용은 저장되지 않습니다.')) {
       navigate('/admin/notices');
     }
   };
@@ -60,22 +60,22 @@ const NoticeWrite = () => {
       <div className="dashboard-main">
         <div className="notice-write-container">
           <div className="notice-write-header">
-            <h1>공�??�항 ?�성</h1>
-            <p className="notice-description">?�로??공�??�항???�성?�니??/p>
+            <h1>공지사항 작성</h1>
+            <p className="notice-description">새로운 공지사항을 작성합니다</p>
           </div>
 
           <form onSubmit={handleSubmit} className="notice-write-form">
             <div className="form-card">
               <div className="form-section">
                 <label className="form-label required">
-                  ?�목
+                  제목
                 </label>
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
-                  placeholder="공�??�항 ?�목???�력?�세??
+                  placeholder="공지사항 제목을 입력하세요"
                   className="form-input"
                   maxLength={100}
                 />
@@ -86,14 +86,14 @@ const NoticeWrite = () => {
 
               <div className="form-section">
                 <label className="form-label required">
-                  ?�성??
+                  작성자
                 </label>
                 <input
                   type="text"
                   name="writer"
                   value={formData.writer}
                   onChange={handleInputChange}
-                  placeholder="?�성?�명???�력?�세??
+                  placeholder="작성자명을 입력하세요"
                   className="form-input"
                   maxLength={50}
                 />
@@ -101,18 +101,18 @@ const NoticeWrite = () => {
 
               <div className="form-section">
                 <label className="form-label required">
-                  ?�용
+                  내용
                 </label>
                 <textarea
                   name="content"
                   value={formData.content}
                   onChange={handleInputChange}
-                  placeholder="공�??�항 ?�용???�력?�세??
+                  placeholder="공지사항 내용을 입력하세요"
                   className="form-textarea"
                   rows={15}
                 />
                 <div className="char-count">
-                  {formData.content.length}??
+                  {formData.content.length}자
                 </div>
               </div>
             </div>
@@ -130,7 +130,7 @@ const NoticeWrite = () => {
                 className="btn-submit"
                 disabled={loading}
               >
-                {loading ? '?�록 �?..' : '?�록?�기'}
+                {loading ? '등록 중...' : '등록하기'}
               </button>
             </div>
           </form>
@@ -141,4 +141,3 @@ const NoticeWrite = () => {
 };
 
 export default NoticeWrite;
-
