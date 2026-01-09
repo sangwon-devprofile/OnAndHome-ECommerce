@@ -34,3 +34,7 @@
 {"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:269","message":"filterChain initialization finished","data":"Duration: 542ms","timestamp":1766831396067}
 {"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:117","message":"filterChain initialization started","data":null,"timestamp":1766831786293}
 {"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:269","message":"filterChain initialization finished","data":"Duration: 1488ms","timestamp":1766831787818}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:117","message":"filterChain initialization started","data":null,"timestamp":1766836821864}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:269","message":"filterChain initialization finished","data":"Duration: 602ms","timestamp":1766836822474}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:117","message":"filterChain initialization started","data":null,"timestamp":1767099968521}
+{"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"SecurityConfig.java:269","message":"filterChain initialization finished","data":"Duration: 570ms","timestamp":1767099969101}
